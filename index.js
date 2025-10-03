@@ -1,18 +1,15 @@
 // --- IMPORTS ---
-// Load environment variables from .env file
 require('dotenv').config(); 
-
-// Import Express framework
 const express = require('express');
-// Import path module for working with file and directory paths
 const path = require('path');
+const pool = require('./src/config/database');
+const cookieParser = require('cookie-parser'); 
+
 
 // --- APP INITIALIZATION ---
-// Create an instance of the Express application
 const app = express();
 
 // --- CONFIGURATION ---
-// Set the port number from environment variables, with a fallback to 3000
 const PORT = process.env.PORT || 3000;
 
 // --- MIDDLEWARE ---
@@ -24,6 +21,7 @@ app.use(express.json());
 
 // Enable the Express app to parse URL-encoded request bodies (form data)
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 
 // --- VIEW ENGINE SETUP ---
@@ -33,12 +31,29 @@ app.set('views', path.join(__dirname, 'src', 'views'));
 app.set('view engine', 'ejs');
 
 
+
 // --- ROUTES ---
+const authRoutes = require('./src/routes/authRoutes');
+const dashboardRoutes = require('./src/routes/dashboardRoutes');
+const trainingRoutes = require('./src/routes/trainingRoutes');
+const alertRoutes = require('./src/routes/alertRoutes');
+
+
+app.use('/api/auth', authRoutes);
+app.use('/dashboard', dashboardRoutes); // And add this
+app.use('/trainings', trainingRoutes);
+app.use('/api/alerts', alertRoutes);
+
+app.get('/public-map', (req, res) => {
+    res.render('pages/public_map');
+});
+
+
 // A simple test route to make sure everything is working
 app.get('/', (req, res) => {
     // This will render the home.ejs file from the 'src/views/pages' directory
     res.render('pages/home', {
-        pageTitle: 'Welcome to SAKSHAM'
+        pageTitle: 'Welcome to SAJAG'
     });
 });
 
