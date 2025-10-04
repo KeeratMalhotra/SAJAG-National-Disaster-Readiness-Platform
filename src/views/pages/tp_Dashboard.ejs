@@ -53,12 +53,38 @@
                             <% }) %>
                         </tbody>
                     </table>
+
                 <% } else { %>
                     <div class="text-center p-4">
                         <p class="mb-0">You haven't created any training programs yet.</p>
                         <p>Click the button above to get started!</p>
                     </div>
                 <% } %>
+                <table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Theme</th>
+            <th>Start Date</th>
+            <th>Location</th>
+            <th>Actions</th> </tr>
+    </thead>
+    <tbody>
+        <% trainings.forEach(training => { %>
+            <tr>
+                <td><%= training.title %></td>
+                <td><%= training.theme %></td>
+                <td><%= new Date(training.start_date).toLocaleDateString() %></td>
+                <td><%= training.location_text %></td>
+                <td>
+                    <a href="/assessments/take/<%= training.id %>" class="btn btn-sm btn-outline-primary">
+                        Take Quiz
+                    </a>
+                </td>
+            </tr>
+        <% }) %>
+    </tbody>
+</table>
             </div>
         </div>
     </div>

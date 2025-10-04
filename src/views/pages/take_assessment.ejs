@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF--8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= pageTitle %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="card w-75 mx-auto" id="assessmentCard">
+            <div class="card-header">
+                <h2><%= assessment.title %></h2>
+            </div>
+            <div class="card-body">
+                <form id="assessmentForm">
+                    <input type="hidden" name="assessmentId" value="<%= assessment.id %>">
+                    <input type="hidden" name="trainingId" value="<%= trainingId %>">
+
+                    <% assessment.questions.forEach((question, index) => { %>
+                        <div class="mb-4">
+                            <p class="fw-bold"><%= (index + 1) %>. <%= question.question_text %></p>
+                            <% question.options.forEach(option => { %>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="<%= question.id %>" id="<%= option.id %>" value="<%= option.id %>" required>
+                                    <label class="form-check-label" for="<%= option.id %>">
+                                        <%= option.option_text %>
+                                    </label>
+                                </div>
+                            <% }) %>
+                        </div>
+                    <% }) %>
+                    <button type="submit" class="btn btn-primary">Submit Answers</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="/js/assessment.js"></script>
+</body>
+</html>

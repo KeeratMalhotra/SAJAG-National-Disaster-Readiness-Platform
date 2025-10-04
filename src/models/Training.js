@@ -62,6 +62,16 @@ const Training = {
             throw error;
         }
     },
+    async findById(id) {
+        const query = 'SELECT * FROM trainings WHERE id = $1;';
+        try {
+            const result = await pool.query(query, [id]);
+            return result.rows[0];
+        } catch (error) {
+            console.error('Error finding training by id:', error);
+            throw error;
+        }
+    },
     async findAllGeoJSON() {
         // This query fetches trainings that have valid coordinates
         const query = `

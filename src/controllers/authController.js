@@ -57,9 +57,10 @@ const authController = {
 
             // **3. User is authenticated, now create a JWT**
             const payload = {
-                id: user.id,
-                role: user.role
-            };
+    id: user.id,
+    role: user.role,
+    email: user.email // Add this line
+};
 
             const token = jwt.sign(
                 payload,

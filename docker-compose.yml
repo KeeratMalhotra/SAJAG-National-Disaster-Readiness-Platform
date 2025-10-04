@@ -22,14 +22,16 @@ services:
       retries: 5
 
   # Our Node.js Application Service
+  # Our Node.js Application Service
   app:
     build: .
     container_name: sajag_app
     restart: always
-    # --- MODIFY THE depends_on SECTION LIKE THIS ---
+    # ADD THIS COMMAND ATTRIBUTE
+    command: sh -c "npm start > /usr/src/app/output.log 2>&1"
     depends_on:
       db:
-        condition: service_healthy # Wait for the healthcheck to pass
+        condition: service_healthy
     ports:
       - '${PORT}:${PORT}'
     volumes:

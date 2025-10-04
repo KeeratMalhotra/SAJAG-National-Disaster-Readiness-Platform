@@ -37,12 +37,15 @@ const authRoutes = require('./src/routes/authRoutes');
 const dashboardRoutes = require('./src/routes/dashboardRoutes');
 const trainingRoutes = require('./src/routes/trainingRoutes');
 const alertRoutes = require('./src/routes/alertRoutes');
-
+const assessmentApiRoutes = require('./src/routes/assessmentRoutes'); // Renamed for clarity
+const assessmentPageRoutes = require('./src/routes/assessmentPageRoutes'); // The new page router
 
 app.use('/api/auth', authRoutes);
-app.use('/dashboard', dashboardRoutes); // And add this
+app.use('/dashboard', dashboardRoutes);
 app.use('/trainings', trainingRoutes);
 app.use('/api/alerts', alertRoutes);
+app.use('/api/assessments', assessmentApiRoutes); // API routes are at /api/assessments
+app.use('/assessments', assessmentPageRoutes); // Page routes are at /assessments
 
 app.get('/public-map', (req, res) => {
     res.render('pages/public_map');
