@@ -8,17 +8,7 @@
 </head>
 <body class="bg-light">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/dashboard">SAJAG Partner Portal</a>
-            <div class="d-flex">
-                <span class="navbar-text me-3">
-                    Welcome, <%= user.name || 'User' %>
-                </span>
-                <a href="/api/auth/logout" class="btn btn-outline-light">Logout</a>
-            </div>
-        </div>
-    </nav>
+    <%- include('../partials/_navbar') %>
 
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">

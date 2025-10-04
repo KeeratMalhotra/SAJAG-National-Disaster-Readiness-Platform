@@ -1,0 +1,28 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/dashboard">SAJAG</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <% if (user.role === 'training_partner') { %>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/trainings/new">+ Create Training</a>
+                    </li>
+                <% } %>
+                <% if (user.role === 'sdma_admin' || user.role === 'ndma_admin') { %>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/manage-partners">Manage Partners</a>
+                    </li>
+                <% } %>
+            </ul>
+            <div class="d-flex">
+                <span class="navbar-text me-3">
+                    Welcome, <%= user.name || 'User' %> (<%= user.role.replace('_', ' ') %>)
+                </span>
+                <a href="/api/auth/logout" class="btn btn-outline-light">Logout</a>
+            </div>
+        </div>
+    </div>
+</nav>

@@ -15,12 +15,12 @@ const authController = {
     },
     registerUser: async (req, res) => {
         try {
-            const { name, email, password, role, organizationName } = req.body;
+            const { name, email, password, organizationName, state } = req.body;
 
             // **1. Basic Validation**
-            if (!name || !email || !password || !role) {
-                return res.status(400).json({ message: 'All required fields must be provided.' });
-            }
+            if (!name || !email || !password || !state) {
+            return res.status(400).json({ message: 'Name, email, password, and state are required.' });
+        }
 
             // **2. Check if user already exists**
             const existingUser = await User.findByEmail(email);
@@ -29,10 +29,9 @@ const authController = {
             }
             
             // **3. Create the new user using the model**
-            const newUser = await User.create(name, email, password, role, organizationName);
-
+            const newUser = await User.create(name, email, password, 'training_partner', organizationName, state);
             // **4. Send a success response**
-            res.status(201).json({ message: 'User registered successfully! 👍', user: newUser });
+           res.status(201).json({ message: 'Registration successful! Your account is pending approval.', user: newUser });
 
         } catch (error) {
             console.error('Registration Error:', error);
@@ -48,6 +47,9 @@ const authController = {
             if (!user) {
                 return res.status(401).json({ message: 'Invalid credentials. Please try again.' });
             }
+            if (user.status !== 'active') {
+                return res.status(401).json({ message: 'Your account is not active. Please wait for an admin to approve it.' });
+            }           
 
             // **2. Compare the provided password with the stored hash**
             const isMatch = await bcrypt.compare(password, user.password_hash);
@@ -57,10 +59,11 @@ const authController = {
 
             // **3. User is authenticated, now create a JWT**
             const payload = {
-    id: user.id,
-    role: user.role,
-    email: user.email // Add this line
-};
+                id: user.id,
+                role: user.role,
+                email: user.email, 
+                state: user.state 
+            };
 
             const token = jwt.sign(
                 payload,

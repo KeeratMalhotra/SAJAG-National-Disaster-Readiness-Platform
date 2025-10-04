@@ -47,7 +47,23 @@ const Submission = {
         console.error('Error finding all submissions:', error);
         throw error;
     }
-}
+},
+ async getAverageScoresByTheme() {
+        const query = `
+            SELECT t.theme, AVG(ps.score) as average_score
+            FROM participant_submissions ps
+            JOIN trainings t ON ps.training_id = t.id
+            GROUP BY t.theme
+            ORDER BY t.theme;
+        `;
+        try {
+            const result = await pool.query(query);
+            return result.rows; // Returns an array like [{ theme: 'Flood', average_score: '85.50' }]
+        } catch (error) {
+            console.error('Error getting average scores by theme:', error);
+            throw error;
+        }
+    }
 };
 
 module.exports = Submission;

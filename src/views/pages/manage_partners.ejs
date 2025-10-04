@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        </nav>
+    <div class="container mt-4">
+        <h2 class="mb-4">Pending Partner Approvals</h2>
+        <div class="card">
+            <div class="card-body">
+                <table class="table" id="pending-partners-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Organization</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% pendingPartners.forEach(partner => { %>
+                            <tr id="user-row-<%= partner.id %>">
+                                <td><%= partner.name %></td>
+                                <td><%= partner.email %></td>
+                                <td><%= partner.organization_name %></td>
+                                <td>
+                                    <button class="btn btn-sm btn-success update-status-btn" data-userid="<%= partner.id %>" data-status="active">Approve</button>
+                                    <button class="btn btn-sm btn-danger update-status-btn" data-userid="<%= partner.id %>" data-status="rejected">Reject</button>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="/js/admin.js"></script>
+</body>
+</html>

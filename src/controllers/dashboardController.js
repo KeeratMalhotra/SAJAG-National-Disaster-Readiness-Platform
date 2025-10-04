@@ -18,22 +18,23 @@ const dashboardController = {
                     trainings: trainings // Pass the data here
                 });
             } else if (role === 'sdma_admin') {
-                const allTrainings = await Training.findAll();
+                const adminState = req.user.state; 
+                const stateTrainings = await Training.findAllByState(adminState);
 
-                // Render the new SDMA dashboard view
                 res.render('pages/sdma_dashboard', {
-                    pageTitle: 'SDMA Dashboard',
+                    pageTitle: `SDMA Dashboard - ${adminState}`,
                     user: req.user,
-                    trainings: allTrainings
+                    trainings: stateTrainings,
+                    state: adminState // Pass the state name to the view
                 });
-            } else if (role === 'ndma_admin') {
+            } else if (role === 'ndma_admin'|| role === 'auditor') {
                  const allTrainings = await Training.findAll();
                 // --- ADD THESE TWO LINES ---
                 const averageScore = await Submission.getNationalAverageScore();
-                 const trainingGaps = await predictionService.calculateGaps();
-
+                const trainingGaps = await predictionService.calculateGaps();
                 const totalTrainings = allTrainings.length;
                 const uniquePartners = [...new Set(allTrainings.map(t => t.creator_user_id))].length;
+                const scoresByTheme = await Submission.getAverageScoresByTheme();
 
                 res.render('pages/ndma_dashboard', {
                     pageTitle: 'National Dashboard',
@@ -41,7 +42,8 @@ const dashboardController = {
                     totalTrainings: totalTrainings,
                     uniquePartners: uniquePartners,
                     averageScore: parseFloat(averageScore).toFixed(2),
-                    gaps: trainingGaps
+                    gaps: trainingGaps,
+                    scoresByTheme: scoresByTheme
                 });
             } else {
                 res.send('Welcome to your dashboard!');

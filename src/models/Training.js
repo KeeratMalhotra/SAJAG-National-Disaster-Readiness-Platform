@@ -108,6 +108,50 @@ const Training = {
             console.error('Error fetching GeoJSON trainings:', error);
             throw error;
         }
+    },
+    async findAllByState(state) {
+        const query = `
+            SELECT t.*, u.organization_name 
+            FROM trainings t
+            JOIN users u ON t.creator_user_id = u.id
+            WHERE u.state = $1
+            ORDER BY t.start_date DESC;
+        `;
+        try {
+            const result = await pool.query(query, [state]);
+            return result.rows;
+        } catch (error) {
+            console.error('Error finding all trainings by state:', error);
+            throw error;
+        }
+    },async findAllGeoJSONByState(state) {
+        const query = `
+            SELECT t.id, t.title, t.theme, t.location_text, t.longitude, t.latitude
+            FROM trainings t
+            JOIN users u ON t.creator_user_id = u.id
+            WHERE u.state = $1 AND t.latitude IS NOT NULL AND t.longitude IS NOT NULL;
+        `;
+        try {
+            const result = await pool.query(query, [state]);
+            
+            const features = result.rows.map(row => ({
+                type: 'Feature',
+                geometry: {
+                    type: 'Point',
+                    coordinates: [row.longitude, row.latitude]
+                },
+                properties: {
+                    title: row.title,
+                    theme: row.theme,
+                    location: row.location_text
+                }
+            }));
+
+            return { type: 'FeatureCollection', features: features };
+        } catch (error) {
+            console.error('Error fetching GeoJSON by state:', error);
+            throw error;
+        }
     }
 
     

@@ -34,7 +34,16 @@ const trainingController = {
         } catch (error) {
             res.status(500).json({ message: 'Server error while fetching GeoJSON data.' });
         }
+    },
+    getTrainingsAsGeoJSONByState: async (req, res) => {
+    try {
+        const adminState = req.user.state; // Get state from the logged-in user
+        const geojsonData = await Training.findAllGeoJSONByState(adminState);
+        res.status(200).json(geojsonData);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error while fetching state GeoJSON data.' });
     }
+}
 };
 
 module.exports = trainingController;

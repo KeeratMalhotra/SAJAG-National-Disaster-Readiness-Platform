@@ -12,5 +12,7 @@ router.get('/new', trainingController.showNewTrainingForm);
 // POST /trainings
 router.post('/', trainingController.createTraining);
 router.get('/geojson', trainingController.getTrainingsAsGeoJSON);
+router.get('/geojson/state', trainingController.getTrainingsAsGeoJSONByState);
+
     
 module.exports = router;

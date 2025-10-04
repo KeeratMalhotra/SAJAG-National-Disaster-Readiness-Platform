@@ -37,20 +37,24 @@ const authRoutes = require('./src/routes/authRoutes');
 const dashboardRoutes = require('./src/routes/dashboardRoutes');
 const trainingRoutes = require('./src/routes/trainingRoutes');
 const alertRoutes = require('./src/routes/alertRoutes');
-const assessmentApiRoutes = require('./src/routes/assessmentRoutes'); // Renamed for clarity
-const assessmentPageRoutes = require('./src/routes/assessmentPageRoutes'); // The new page router
-const publicRoutes = require('./src/routes/publicRoutes'); // Add this
+const assessmentApiRoutes = require('./src/routes/assessmentRoutes'); 
+const assessmentPageRoutes = require('./src/routes/assessmentPageRoutes'); 
+const publicRoutes = require('./src/routes/publicRoutes');
 const predictionRoutes = require('./src/routes/predictionRoutes');
+const adminApiRoutes = require('./src/routes/adminRoutes'); 
+const adminPageRoutes = require('./src/routes/adminPageRoutes'); 
 
-app.use('/public', publicRoutes); // And add this
+
+app.use('/public', publicRoutes); 
 app.use('/api/auth', authRoutes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/trainings', trainingRoutes);
 app.use('/api/alerts', alertRoutes);
-app.use('/api/assessments', assessmentApiRoutes); // API routes are at /api/assessments
-app.use('/assessments', assessmentPageRoutes); // Page routes are at /assessments
-app.use('/api/predictions', predictionRoutes); // And add this
-
+app.use('/api/assessments', assessmentApiRoutes); 
+app.use('/assessments', assessmentPageRoutes);
+app.use('/api/predictions', predictionRoutes);
+app.use('/api/admin', adminApiRoutes); 
+app.use('/admin', adminPageRoutes); 
 app.get('/public-map', (req, res) => {
     res.render('pages/public_map');
 });
