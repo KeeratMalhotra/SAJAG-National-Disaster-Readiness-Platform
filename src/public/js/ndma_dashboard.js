@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const ctx = document.getElementById('scoresByThemeChart');
     // The themeScores data is passed from our EJS file
+    const chartDataEl = document.getElementById('chart-data');
+    const themeScores = JSON.parse(chartDataEl.dataset.scores);
     if (ctx && typeof themeScores !== 'undefined' && themeScores.length > 0) {
 
         const labels = themeScores.map(item => item.theme);

@@ -92,10 +92,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <script>
-        // Pass data from EJS to our client-side JavaScript
-        const themeScores = <%- JSON.stringify(scoresByTheme) %>;
-    </script>
+    <script id="chart-data" data-scores="<%= JSON.stringify(scoresByTheme) %>"></script>
     
     <script src="/js/map.js"></script>
     <script src="/js/ndma_dashboard.js"></script>
