@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -88,6 +88,166 @@
             <div id="message" class="mt-3"></div>
         </div>
     </div>
+    <script src="/js/auth.js"></script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= pageTitle %></title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Variables from the provided style sheet */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --background-light: #f4f7fc;
+            --border-light: #e2e8f0;
+        }
+
+        /* Global Reset and Font */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Body and Layout (centered) */
+        body {
+            background-color: var(--background-light); /* Custom background color */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        /* Styles for the Register Card Container */
+        .register-page-wrapper {
+            /* Mimics the .container styles: white background, modern box shadow, rounded corners */
+            background-color: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 500px; /* Max-width from original .register-container */
+            max-width: 95%;
+            padding: 40px; /* Generous padding from the custom form style */
+        }
+        
+        /* Typography */
+        h2 { font-weight: 700; color: var(--text-dark); margin-bottom: 30px; }
+        p { font-size: 14px; line-height: 20px; color: var(--text-light); }
+        label { 
+            font-size: 13px; 
+            margin-bottom: 5px; 
+            color: var(--text-dark); 
+            display: block; /* Make labels block elements for correct alignment */
+            font-weight: 500;
+        }
+
+        /* Form Structure */
+        form { 
+            background-color: #fff; 
+            display: flex; 
+            flex-direction: column; 
+            /* We remove the align-items: center to let fields take full width naturally */
+            padding: 0; /* Remove padding from the general form style */
+        }
+
+        .input-group {
+            width: 100%;
+            margin-bottom: 15px; /* Spacing between input groups */
+        }
+
+        /* Input and Select Styling */
+        input, select {
+            background-color: #f8fafc; 
+            border: 1px solid var(--border-light); 
+            padding: 12px 15px; 
+            font-size: 13px; 
+            border-radius: 8px; 
+            width: 100%; 
+            outline: none; 
+            transition: border-color 0.3s ease;
+            color: var(--text-dark);
+            -webkit-appearance: none; /* For select styling consistency */
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        input:focus, select:focus { border-color: var(--primary-color); }
+        
+        /* Button Styling */
+        button {
+            background-color: var(--primary-color); 
+            color: #fff; 
+            font-size: 12px; 
+            padding: 12px 45px; 
+            border: 1px solid transparent; 
+            border-radius: 8px; 
+            font-weight: 600; 
+            letter-spacing: 0.5px; 
+            text-transform: uppercase; 
+            margin-top: 15px; /* Increased margin-top for separation */
+            cursor: pointer; 
+            transition: all 0.3s ease;
+            width: 100%; /* Make button full width */
+        }
+        button:hover { background-color: var(--primary-hover); transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+
+    <div class="register-page-wrapper">
+        <h2 class="text-center">Create a SAJAG Account</h2>
+        <form id="registerForm">
+            
+            <div class="input-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="organizationName">Organization Name</label>
+                <input type="text" id="organizationName" name="organizationName">
+            </div>
+            
+            <div class="input-group">
+                <label for="role">Role</label>
+                <select id="role" name="role" required>
+                    <option value="training_partner" selected>Training Partner</option>
+                    <option value="sdma_admin">SDMA Admin</option>
+                    <option value="ndma_admin">NDMA Admin</option>
+                    <option value="auditor">Auditor</option>
+                </select>
+            </div>
+            
+            <button type="submit">Register</button>
+        </form>
+        
+        <div id="message" style="margin-top: 20px;"></div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+             <p style="margin: 0;">Already have an account? <a href="/api/auth/login">Login here</a></p>
+        </div>
+    </div>
+    
     <script src="/js/auth.js"></script>
 </body>
 </html>

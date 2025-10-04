@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -41,6 +41,140 @@
             </div>
         </div>
     </div>
+    <script src="/js/auth.js"></script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= pageTitle %></title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Including the custom CSS variables and styles here to make the snippet self-contained
+           but in a real application, this would be in a separate .css file. */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --background-light: #f4f7fc;
+            --border-light: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-light); /* Background color from custom CSS */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            width: 820px;
+            max-width: 100%;
+            min-height: 520px;
+        }
+        /* ... rest of the custom CSS (or link to it) ... */
+        /* Only including the relevant styles that affect this single-page view for brevity */
+
+        h1 { font-weight: 700; color: var(--text-dark); }
+        h2 { font-weight: 700; color: var(--text-dark); margin-bottom: 20px;}
+        p { font-size: 14px; line-height: 20px; letter-spacing: 0.3px; margin: 15px 0; color: var(--text-light); }
+        a { color: var(--primary-color); font-size: 13px; text-decoration: none; margin: 15px 0 10px; font-weight: 500; }
+        button { 
+            background-color: var(--primary-color); 
+            color: #fff; 
+            font-size: 12px; 
+            padding: 12px 45px; 
+            border: 1px solid transparent; 
+            border-radius: 8px; 
+            font-weight: 600; 
+            letter-spacing: 0.5px; 
+            text-transform: uppercase; 
+            margin-top: 10px; 
+            cursor: pointer; 
+            transition: all 0.3s ease;
+            width: 100%; /* Make button full width in this context */
+        }
+        button:hover { background-color: var(--primary-hover); transform: translateY(-2px); }
+        form { background-color: #fff; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 0 40px; height: 100%; }
+        input { 
+            background-color: #f8fafc; 
+            border: 1px solid var(--border-light); 
+            margin: 8px 0; 
+            padding: 12px 15px; 
+            font-size: 13px; 
+            border-radius: 8px; 
+            width: 100%; 
+            outline: none; 
+            transition: border-color 0.3s ease;
+        }
+        input:focus { border-color: var(--primary-color); }
+
+        /* Styles to make the login panel fit the provided styles for a single login form */
+        .login-page-wrapper {
+            /* Mimics the .container styles but adjusted for single form presentation */
+            background-color: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 400px; /* Max-width from original .login-container */
+            max-width: 90%;
+            padding: 40px; /* Padding from the form style */
+        }
+        /* Overriding form margin/padding for a cleaner look when presented as a single page */
+        .login-page-wrapper form {
+            padding: 0;
+            justify-content: flex-start;
+        }
+        .input-group {
+            width: 100%;
+            margin-bottom: 15px; /* Spacing between input groups */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-page-wrapper">
+        <h2 class="text-center mb-4">Login to SAJAG</h2>
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="email" style="font-size: 13px; margin-bottom: 5px; color: var(--text-dark);">Email Address</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="password" style="font-size: 13px; margin-bottom: 5px; color: var(--text-dark);">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <button type="submit">Login</button>
+        </form>
+        
+        <div id="message" class="mt-3"></div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <p style="margin: 0;">Don't have an account? <a href="/api/auth/register">Register here</a></p>
+        </div>
+    </div>
+    
     <script src="/js/auth.js"></script>
 </body>
 </html>
