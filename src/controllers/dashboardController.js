@@ -1,4 +1,6 @@
 const Training = require('../models/Training'); // Import the Training model at the top
+const Submission = require('../models/Submission');
+const predictionService = require('../services/predictionService');
 
 const dashboardController = {
     showDashboard: async (req, res) => { // Make the function async
@@ -25,9 +27,11 @@ const dashboardController = {
                     trainings: allTrainings
                 });
             } else if (role === 'ndma_admin') {
-                const allTrainings = await Training.findAll();
+                 const allTrainings = await Training.findAll();
+                // --- ADD THESE TWO LINES ---
+                const averageScore = await Submission.getNationalAverageScore();
+                 const trainingGaps = await predictionService.calculateGaps();
 
-                // Calculate some simple stats
                 const totalTrainings = allTrainings.length;
                 const uniquePartners = [...new Set(allTrainings.map(t => t.creator_user_id))].length;
 
@@ -36,7 +40,8 @@ const dashboardController = {
                     user: req.user,
                     totalTrainings: totalTrainings,
                     uniquePartners: uniquePartners,
-                    // We will pass the geojson data for the map separately
+                    averageScore: parseFloat(averageScore).toFixed(2),
+                    gaps: trainingGaps
                 });
             } else {
                 res.send('Welcome to your dashboard!');

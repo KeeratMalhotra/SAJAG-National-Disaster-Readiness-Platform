@@ -1,6 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
     const newTrainingForm = document.getElementById('newTrainingForm');
 
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
+
+    if (startDateInput && endDateInput) {
+        startDateInput.addEventListener('change', () => {
+            // When the start date changes, set the minimum allowed end date
+            endDateInput.min = startDateInput.value;
+        });
+    }
+
     if (newTrainingForm) {
         newTrainingForm.addEventListener('submit', async (event) => {
             event.preventDefault();

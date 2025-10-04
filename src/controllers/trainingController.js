@@ -12,7 +12,9 @@ const trainingController = {
         try {
             const trainingData = req.body;
             const userId = req.user.id; // We get this from our 'protectRoute' middleware
-
+            if (new Date(trainingData.endDate) < new Date(trainingData.startDate)) {
+            return res.status(400).json({ message: 'End date cannot be before the start date.' });
+        }
             const newTraining = await Training.create(trainingData, userId);
 
             // For now, we'll send a JSON response. Later we can redirect.

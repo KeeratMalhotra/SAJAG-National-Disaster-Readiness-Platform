@@ -39,13 +39,17 @@ const trainingRoutes = require('./src/routes/trainingRoutes');
 const alertRoutes = require('./src/routes/alertRoutes');
 const assessmentApiRoutes = require('./src/routes/assessmentRoutes'); // Renamed for clarity
 const assessmentPageRoutes = require('./src/routes/assessmentPageRoutes'); // The new page router
+const publicRoutes = require('./src/routes/publicRoutes'); // Add this
+const predictionRoutes = require('./src/routes/predictionRoutes');
 
+app.use('/public', publicRoutes); // And add this
 app.use('/api/auth', authRoutes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/trainings', trainingRoutes);
 app.use('/api/alerts', alertRoutes);
 app.use('/api/assessments', assessmentApiRoutes); // API routes are at /api/assessments
 app.use('/assessments', assessmentPageRoutes); // Page routes are at /assessments
+app.use('/api/predictions', predictionRoutes); // And add this
 
 app.get('/public-map', (req, res) => {
     res.render('pages/public_map');
@@ -54,12 +58,10 @@ app.get('/public-map', (req, res) => {
 
 // A simple test route to make sure everything is working
 app.get('/', (req, res) => {
-    // This will render the home.ejs file from the 'src/views/pages' directory
     res.render('pages/home', {
         pageTitle: 'Welcome to SAJAG'
     });
 });
-
 
 // --- SERVER STARTUP ---
 app.listen(PORT, () => {

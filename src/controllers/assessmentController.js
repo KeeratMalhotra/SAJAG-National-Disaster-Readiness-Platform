@@ -47,8 +47,10 @@ const assessmentController = {
     },
     submitAssessment: async (req, res) => {
         try {
-            const { assessmentId, trainingId, answers } = req.body;
-            const participantEmail = req.user.email; // Get email from logged-in user
+            const { assessmentId, trainingId, answers, participantEmail } = req.body;
+        
+        // Use the email from the form if it exists, otherwise fall back to the logged-in user's email
+        const email = participantEmail || req.user.email;
 
             // 1. Get the correct answers from the database
             const correctAnswers = await Assessment.getCorrectAnswers(assessmentId);
@@ -67,11 +69,11 @@ const assessmentController = {
 
             // 3. Save the submission
             await Submission.create({
-                trainingId,
-                participantEmail,
-                assessmentId,
-                score: finalScore.toFixed(2)
-            });
+            trainingId,
+            participantEmail: email, // Use the flexible email variable
+            assessmentId,
+            score: finalScore.toFixed(2)
+        });
 
             res.status(200).json({
                 message: 'Assessment submitted successfully!',

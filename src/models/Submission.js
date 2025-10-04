@@ -26,7 +26,28 @@ const Submission = {
             console.error('Error creating submission:', error);
             throw error;
         }
+    },
+    async getNationalAverageScore() {
+        const query = 'SELECT AVG(score) as average_score FROM participant_submissions;';
+        try {
+            const result = await pool.query(query);
+            // Return the average score, or 0 if there are no submissions yet
+            return result.rows[0].average_score || 0;
+        } catch (error) {
+            console.error('Error calculating national average score:', error);
+            throw error;
+        }
+    },
+    async findAll() {
+    const query = 'SELECT * FROM participant_submissions;';
+    try {
+        const result = await pool.query(query);
+        return result.rows;
+    } catch (error) {
+        console.error('Error finding all submissions:', error);
+        throw error;
     }
+}
 };
 
 module.exports = Submission;
