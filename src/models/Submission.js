@@ -63,6 +63,16 @@ const Submission = {
             console.error('Error getting average scores by theme:', error);
             throw error;
         }
+    },
+    async findByTrainingId(trainingId) {
+        const query = 'SELECT * FROM participant_submissions WHERE training_id = $1 ORDER BY submitted_at DESC;';
+        try {
+            const result = await pool.query(query, [trainingId]);
+            return result.rows;
+        } catch (error) {
+            console.error('Error finding submissions by training id:', error);
+            throw error;
+        }
     }
 };
 

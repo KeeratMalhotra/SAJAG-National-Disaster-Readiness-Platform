@@ -9,16 +9,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (registerForm) {
         registerForm.addEventListener('submit', async (event) => {
             event.preventDefault();
-            const formData = new FormData(registerForm);
-            const data = Object.fromEntries(formData.entries());
 
+            // Create a FormData object directly from the form
+            // This will include all text fields AND the selected file
+            const formData = new FormData(registerForm);
+            
             try {
+                // When sending FormData, DO NOT set the Content-Type header.
+                // The browser will do it for you automatically.
                 const response = await fetch('/api/auth/register', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
+                    body: formData // Send the FormData object directly
                 });
+
                 const result = await response.json();
+
                 if (response.ok) {
                     messageDiv.innerHTML = `<div class="alert alert-success">${result.message}</div>`;
                     registerForm.reset();
@@ -26,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     messageDiv.innerHTML = `<div class="alert alert-danger">${result.message}</div>`;
                 }
             } catch (error) {
+                console.error('Registration error:', error);
                 messageDiv.innerHTML = `<div class="alert alert-danger">A network error occurred.</div>`;
             }
         });

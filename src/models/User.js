@@ -11,17 +11,17 @@ const User = {
      * @param {string} organizationName - The name of the user's organization.
      * @returns {object} The newly created user object (without the password hash).
      */
-    async create(name, email, password, role, organizationName, state) {
+    async create(name, email, password, role, organizationName, state, documentUrl) {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
     // We now include state and status (which defaults to 'pending')
     const query = `
-        INSERT INTO users (name, email, password_hash, role, organization_name, state)
-        VALUES ($1, $2, $3, $4, $5, $6)
-        RETURNING id, name, email, role, organization_name, state, status;
+        INSERT INTO users (name, email, password_hash, role, organization_name, state, document_url)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING id, name, email, role;
     `;
-    const values = [name, email, passwordHash, role, organizationName, state];
+    const values = [name, email, passwordHash, role, organizationName, state, documentUrl];
 
         try {
             const result = await pool.query(query, values);

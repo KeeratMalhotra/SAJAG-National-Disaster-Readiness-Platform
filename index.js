@@ -22,6 +22,7 @@ app.use(express.json());
 // Enable the Express app to parse URL-encoded request bodies (form data)
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 // --- VIEW ENGINE SETUP ---

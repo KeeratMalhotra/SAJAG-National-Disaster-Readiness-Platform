@@ -16,26 +16,26 @@ const authController = {
     registerUser: async (req, res) => {
         try {
             const { name, email, password, organizationName, state } = req.body;
+            const documentUrl = req.file ? `/uploads/${req.file.filename}` : null;
 
-            // **1. Basic Validation**
-            if (!name || !email || !password || !state) {
-            return res.status(400).json({ message: 'Name, email, password, and state are required.' });
-        }
+            if (!name || !email || !password || !state || !documentUrl) {
+                return res.status(400).json({ message: 'All fields, including the registration document, are required.' });
+            }
 
-            // **2. Check if user already exists**
             const existingUser = await User.findByEmail(email);
             if (existingUser) {
                 return res.status(409).json({ message: 'A user with this email already exists.' });
             }
-            
-            // **3. Create the new user using the model**
-            const newUser = await User.create(name, email, password, 'training_partner', organizationName, state);
-            // **4. Send a success response**
+            const newUser = await User.create(name, email, password, 'training_partner', organizationName, state, documentUrl);
+        
            res.status(201).json({ message: 'Registration successful! Your account is pending approval.', user: newUser });
 
         } catch (error) {
             console.error('Registration Error:', error);
-            res.status(500).json({ message: 'Server error during user registration.' });
+        if (error.message.includes('Only PDF')) {
+             return res.status(400).json({ message: error.message });
+        }
+        res.status(500).json({ message: 'Server error during user registration.' });
         }
     },
     loginUser: async (req, res) => {

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= pageTitle %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <%- include('../partials/_navbar') %>
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1 class="mb-0"><%= training.title %></h1>
+            <a href="/dashboard" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+        <p class="lead text-muted"><%= training.theme %> | <%= new Date(training.start_date).toLocaleDateString() %> - <%= new Date(training.end_date).toLocaleDateString() %> | <%= training.location_text %></p>
+        <hr>
+
+        <div class="row">
+            <div class="col-md-4">
+                <h4>Statistics</h4>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Average Readiness Score</h5>
+                        <p class="fs-2 fw-bold text-primary"><%= averageScore %>%</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Participants Assessed</h5>
+                        <p class="fs-2 fw-bold"><%= submissions.length %></p>
+                    </div>
+                </div>
+
+                <h4 class="mt-4">Actions</h4>
+                <div class="d-grid gap-2">
+                     <a href="/public/assessment/take/<%= training.id %>" target="_blank" class="btn btn-outline-primary">Get Public Assessment Link</a>
+                     <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#qrModal">
+                        Show QR Code
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <h4>Participant Submissions</h4>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <table class="table">
+                            <thead><tr><th>Participant Email</th><th>Score</th></tr></thead>
+                            <tbody>
+                                <% submissions.forEach(sub => { %>
+                                    <tr>
+                                        <td><%= sub.participant_email %></td>
+                                        <td><%= sub.score %>%</td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <h4>Training Photos</h4>
+                <div class="card">
+                    <div class="card-body">
+                        <% if (photos.length > 0) { %>
+                            <div id="photoCarousel" class="carousel slide" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    <% photos.forEach((photo, index) => { %>
+                                        <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                                            <img src="<%= photo.image_url %>" class="d-block w-100" alt="Training Photo">
+                                        </div>
+                                    <% }) %>
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#photoCarousel" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#photoCarousel" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                </button>
+                            </div>
+                        <% } else { %>
+                            <p class="text-center">No photos uploaded yet.</p>
+                        <% } %>
+                    </div>
+                    <div class="card-footer">
+                        <form action="/trainings/<%= training.id %>/photos" method="POST" enctype="multipart/form-data">
+                            <div class="input-group">
+                                <input type="file" class="form-control" name="trainingPhoto" accept="image/*" required>
+                                <button class="btn btn-outline-secondary" type="submit">Upload Photo</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="qrModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Assessment QR Code for: <%= training.title %></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div id="qrcode"></div>
+                <p class="mt-2"><small class="text-muted"><%= `http://localhost:3000/public/assessment/take/${training.id}` %></small></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.js"></script>
+    <script src="/js/training_details.js"></script>
+</body>
+</html>

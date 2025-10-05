@@ -1,4 +1,4 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -22,7 +22,7 @@
     <div class="container">
         <div class="register-container">
             <h2 class="text-center mb-4">Register as a Training Partner</h2>
-            <form id="registerForm">
+            <form id="registerForm" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label for="name" class="form-label">Full Name</label>
                     <input type="text" class="form-control" id="name" name="name" required>
@@ -81,6 +81,12 @@
                         <option value="West Bengal">West Bengal</option>
                     </select>
                 </div>
+
+                <div class="mb-3">
+                    <label for="registrationDocument" class="form-label">Registration Document (PDF only)</label>
+                    <input class="form-control" type="file" id="registrationDocument" name="registrationDocument" accept=".pdf" required>
+                </div>
+
                 <div class="d-grid">
                     <button type="submit" class="btn btn-primary">Register for Approval</button>
                 </div>
@@ -90,10 +96,8 @@
     </div>
     <script src="/js/auth.js"></script>
 </body>
-</html> -->
-
-
-<!DOCTYPE html>
+</html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -250,4 +254,4 @@
     
     <script src="/js/auth.js"></script>
 </body>
-</html>
+</html> -->
