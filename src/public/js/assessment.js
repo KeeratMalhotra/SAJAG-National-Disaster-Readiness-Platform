@@ -11,12 +11,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const submissionData = {
                 assessmentId: formData.get('assessmentId'),
                 trainingId: formData.get('trainingId'),
+                participantEmail: formData.get('participantEmail'), // Get email separately
                 answers: {}
             };
 
-            // Collect the selected answers
+            // Collect only the question answers
             for (let [key, value] of formData.entries()) {
-                if (key !== 'assessmentId' && key !== 'trainingId') {
+                // Check if the key is a UUID (i.e., a question ID)
+                if (key.length > 30) { // A simple way to identify UUIDs vs other fields
                     submissionData.answers[key] = value;
                 }
             }

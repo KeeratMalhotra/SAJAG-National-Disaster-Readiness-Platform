@@ -12,6 +12,7 @@
         <div class="container">
             <a class="navbar-brand fs-4" href="/">SAJAG</a>
             <div class="d-flex">
+                <a href="/learn" class="nav-link text-white d-inline-block me-3">Learn</a>
                 <a href="/api/auth/login" class="btn btn-outline-light me-2">Login</a>
                 <a href="/api/auth/register" class="btn btn-primary">Register</a>
             </div>
@@ -50,6 +51,24 @@
             </div>
         </div>
     </div>
+    <div class="container px-4 py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="pb-2 border-bottom">Check Your Assessment Score</h2>
+                <div class="card p-4 my-4" id="lookupCard">
+                    <p class="lead">Attended a training? Enter the email you provided to get a secure link to your results.</p>
+                    <form id="lookupForm">
+                        <div class="input-group mb-3">
+                            <input type="email" class="form-control" name="email" placeholder="Enter your email address" required>
+                            <button class="btn btn-success" type="submit">Find My Score</button>
+                        </div>
+                    </form>
+                    <div id="lookupMessage" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <script src="/js/participant.js"></script>
 </body>
 </html>

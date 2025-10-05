@@ -44,8 +44,14 @@ const predictionRoutes = require('./src/routes/predictionRoutes');
 const adminApiRoutes = require('./src/routes/adminRoutes'); 
 const adminPageRoutes = require('./src/routes/adminPageRoutes'); 
 const announcementPageRoutes = require('./src/routes/announcementPageRoutes');
+const participantApiRoutes = require('./src/routes/participantRoutes'); 
+const participantPageRoutes = require('./src/routes/participantPageRoutes'); 
+const importRoutes = require('./src/routes/importRoutes'); // Add this
 
 
+app.use('/api/import', importRoutes);
+app.use('/participant', participantPageRoutes);
+app.use('/api/participant', participantApiRoutes);
 app.use('/announcements', announcementPageRoutes);
 app.use('/public', publicRoutes); 
 app.use('/api/auth', authRoutes);
@@ -68,7 +74,9 @@ app.get('/', (req, res) => {
         pageTitle: 'Welcome to SAJAG'
     });
 });
-
+app.get('/learn', (req, res) => {
+    res.render('pages/learn', { pageTitle: 'Learn & Prepare' });
+});
 // --- SERVER STARTUP ---
 app.listen(PORT, () => {
     console.log(`🚀 Server is running on http://localhost:${PORT}`);

@@ -73,6 +73,22 @@ const Submission = {
             console.error('Error finding submissions by training id:', error);
             throw error;
         }
+    },
+    async findByEmail(email) {
+        const query = `
+            SELECT s.score, s.submitted_at, t.title as training_title
+            FROM participant_submissions s
+            JOIN trainings t ON s.training_id = t.id
+            WHERE s.participant_email = $1
+            ORDER BY s.submitted_at DESC;
+        `;
+        try {
+            const result = await pool.query(query, [email]);
+            return result.rows;
+        } catch (error) {
+            console.error('Error finding submissions by email:', error);
+            throw error;
+        }
     }
 };
 
