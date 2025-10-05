@@ -8,8 +8,12 @@ const { requireRole } = require('../middleware/roleMiddleware');
 router.use(protectRoute);
 // Only allow SDMA and NDMA admins to access these routes
 router.use(requireRole(['sdma_admin', 'ndma_admin']));
-
 // PATCH /api/admin/partners/:userId/status
 router.patch('/partners/:userId/status', adminController.updatePartnerStatus);
+// PATCH /api/admin/partners/:userId/status
+router.patch('/partners/:userId/status', adminController.updatePartnerStatus);
+// POST /api/admin/announcements
+router.post('/announcements', adminController.createAnnouncement);
+
 
 module.exports = router;

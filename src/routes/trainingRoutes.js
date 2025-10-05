@@ -14,12 +14,12 @@ const imageFileFilter = (req, file, cb) => {
 const upload = multer({ dest: 'uploads/', fileFilter: imageFileFilter });
 
 router.use(protectRoute);
-router.get('/:id', trainingController.showTrainingDetails);
+
 router.get('/new', trainingController.showNewTrainingForm);
-router.post('/', trainingController.createTraining);
 router.get('/geojson', trainingController.getTrainingsAsGeoJSON);
 router.get('/geojson/state', trainingController.getTrainingsAsGeoJSONByState);
+router.get('/:id', trainingController.showTrainingDetails);
+router.post('/', trainingController.createTraining);    
 router.post('/:id/photos', upload.single('trainingPhoto'), trainingController.uploadPhoto);
 
-    
 module.exports = router;

@@ -1,11 +1,14 @@
 const Training = require('../models/Training'); // Import the Training model at the top
 const Submission = require('../models/Submission');
 const predictionService = require('../services/predictionService');
+const Announcement = require('../models/Announcement');
 
 const dashboardController = {
     showDashboard: async (req, res) => { // Make the function async
+        
         try {
-            const { role, id } = req.user;
+            const { role, id , state} = req.user;
+            const announcements = await Announcement.findForUser({ role, state });
 
             if (role === 'training_partner') {
                 // Fetch the trainings for the logged-in user
@@ -15,9 +18,13 @@ const dashboardController = {
                 res.render('pages/tp_dashboard', {
                     pageTitle: 'Partner Dashboard',
                     user: req.user,
-                    trainings: trainings // Pass the data here
+                    trainings: trainings,
+                    announcements: announcements  
                 });
             } else if (role === 'sdma_admin') {
+                if (!state) {
+                    return res.status(403).send('Access denied: SDMA Admin account is not associated with a state.');
+                }
                 const adminState = req.user.state; 
                 const stateTrainings = await Training.findAllByState(adminState);
 
@@ -25,7 +32,8 @@ const dashboardController = {
                     pageTitle: `SDMA Dashboard - ${adminState}`,
                     user: req.user,
                     trainings: stateTrainings,
-                    state: adminState // Pass the state name to the view
+                    state: adminState,
+                    announcements: announcements // Pass the state name to the view
                 });
             } else if (role === 'ndma_admin'|| role === 'auditor') {
                  const allTrainings = await Training.findAll();
@@ -43,7 +51,8 @@ const dashboardController = {
                     uniquePartners: uniquePartners,
                     averageScore: parseFloat(averageScore).toFixed(2),
                     gaps: trainingGaps,
-                    scoresByTheme: scoresByTheme
+                    scoresByTheme: scoresByTheme,
+                    announcements: announcements
                 });
             } else {
                 res.send('Welcome to your dashboard!');

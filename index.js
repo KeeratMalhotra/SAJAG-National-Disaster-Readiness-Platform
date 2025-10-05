@@ -24,7 +24,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-
 // --- VIEW ENGINE SETUP ---
 // Set the directory where the template files are located
 app.set('views', path.join(__dirname, 'src', 'views'));
@@ -44,8 +43,10 @@ const publicRoutes = require('./src/routes/publicRoutes');
 const predictionRoutes = require('./src/routes/predictionRoutes');
 const adminApiRoutes = require('./src/routes/adminRoutes'); 
 const adminPageRoutes = require('./src/routes/adminPageRoutes'); 
+const announcementPageRoutes = require('./src/routes/announcementPageRoutes');
 
 
+app.use('/announcements', announcementPageRoutes);
 app.use('/public', publicRoutes); 
 app.use('/api/auth', authRoutes);
 app.use('/dashboard', dashboardRoutes);

@@ -1,0 +1,18 @@
+<h1 class="mb-4">All Announcements</h1>
+
+<% if (announcements.length > 0) { %>
+    <div class="list-group">
+        <% announcements.forEach(announcement => { %>
+            <div class="list-group-item list-group-item-action flex-column align-items-start mb-3">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1"><%= announcement.title %></h5>
+                    <small><%= new Date(announcement.created_at).toLocaleDateString() %></small>
+                </div>
+                <p class="mb-1"><%= announcement.content %></p>
+                <small class="text-muted">Scope: <%= announcement.scope %></small>
+            </div>
+        <% }) %>
+    </div>
+<% } else { %>
+    <p>No announcements found.</p>
+<% } %>
