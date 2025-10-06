@@ -1,0 +1,185 @@
+/* --- SAJAG AUTHENTICATION STYLING --- */
+/* This file will style the login, register, and other auth pages. */
+
+/* 1. Import Font & Define Design System Variables */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --primary-saffron: #FF9933;
+    --primary-hover: #E68A2E;
+    --navy-blue: #000080;
+    --text-dark: #212529;
+    --text-light: #6c757d;
+    --background-grey: #f8f9fa;
+    --border-grey: #dee2e6;
+    --white: #ffffff;
+    --success-green: #138808;
+}
+
+/* 2. Base Body & Page Layout */
+body.auth-body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--background-grey);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+.auth-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 900px;
+    max-width: 100%;
+    min-height: 550px;
+    background-color: var(--white);
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* 3. Branding Panel (Left Side) */
+.branding-panel {
+    background: linear-gradient(rgba(255, 153, 51, 0.85), rgba(255, 153, 51, 0.85)), url('https://images.unsplash.com/photo-1619864551322-90e788939c39?q=80&w=1974') center/cover no-repeat;
+    color: var(--navy-blue);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 3rem;
+    position: relative;
+}
+
+.branding-panel::before {
+    content: '☸'; /* Ashoka Chakra symbol */
+    font-size: 15rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--white);
+    opacity: 0.1;
+    z-index: 1;
+}
+
+.branding-panel .logo, .branding-panel p {
+    z-index: 2;
+    position: relative;
+}
+
+.branding-panel .logo {
+    font-size: 3.5rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 1rem;
+    color: var(--white);
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+}
+
+.branding-panel p {
+    font-size: 1rem;
+    line-height: 1.6;
+    opacity: 1;
+    color: var(--white);
+    font-weight: 500;
+}
+
+/* 4. Form Panel (Right Side) */
+.form-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3rem;
+}
+
+.form-panel h2 {
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.form-panel .subtitle {
+    color: var(--text-light);
+    margin-bottom: 2rem;
+}
+
+.input-group {
+    margin-bottom: 1.25rem;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-grey);
+    border-radius: 0.5rem;
+    background-color: var(--background-grey);
+    transition: all 0.2s ease-in-out;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--primary-saffron);
+    box-shadow: 0 0 0 3px rgba(255, 153, 51, 0.25);
+}
+
+.form-panel button {
+    width: 100%;
+    padding: 0.875rem;
+    border: none;
+    border-radius: 0.5rem;
+    background-color: var(--primary-saffron);
+    color: var(--white);
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.form-panel button:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+}
+
+.form-panel .links {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.875rem;
+}
+
+.form-panel .links a {
+    color: var(--navy-blue);
+    text-decoration: none;
+    font-weight: 500;
+}
+.form-panel .links a:hover {
+    text-decoration: underline;
+}
+
+#message .alert {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+}
+
+/* 5. Responsive Design */
+@media (max-width: 768px) {
+    .auth-container {
+        grid-template-columns: 1fr;
+    }
+    .branding-panel {
+        display: none;
+    }
+    .form-panel {
+        padding: 2rem;
+    }
+}
+

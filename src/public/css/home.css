@@ -1,0 +1,168 @@
+/* --- SAJAG HOMEPAGE STYLING (V4 - Final "National Resilience" Design) --- */
+
+/* 1. Import Font & Define Design System Variables */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --primary-blue: #0F2B5B;
+    --accent-saffron: #FF9933;
+    --accent-hover: #E68A2E;
+    --india-green: #138808;
+    --text-dark: #212529;
+    --text-light: #495057;
+    --background-grey: #f8f9fa;
+    --white: #ffffff;
+    --border-color: #dee2e6;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--white);
+    color: var(--text-light);
+    line-height: 1.7;
+    padding-top: 70px; /* Offset for fixed navbar */
+}
+
+/* 2. Navbar */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.navbar-brand img {
+    height: 35px;
+    margin-right: 8px;
+}
+.navbar-brand span {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--text-dark);
+}
+.navbar .nav-link {
+    font-weight: 500;
+}
+.navbar .btn-saffron {
+    background-color: var(--accent-saffron);
+    border-color: var(--accent-saffron);
+    color: var(--white);
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+.navbar .btn-saffron:hover {
+    background-color: var(--accent-hover);
+    border-color: var(--accent-hover);
+    transform: translateY(-2px);
+}
+.gov-logos img {
+    height: 40px;
+    margin-left: 15px;
+}
+
+/* 3. Hero Carousel Section */
+.hero-carousel .carousel-item {
+    height: 70vh;
+    min-height: 500px;
+    background-size: cover;
+    background-position: center;
+}
+.hero-carousel .carousel-caption {
+    top: 50%;
+    transform: translateY(-50%);
+    bottom: auto;
+    text-align: left;
+    background: linear-gradient(90deg, rgba(15, 43, 91, 0.85) 0%, rgba(15, 43, 91, 0) 100%);
+    padding: 2rem 5%;
+}
+.hero-carousel h1 {
+    font-weight: 800;
+    font-size: 3rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    max-width: 60%;
+}
+.hero-carousel p {
+    max-width: 55%;
+    font-size: 1.1rem;
+    margin-top: 1rem;
+}
+
+/* 4. Features Section */
+.features-section {
+    padding: 6rem 0;
+    background-color: var(--background-grey);
+}
+.features-section .section-title {
+    font-weight: 700;
+    color: var(--text-dark);
+}
+.feature-card {
+    border: none;
+    border-radius: 0.5rem;
+    padding: 2rem;
+    background-color: var(--white);
+    transition: all 0.3s ease-in-out;
+    height: 100%;
+    box-shadow: 0 4px 25px rgba(0,0,0,0.05);
+}
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+}
+.feature-icon {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 0.5rem;
+    background-color: rgba(15, 43, 91, 0.1);
+    color: var(--primary-blue);
+    margin-bottom: 1.5rem;
+}
+.feature-icon svg {
+    width: 24px;
+    height: 24px;
+}
+.feature-card h3 {
+    color: var(--text-dark);
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+/* 5. Score Lookup Section */
+.score-lookup-section {
+    padding: 6rem 0;
+}
+.score-lookup-section h2 {
+    font-weight: 700;
+    color: var(--text-dark);
+}
+.score-lookup-section .card {
+    border: 1px solid var(--border-color);
+    background-color: var(--white);
+    border-radius: 1rem;
+}
+.score-lookup-section .btn-success {
+    background-color: var(--india-green);
+    border-color: var(--india-green);
+    font-weight: 500;
+}
+
+/* 6. Footer */
+.footer {
+    background-color: var(--primary-blue);
+    color: rgba(255, 255, 255, 0.8);
+    padding: 3rem 0;
+    font-size: 0.9rem;
+}
+.footer .footer-logo img {
+    height: 50px;
+    margin-bottom: 1rem;
+}
+.footer a {
+    color: var(--white);
+    text-decoration: none;
+    font-weight: 500;
+}
+.footer a:hover {
+    text-decoration: underline;
+}
+

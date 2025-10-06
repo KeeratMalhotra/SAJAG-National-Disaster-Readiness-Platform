@@ -4,7 +4,7 @@ const express = require('express');
 const path = require('path');
 const pool = require('./src/config/database');
 const cookieParser = require('cookie-parser'); 
-
+const { checkUser } = require('./src/middleware/checkUserMiddleware'); 
 
 // --- APP INITIALIZATION ---
 const app = express();
@@ -22,6 +22,7 @@ app.use(express.json());
 // Enable the Express app to parse URL-encoded request bodies (form data)
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(checkUser);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // --- VIEW ENGINE SETUP ---
@@ -55,6 +56,7 @@ app.use('/api/participant', participantApiRoutes);
 app.use('/announcements', announcementPageRoutes);
 app.use('/public', publicRoutes); 
 app.use('/api/auth', authRoutes);
+
 app.use('/dashboard', dashboardRoutes);
 app.use('/trainings', trainingRoutes);
 app.use('/api/alerts', alertRoutes);
