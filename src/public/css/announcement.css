@@ -1,0 +1,199 @@
+:root {
+    --primary-blue: #007bff;
+    --light-blue: #e7f3ff;
+    --text-color: #333;
+    --light-text-color: #6c757d;
+    --border-color: #e0e0e0;
+    --background-light: #f8f9fa;
+    --white: #ffffff;
+    --shadow-light: rgba(0, 0, 0, 0.05);
+    --ndma-color: #0d6efd; /* Bootstrap primary */
+    --sdma-color: #198754; /* Bootstrap success */
+}
+
+/* General Layout */
+.main-content {
+    margin-left: 250px; /* From sidebar.css */
+    padding: 30px;
+    background-color: var(--background-light);
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.page-header h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.create-btn {
+    font-weight: 600;
+}
+
+/* Filter Section */
+.announcement-filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--white);
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px var(--shadow-light);
+}
+
+.search-wrapper {
+    position: relative;
+    width: 40%;
+}
+
+.search-wrapper i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--light-text-color);
+}
+
+#searchInput {
+    padding-left: 40px;
+    border-radius: 8px;
+}
+
+.filter-buttons .btn {
+    border: 1px solid var(--border-color);
+    color: var(--light-text-color);
+    font-weight: 500;
+    background-color: transparent;
+    margin-left: 5px;
+}
+
+.filter-buttons .btn.active {
+    background-color: var(--primary-blue);
+    color: var(--white);
+    border-color: var(--primary-blue);
+}
+
+/* Announcement Grid */
+.announcement-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+}
+
+.announcement-card {
+    background-color: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px var(--shadow-light);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.announcement-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+.announcement-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: transparent;
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-title-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--primary-blue);
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.scope-badge {
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 5px 10px;
+}
+
+.scope-ndma {
+    background-color: var(--ndma-color) !important;
+    color: white;
+}
+.scope-sdma {
+    background-color: var(--sdma-color) !important;
+    color: white;
+}
+
+.announcement-card .card-body {
+    padding: 20px;
+    color: var(--light-text-color);
+    flex-grow: 1; /* Allows footer to stick to bottom */
+}
+
+.announcement-card .card-footer {
+    padding: 15px 20px;
+    background-color: transparent;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    background-color: var(--white);
+    border-radius: 12px;
+    border: 2px dashed var(--border-color);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: #ced4da;
+}
+
+.empty-state h2 {
+    margin-top: 20px;
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.empty-state p {
+    color: var(--light-text-color);
+}
+
+/* Add this new color variable at the top in :root */
+:root {
+    /* ... your other variables ... */
+    --state-color: #6f42c1; /* A nice purple for distinction */
+}
+
+/* ... keep your existing .scope-ndma and .scope-sdma styles ... */
+
+/* Add this new style for the state-specific badge */
+.scope-state {
+    background-color: var(--state-color) !important;
+    color: white;
+}
+
+/* A small addition to add icons to all badges */
+.scope-badge i {
+    margin-right: 4px;
+}

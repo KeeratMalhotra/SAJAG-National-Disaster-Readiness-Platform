@@ -7,7 +7,8 @@ const announcementController = {
             res.render('pages/all_announcements', {
                 pageTitle: 'All Announcements',
                 user: req.user,
-                announcements: allAnnouncements
+                announcements: allAnnouncements,
+                activePage: 'announcements'
             });
         } catch (error) {
             res.status(500).send('Server Error');

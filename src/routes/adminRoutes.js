@@ -15,5 +15,6 @@ router.patch('/partners/:userId/status', adminController.updatePartnerStatus);
 // POST /api/admin/announcements
 router.post('/announcements', adminController.createAnnouncement);
 
-
+router.delete('/announcements/:id', adminController.deleteAnnouncement);
+router.get('/documents/:filename', adminController.downloadDocument);
 module.exports = router;

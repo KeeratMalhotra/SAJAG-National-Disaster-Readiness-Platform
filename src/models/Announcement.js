@@ -40,26 +40,54 @@ const Announcement = {
             console.error('Error finding announcements for user:', error);
             throw error;
         }
-    },async findAllForUser({ role, state }) {
-        let query;
-        const params = [];
+    },
 
-        if (role === 'ndma_admin' || role === 'auditor') {
-            query = 'SELECT * FROM announcements ORDER BY created_at DESC;';
-        } else {
-            query = `
-                SELECT * FROM announcements 
-                WHERE scope = 'national' OR state = $1 
-                ORDER BY created_at DESC;
-            `;
-            params.push(state);
-        }
+    async findAllForUser({ role, state }) {
+    let query;
+    const params = [];
 
+    // This is the base query that now joins the tables
+    const baseQuery = `
+        SELECT a.*, u.organization_name
+        FROM announcements a
+        JOIN users u ON a.creator_user_id = u.id
+    `;
+
+    if (role === 'ndma_admin' || role === 'auditor') {
+        // NDMA/Auditors see everything
+        query = `${baseQuery} ORDER BY a.created_at DESC;`;
+    } else {
+        // Other users see national + their state announcements
+        query = `${baseQuery} WHERE a.scope = 'national' OR a.state = $1 ORDER BY a.created_at DESC;`;
+        params.push(state);
+    }
+
+    try {
+        const result = await pool.query(query, params);
+        return result.rows;
+    } catch (error){
+        console.error('Error finding all announcements for user:', error);
+        throw error;
+    }
+},
+async findById(id) {
+        const query = 'SELECT * FROM announcements WHERE id = $1;';
         try {
-            const result = await pool.query(query, params);
-            return result.rows;
+            const result = await pool.query(query, [id]);
+            return result.rows[0];
         } catch (error) {
-            console.error('Error finding all announcements for user:', error);
+            console.error('Error finding announcement by id:', error);
+            throw error;
+        }
+    },
+
+    async deleteById(id) {
+        const query = 'DELETE FROM announcements WHERE id = $1;';
+        try {
+            await pool.query(query, [id]);
+            return { success: true };
+        } catch (error) {
+            console.error('Error deleting announcement:', error);
             throw error;
         }
     }

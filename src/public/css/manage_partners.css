@@ -1,0 +1,120 @@
+:root {
+    --primary-blue: #007bff;
+    --text-color: #343a40;
+    --light-text-color: #6c757d;
+    --border-color: #dee2e6;
+    --background-light: #f8f9fa;
+    --white: #ffffff;
+    --shadow-light: rgba(0, 0, 0, 0.05);
+}
+
+/* General Layout & Header */
+.main-content {
+    margin-left: 250px; /* From sidebar.css */
+    padding: 30px;
+    background-color: var(--background-light);
+}
+
+.page-header {
+    margin-bottom: 25px;
+}
+
+.page-header h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+/* Tab Styling */
+.nav-tabs .nav-link {
+    font-weight: 600;
+    color: var(--light-text-color);
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--primary-blue);
+    border-color: var(--border-color) var(--border-color) var(--white);
+}
+
+.nav-tabs .nav-link .badge {
+    margin-left: 8px;
+}
+
+/* Partner Card List */
+.partner-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.partner-card {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--white);
+    transition: box-shadow 0.2s ease-in-out;
+}
+
+.partner-card:hover {
+    box-shadow: 0 4px 15px var(--shadow-light);
+}
+
+.partner-avatar {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--primary-blue);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-right: 15px;
+}
+
+.partner-info {
+    flex-grow: 1;
+}
+
+.partner-name {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.partner-org {
+    font-size: 0.9rem;
+}
+
+.partner-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.partner-actions .btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 500;
+}
+
+/* Empty State Styling */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-state i {
+    font-size: 3.5rem;
+    color: #28a745; /* Green for success/clear */
+}
+
+.empty-state h2 {
+    margin-top: 20px;
+    color: var(--text-color);
+    font-weight: 600;
+}

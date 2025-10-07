@@ -77,7 +77,7 @@ app.get('/', (req, res) => {
     });
 });
 app.get('/learn', (req, res) => {
-    res.render('pages/learn', { pageTitle: 'Learn & Prepare' });
+    res.render('pages/learn', { pageTitle: 'Learn & Prepare' , activePage: 'learn'});
 });
 // --- SERVER STARTUP ---
 app.listen(PORT, () => {

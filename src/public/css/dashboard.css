@@ -33,7 +33,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* --- Main Layout: Sidebar + Content --- */
-.sidebar {
+/* .sidebar {
     width: 260px;
     background-color: var(--sidebar-bg);
     color: white;
@@ -45,7 +45,7 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     flex-direction: column;
     transition: transform 0.3s ease-in-out;
-}
+} */
 
 .main-content {
     margin-left: 260px;
@@ -55,7 +55,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* --- Sidebar Specifics --- */
-.sidebar-header {
+/* .sidebar-header {
     margin-bottom: 2rem;
     font-size: 1.5rem;
     font-weight: 700;
@@ -82,7 +82,7 @@ h1, h2, h3, h4, h5, h6 {
 .sidebar-nav a.active {
     background-color: var(--sidebar-link-active-bg);
     color: white;
-}
+} */
 
 /* --- Header Section --- */
 .page-header {
@@ -231,13 +231,13 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 /* Add this to your dashboard.css file */
-.sidebar {
+/* .sidebar {
     display: flex;
     flex-direction: column;
 }
 
 .sidebar-nav {
-    flex-grow: 1; /* Pushes the footer down */
+    flex-grow: 1; 
 }
 
 .logout-link {
@@ -250,12 +250,12 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: 8px;
     margin-top: 1rem;
     transition: background-color 0.2s ease, color 0.2s ease;
-}
+} */
 
-.logout-link:hover {
-    background-color: #c81e1e; /* A distinct red for logout hover */
+/* .logout-link:hover {
+    background-color: #c81e1e; 
     color: white;
-}
+} */
 /* public/css/dashboard.css */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -281,7 +281,7 @@ body {
     display: flex;
 }
 
-.sidebar {
+/* .sidebar {
     width: 260px;
     background-color: var(--sidebar-bg);
     color: white;
@@ -293,7 +293,7 @@ body {
     display: flex;
     flex-direction: column;
     transition: transform 0.3s ease-in-out;
-}
+} */
 
 .main-content {
     margin-left: 260px;
@@ -302,7 +302,7 @@ body {
     overflow-y: auto;
 }
 
-.sidebar-header {
+/* .sidebar-header {
     margin-bottom: 2rem;
     font-size: 1.5rem;
     font-weight: 700;
@@ -380,78 +380,4 @@ body {
 .logout-link:hover {
     background-color: var(--danger-color);
     color: white;
-}
-/* ADD THIS TO THE END of public/css/dashboard.css */
-
-.learn-hero {
-    padding: 4rem 2rem;
-    margin-bottom: 2rem;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1593941707874-ef25b8b4a920?q=80&w=2070&auto=format&fit=crop');
-    background-size: cover;
-    background-position: center;
-    border-radius: 12px;
-}
-
-.learn-hero h1 {
-    font-size: 3rem;
-    font-weight: 700;
-}
-
-.nav-tabs .nav-link {
-    color: var(--text-secondary);
-    font-weight: 600;
-}
-
-.nav-tabs .nav-link.active {
-    color: var(--text-primary);
-    background-color: var(--card-bg);
-    border-color: var(--border-color) var(--border-color) var(--card-bg);
-}
-
-.accordion-button:not(.collapsed) {
-    background-color: var(--primary-accent-light);
-    color: var(--primary-accent);
-}
-
-.safety-card {
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    background-color: #fff;
-}
-
-.safety-card .card-header {
-    font-weight: 700;
-    font-size: 1.1rem;
-    padding: 0.75rem 1.25rem;
-}
-
-.safety-card-do .card-header {
-    background-color: #d1fae5; /* Green */
-    color: #065f46;
-}
-
-.safety-card-dont .card-header {
-    background-color: #fee2e2; /* Red */
-    color: #991b1b;
-}
-
-.safety-card ul {
-    list-style-type: none;
-    padding-left: 0;
-    margin-bottom: 0;
-}
-
-.safety-card li {
-    padding: 0.75rem 1.25rem;
-    display: flex;
-    align-items: center;
-    border-top: 1px solid var(--border-color);
-}
-
-.safety-card li i {
-    margin-right: 0.75rem;
-    font-size: 1.2rem;
-}
-
-.safety-card-do li i { color: #16a34a; }
-.safety-card-dont li i { color: #dc2626; }
+} */

@@ -1,19 +1,44 @@
 const User = require('../models/User');
 const Announcement = require('../models/Announcement');
+const Training = require('../models/Training'); // ADD THIS LINE
+const Submission = require('../models/Submission'); // ADD THIS LINE
+const path = require('path'); // ADD THIS LINE
 const adminController = {
-    showPendingPartnersPage: async (req, res) => {
-            try {
-                const adminState = req.user.state;
-                const pendingUsers = await User.findPendingByState(adminState);
-                res.render('pages/manage_partners', {
-                    pageTitle: 'Manage Partners',
-                    user: req.user,
-                    pendingPartners: pendingUsers
-                });
-            } catch (error) {
-                res.status(500).send('Server error');
-            }
-        },
+    showManagePartnersPage: async (req, res) => {
+    try {
+        const user = req.user;
+        let pendingPartners, activePartners, rejectedPartners;
+
+        // ** THIS IS THE NEW LOGIC **
+        if (user.role === 'ndma_admin') {
+            // NDMA Admin gets all partners from all states
+            [pendingPartners, activePartners, rejectedPartners] = await Promise.all([
+                User.findAllPending(),
+                User.findAllActive(),
+                User.findAllRejected()
+            ]);
+        } else {
+            // SDMA Admin gets partners only from their state
+            const adminState = user.state;
+            [pendingPartners, activePartners, rejectedPartners] = await Promise.all([
+                User.findPendingByState(adminState),
+                User.findActiveByState(adminState),
+                User.findRejectedByState(adminState)
+            ]);
+        }
+
+        res.render('pages/manage_partners', {
+            pageTitle: 'Manage Partners',
+            user: req.user,
+            pendingPartners,
+            activePartners,
+            rejectedPartners
+        });
+    } catch (error) {
+        console.error('Error loading manage partners page:', error);
+        res.status(500).send('Server error');
+    }
+},
 
     updatePartnerStatus: async (req, res) => {
         try {
@@ -56,7 +81,83 @@ const adminController = {
         } catch (error) {
             res.status(500).json({ message: 'Server error creating announcement.' });
         }
+    },
+    deleteAnnouncement: async (req, res) => {
+    try {
+        const { id: announcementId } = req.params;
+        const user = req.user;
+
+        const announcement = await Announcement.findById(announcementId);
+        if (!announcement) {
+            return res.status(404).json({ message: 'Announcement not found.' });
+        }
+
+        // --- THIS IS THE NEW, CORRECT SECURITY LOGIC ---
+        let canDelete = false;
+
+        // Rule 1: An NDMA admin can delete ANY announcement.
+        if (user.role === 'ndma_admin') {
+            canDelete = true;
+        } 
+        // Rule 2: A non-NDMA admin (i.e., an SDMA admin) can only delete their OWN state-level announcements.
+        else if (announcement.scope === 'state' && announcement.creator_user_id === user.id) {
+            canDelete = true;
+        }
+        // --- END OF NEW LOGIC ---
+
+        if (canDelete) {
+            await Announcement.deleteById(announcementId);
+            res.status(200).json({ message: 'Announcement deleted successfully.' });
+        } else {
+            res.status(403).json({ message: 'Forbidden: You do not have permission to delete this announcement.' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Server error deleting announcement.' });
     }
+},
+showPartnerDetailsPage: async (req, res) => {
+            try {
+                const { partnerId } = req.params;
+                const partner = await User.findById(partnerId);
+                if (!partner) {
+                    return res.status(404).send('Partner not found.');
+                }
+                
+                const trainingsConducted = await Training.findByUserId(partnerId);
+                const averageScore = await Submission.getAverageScoreByCreator(partnerId);
+
+                res.render('pages/partner_details', {
+                    pageTitle: `Details for ${partner.name}`,
+                    user: req.user,
+                    partner: partner,
+                    trainings: trainingsConducted,
+                    averageScore: parseFloat(averageScore)
+                });
+
+            } catch (error) {
+                console.error('Error loading partner details:', error);
+                res.status(500).send('Server Error');
+            }
+        },
+        downloadDocument: (req, res) => {
+        try {
+            const { filename } = req.params;
+            
+            // This creates a secure path to the file and prevents users from accessing other parts of the server
+            const filePath = path.join(__dirname, '..', '..', 'uploads', filename);
+
+            // Use res.download() to send the file with a proper name and type
+            res.download(filePath, 'registration-document.pdf', (err) => {
+                if (err) {
+                    console.error("Error downloading file:", err);
+                    res.status(404).send('File not found.');
+                }
+            });
+        } catch (error) {
+            res.status(500).send('Server error');
+        }
+    }
+    
 };
 
 module.exports = adminController;

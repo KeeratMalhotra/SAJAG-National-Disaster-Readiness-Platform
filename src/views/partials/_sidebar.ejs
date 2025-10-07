@@ -1,17 +1,21 @@
 <aside class="sidebar">
     <div class="sidebar-header">
-        <a href="/" style="text-decoration: none; color: white;">
+        <a href="/">
             <i class="bi bi-shield-check"></i> SAJAG Portal
         </a>
     </div>
 
     <nav class="sidebar-nav flex-grow-1">
-        <!-- These links are visible to everyone -->
-        <a href="/dashboard" class="active"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
-        <a href="/announcements/all"><i class="bi bi-megaphone-fill"></i> All Announcements</a>
-        <a href="/learn"><i class="bi bi-book-fill"></i> Learn</a>
+        <a href="/dashboard" class="<%- (locals.activePage === 'dashboard') ? 'active' : '' %>">
+            <i class="bi bi-grid-1x2-fill"></i> Dashboard
+        </a>
+        <a href="/announcements/all" class="<%- (locals.activePage === 'announcements') ? 'active' : '' %>">
+            <i class="bi bi-megaphone-fill"></i> All Announcements
+        </a>
+        <a href="/learn" class="<%- (locals.activePage === 'learn') ? 'active' : '' %>">
+            <i class="bi bi-book-fill"></i> Learn
+        </a>
         
-        <%# This is the fix: Only show the divider and role-specific links IF a user is logged in %>
         <% if (locals.user) { %>
             <hr class="sidebar-divider">
 
@@ -25,7 +29,6 @@
         <% } %>
     </nav>
 
-    <%# The footer with user info and logout should also only appear for logged-in users %>
     <% if (locals.user) { %>
         <div class="sidebar-footer">
             <div class="sidebar-user-info">
@@ -37,3 +40,4 @@
         </div>
     <% } %>
 </aside>
+

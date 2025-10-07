@@ -5,213 +5,225 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= pageTitle %></title>
     
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FONT & ICONS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="/css/dashboard.css">
-    <link rel="stylesheet" href="/css/learn.css"> </head>
+    
+
+    <!-- STYLESHEETS -->
+    <link rel="stylesheet" href="/css/learn-redesign.css"> 
+    <link rel="stylesheet" href="/css/sidebar.css">
+</head>
 <body>
 
     <%- include('../partials/_sidebar') %>
 
     <main class="main-content">
-        <div class="learn-hero text-white">
-            <h1>Preparedness Hub</h1>
-            <p class="lead">Empower yourself with the knowledge to face any challenge. Your safety starts with being informed.</p>
-        </div>
+        <header class="learn-header">
+            <h1>Learn About Disaster Preparedness</h1>
+            <p>Select a disaster type below to learn crucial safety information. Knowledge is the first step to safety.</p>
+        </header>
 
-        <h2 class="disaster-category-title">Geological Disasters</h2>
-        <div class="row g-4 mb-5">
-            <div class="col-lg-4 col-md-6">
-                <a href="#" class="disaster-card" style="background-image: url('https://images.unsplash.com/photo-1594998795116-c40211504944?q=80&w=1974&auto=format&fit=crop');" data-bs-toggle="modal" data-bs-target="#earthquakeModal">
-                    <div class="card-content">
-                        <i class="bi bi-tsunami card-icon"></i>
-                        <h3 class="card-title">Earthquakes</h3>
-                        <p class="card-text">Learn how to react when the ground shakes.</p>
-                    </div>
-                </a>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <a href="#" class="disaster-card" style="background-image: url('https://images.unsplash.com/photo-1590422122288-a40a0af1525a?q=80&w=1932&auto=format&fit=crop');" data-bs-toggle="modal" data-bs-target="#landslideModal">
-                     <div class="card-content">
-                        <i class="bi bi-filter-hdr card-icon"></i>
-                        <h3 class="card-title">Landslides</h3>
-                        <p class="card-text">Safety measures for hilly and mountainous regions.</p>
-                    </div>
-                </a>
-            </div>
-        </div>
+        <nav class="disaster-nav">
+            <a href="#earthquake">Earthquake</a>
+            <a href="#tsunami">Tsunami</a>
+            <a href="#landslides">Landslides</a>
+            <a href="#cyclone">Cyclone</a>
+            <a href="#floods">Floods</a>
+        </nav>
 
-        <h2 class="disaster-category-title">Weather-Related Disasters</h2>
-        <div class="row g-4 mb-5">
-             <div class="col-lg-4 col-md-6">
-                <a href="#" class="disaster-card" style="background-image: url('https://images.unsplash.com/photo-1561016444-4a0b73149e3e?q=80&w=1974&auto=format&fit=crop');" data-bs-toggle="modal" data-bs-target="#floodModal">
-                     <div class="card-content">
-                        <i class="bi bi-house-flood-fill card-icon"></i>
-                        <h3 class="card-title">Floods</h3>
-                        <p class="card-text">How to stay safe before, during, and after a flood.</p>
+        <div class="disaster-content">
+            <!-- EARTHQUAKE SECTION -->
+            <section id="earthquake" class="disaster-section">
+                <div class="content-wrapper">
+                    <div class="image-panel">
+                        <div class="bg-image" style="background-image: url('/images/Earthquake.jpg');"></div>
+                        <div class="text-content">
+                            <h1 class="disaster-title">Earthquake</h1>
+                            <p class="disaster-subtitle">When the ground betrays you, knowledge is your only stability.</p>
+                        </div>
                     </div>
-                </a>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <a href="#" class="disaster-card" style="background-image: url('https://images.unsplash.com/photo-1559032225-831eba28a679?q=80&w=1974&auto=format&fit=crop');" data-bs-toggle="modal" data-bs-target="#cycloneModal">
-                     <div class="card-content">
-                        <i class="bi bi-hurricane card-icon"></i>
-                        <h3 class="card-title">Cyclones</h3>
-                        <p class="card-text">Preparing coastal communities for high-velocity winds.</p>
+                    <div class="info-panel">
+                        <h3><i class="bi bi-tsunami"></i> Earthquake Safety Essentials</h3>
+                        <div class="do-dont-grid">
+                            <div class="do-card">
+                                <h4><i class="bi bi-check-circle-fill"></i> DO</h4>
+                                <ul>
+                                    <li><strong>Drop, Cover, and Hold On</strong> immediately.</li>
+                                    <li>Stay clear of windows & heavy furniture.</li>
+                                    <li>Find an open area if outside.</li>
+                                </ul>
+                            </div>
+                            <div class="dont-card">
+                                <h4><i class="bi bi-x-circle-fill"></i> DON'T</h4>
+                                <ul>
+                                    <li>Do not rush outside during shaking.</li>
+                                    <li>Do not stand in doorways.</li>
+                                    <li>Avoid using elevators after a quake.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <a href="https://ndma.gov.in/" target="_blank" class="learn-more-btn">
+        Learn More on NDMA.gov.in <i class="bi bi-box-arrow-up-right"></i>
+    </a>
                     </div>
-                </a>
-            </div>
-             <div class="col-lg-4 col-md-6">
-                <a href="#" class="disaster-card" style="background-image: url('https://images.unsplash.com/photo-1504370805625-d32c54b16100?q=80&w=1932&auto=format&fit=crop');" data-bs-toggle="modal" data-bs-target="#heatwaveModal">
-                     <div class="card-content">
-                        <i class="bi bi-thermometer-sun card-icon"></i>
-                        <h3 class="card-title">Heatwaves</h3>
-                        <p class="card-text">Recognizing and preventing heat-related illnesses.</p>
-                    </div>
-                </a>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <a href="#" class="disaster-card" style="background-image: url('https://images.unsplash.com/photo-1605837192292-91e89d843818?q=80&w=1974&auto=format&fit=crop');" data-bs-toggle="modal" data-bs-target="#wildfireModal">
-                     <div class="card-content">
-                        <i class="bi bi-fire card-icon"></i>
-                        <h3 class="card-title">Wildfires</h3>
-                        <p class="card-text">Protecting lives and property from forest fires.</p>
-                    </div>
-                </a>
-            </div>
-        </div>
+                </div>
+            </section>
 
-        <h2 class="disaster-category-title">Industrial & Man-Made Disasters</h2>
-        <div class="row g-4 mb-5">
-            <div class="col-lg-4 col-md-6">
-                <a href="#" class="disaster-card" style="background-image: url('https://images.unsplash.com/photo-1615012554783-a43e42d7b539?q=80&w=1964&auto=format&fit=crop');" data-bs-toggle="modal" data-bs-target="#chemicalModal">
-                    <div class="card-content">
-                        <i class="bi bi-radioactive card-icon"></i>
-                        <h3 class="card-title">Chemical Spills</h3>
-                        <p class="card-text">Guidelines for industrial accidents and emergencies.</p>
+            <!-- TSUNAMI SECTION -->
+            <section id="tsunami" class="disaster-section">
+                <div class="content-wrapper">
+                    <div class="image-panel">
+                        <div class="bg-image" style="background-image: url('/images/Tsunami.jpg');"></div>
+                        <div class="text-content">
+                            <h1 class="disaster-title">Tsunami</h1>
+                            <p class="disaster-subtitle">The silent retreat of the sea is a deceptive warning.</p>
+                        </div>
                     </div>
-                </a>
-            </div>
-        </div>
+                    <div class="info-panel">
+                        <h3><i class="bi bi-water"></i> Tsunami Survival Guide</h3>
+                        <div class="do-dont-grid">
+                            <div class="do-card">
+                                <h4><i class="bi bi-check-circle-fill"></i> DO</h4>
+                                <ul>
+                                    <li>Move to higher ground immediately.</li>
+                                    <li>Listen for official evacuation notices.</li>
+                                    <li>Stay on high ground until it's safe.</li>
+                                </ul>
+                            </div>
+                            <div class="dont-card">
+                                <h4><i class="bi bi-x-circle-fill"></i> DON'T</h4>
+                                <ul>
+                                    <li>Do not go to the coast to watch.</li>
+                                    <li>Do not assume the first wave is the last.</li>
+                                    <li>Don't return until cleared by officials.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <a href="https://ndma.gov.in/" target="_blank" class="learn-more-btn">
+        Learn More on NDMA.gov.in <i class="bi bi-box-arrow-up-right"></i>
+    </a>
+                    </div>
+                </div>
+            </section>
 
+            <!-- LANDSLIDES SECTION -->
+            <section id="landslides" class="disaster-section">
+                <div class="content-wrapper">
+                    <div class="image-panel">
+                        <div class="bg-image" style="background-image: url('/images/Landslide.jpg');"></div>
+                        <div class="text-content">
+                            <h1 class="disaster-title">Landslides</h1>
+                            <p class="disaster-subtitle">The mountains themselves can become a threat.</p>
+                        </div>
+                    </div>
+                    <div class="info-panel">
+                         <h3><i class="bi bi-image-alt"></i> Landslide Readiness</h3>
+                        <div class="do-dont-grid">
+                            <div class="do-card">
+                                <h4><i class="bi bi-check-circle-fill"></i> DO</h4>
+                                <ul>
+                                    <li>Watch for warning signs like cracking sounds.</li>
+                                    <li>Move to stable ground if you suspect danger.</li>
+                                    <li>Report any warning signs to authorities.</li>
+                                </ul>
+                            </div>
+                            <div class="dont-card">
+                                <h4><i class="bi bi-x-circle-fill"></i> DON'T</h4>
+                                <ul>
+                                    <li>Do not build near steep slopes.</li>
+                                    <li>Do not block natural drainage paths.</li>
+                                    <li>Do not travel in prone areas during heavy rain.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <a href="https://ndma.gov.in/" target="_blank" class="learn-more-btn">
+        Learn More on NDMA.gov.in <i class="bi bi-box-arrow-up-right"></i>
+    </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CYCLONE SECTION -->
+            <section id="cyclone" class="disaster-section">
+                 <div class="content-wrapper">
+                    <div class="image-panel">
+                        <div class="bg-image" style="background-image: url('/images/Cyclone.jpg');"></div>
+                        <div class="text-content">
+                            <h1 class="disaster-title">Cyclone</h1>
+                            <p class="disaster-subtitle">Nature's rotating fury requires respect and preparation.</p>
+                        </div>
+                    </div>
+                    <div class="info-panel">
+                        <h3><i class="bi bi-hurricane"></i> Cyclone Preparedness</h3>
+                        <div class="do-dont-grid">
+                            <div class="do-card">
+                                <h4><i class="bi bi-check-circle-fill"></i> DO</h4>
+                                <ul>
+                                    <li>Listen to weather forecasts and heed warnings.</li>
+                                    <li>Secure your house and loose items.</li>
+                                    <li>Prepare an emergency kit and evacuate if advised.</li>
+                                </ul>
+                            </div>
+                            <div class="dont-card">
+                                <h4><i class="bi bi-x-circle-fill"></i> DON'T</h4>
+                                <ul>
+                                    <li>Do not go outside, especially in the 'eye'.</li>
+                                    <li>Do not spread or believe rumors.</li>
+                                    <li>Do not venture out to sea or coastal areas.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <a href="https://ndma.gov.in/" target="_blank" class="learn-more-btn">
+        Learn More on NDMA.gov.in <i class="bi bi-box-arrow-up-right"></i>
+    </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FLOODS SECTION -->
+            <section id="floods" class="disaster-section">
+                <div class="content-wrapper">
+                    <div class="image-panel">
+                        <div class="bg-image" style="background-image: url('/images/Floods.jpg');"></div>
+                        <div class="text-content">
+                            <h1 class="disaster-title">Floods</h1>
+                            <p class="disaster-subtitle">Rising waters are a pervasive threat. Never underestimate them.</p>
+                        </div>
+                    </div>
+                    <div class="info-panel">
+                        <h3><i class="bi bi-house-door-fill"></i> Flood Safety</h3>
+                        <div class="do-dont-grid">
+                            <div class="do-card">
+                                <h4><i class="bi bi-check-circle-fill"></i> DO</h4>
+                                <ul>
+                                    <li>Move to higher ground immediately.</li>
+                                    <li>Turn off utilities if instructed to.</li>
+                                    <li>Prepare a go-bag with essentials.</li>
+                                </ul>
+                            </div>
+                            <div class="dont-card">
+                                <h4><i class="bi bi-x-circle-fill"></i> DON'T</h4>
+                                <ul>
+                                    <li>Do not walk, swim, or drive through floodwaters.</li>
+                                    <li>Do not touch wet electrical equipment.</li>
+                                    <li>Do not consume contaminated food or water.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <a href="https://ndma.gov.in/" target="_blank" class="learn-more-btn">
+        Learn More on NDMA.gov.in <i class="bi bi-box-arrow-up-right"></i>
+    </a>
+                    </div>
+                </div>
+            </section>
+        </div>
     </main>
 
-    <div class="modal fade" id="earthquakeModal" tabindex="-1">
-        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title d-flex align-items-center"><i class="bi bi-tsunami me-2"></i> Earthquake Safety</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="ratio ratio-16x9 mb-4"><iframe src="https://www.youtube.com/embed/G3hfugI1oXQ" title="Earthquake Safety Video" allowfullscreen></iframe></div>
-                    <div class="row g-4">
-                        <div class="col-lg-6"><div class="safety-card safety-card-do"><div class="card-header">DO</div><ul><li><i class="bi bi-check-circle-fill"></i><strong>Drop, Cover, and Hold On.</strong> This is the most important action.</li><li><i class="bi bi-check-circle-fill"></i>Move away from windows, heavy furniture, and anything that could fall.</li><li><i class="bi bi-check-circle-fill"></i>If outside, find an open space away from buildings, trees, and power lines.</li></ul></div></div>
-                        <div class="col-lg-6"><div class="safety-card safety-card-dont"><div class="card-header">DON'T</div><ul><li><i class="bi bi-x-circle-fill"></i>Do not use elevators. Always take the stairs after the shaking stops.</li><li><i class="bi bi-x-circle-fill"></i>Do not stand in doorways; they are not safer and do not protect from falling debris.</li><li><i class="bi bi-x-circle-fill"></i>Do not rush outside. You are more likely to be injured by falling debris.</li></ul></div></div>
-                    </div>
-                </div>
-                <div class="modal-footer"><a href="https://ndma.gov.in/Natural-Hazards/Earthquakes" target="_blank" class="btn btn-primary">Learn More at NDMA</a><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="modal fade" id="landslideModal" tabindex="-1">
-        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header"><h5 class="modal-title d-flex align-items-center"><i class="bi bi-filter-hdr me-2"></i> Landslide Safety</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                <div class="modal-body">
-                    <div class="ratio ratio-16x9 mb-4"><iframe src="https://www.youtube.com/embed/z-KKi34h5yA" title="Landslide Safety Video" allowfullscreen></iframe></div>
-                    <div class="row g-4">
-                        <div class="col-lg-6"><div class="safety-card safety-card-do"><div class="card-header">DO</div><ul><li><i class="bi bi-check-circle-fill"></i>Be aware of warning signs like cracking sounds, leaning trees, or changes in water flow.</li><li><i class="bi bi-check-circle-fill"></i>Move to higher, stable ground if you suspect danger.</li><li><i class="bi bi-check-circle-fill"></i>Report any warning signs to local authorities immediately.</li></ul></div></div>
-                        <div class="col-lg-6"><div class="safety-card safety-card-dont"><div class="card-header">DON'T</div><ul><li><i class="bi bi-x-circle-fill"></i>Do not build homes near steep slopes or areas with a history of landslides.</li><li><i class="bi bi-x-circle-fill"></i>Do not block drainage paths; ensure water can flow away from slopes.</li><li><i class="bi bi-x-circle-fill"></i>Do not travel in landslide-prone areas during heavy rainfall.</li></ul></div></div>
-                    </div>
-                </div>
-                <div class="modal-footer"><a href="https://ndma.gov.in/Natural-Hazards/Landslides-Snow-Avalanches" target="_blank" class="btn btn-primary">Learn More at NDMA</a><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="modal fade" id="floodModal" tabindex="-1">
-        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header"><h5 class="modal-title d-flex align-items-center"><i class="bi bi-house-flood-fill me-2"></i> Flood Safety</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                <div class="modal-body">
-                    <div class="ratio ratio-16x9 mb-4"><iframe src="https://www.youtube.com/embed/zZv3hp4_n2Q" title="Flood Safety Video" allowfullscreen></iframe></div>
-                    <div class="row g-4">
-                        <div class="col-lg-6"><div class="safety-card safety-card-do"><div class="card-header">DO</div><ul><li><i class="bi bi-check-circle-fill"></i>Move to a higher floor or higher ground immediately upon flood warnings.</li><li><i class="bi bi-check-circle-fill"></i>Listen to radio/TV and follow official advice.</li><li><i class="bi bi-check-circle-fill"></i>Keep a stock of dry food, drinking water, and emergency supplies.</li></ul></div></div>
-                        <div class="col-lg-6"><div class="safety-card safety-card-dont"><div class="card-header">DON'T</div><ul><li><i class="bi bi-x-circle-fill"></i>Do not walk, swim, or drive through moving floodwaters.</li><li><i class="bi bi-x-circle-fill"></i>Do not touch electrical equipment if you are wet or in standing water.</li><li><i class="bi bi-x-circle-fill"></i>Do not eat food that has come in contact with floodwater.</li></ul></div></div>
-                    </div>
-                </div>
-                <div class="modal-footer"><a href="https://ndma.gov.in/Natural-Hazards/Floods" target="_blank" class="btn btn-primary">Learn More at NDMA</a><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="cycloneModal" tabindex="-1">
-        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header"><h5 class="modal-title d-flex align-items-center"><i class="bi bi-hurricane me-2"></i> Cyclone Preparedness</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                <div class="modal-body">
-                    <div class="ratio ratio-16x9 mb-4"><iframe src="https://www.youtube.com/embed/jZ_CW2Ea3f0" title="Cyclone Preparedness Video" allowfullscreen></iframe></div>
-                    <div class="row g-4">
-                        <div class="col-lg-6"><div class="safety-card safety-card-do"><div class="card-header">DO</div><ul><li><i class="bi bi-check-circle-fill"></i>Listen to weather forecasts and heed warnings.</li><li><i class="bi bi-check-circle-fill"></i>Secure your house; board up windows; bring loose items inside.</li><li><i class="bi bi-check-circle-fill"></i>Evacuate immediately if advised by authorities.</li></ul></div></div>
-                        <div class="col-lg-6"><div class="safety-card safety-card-dont"><div class="card-header">DON'T</div><ul><li><i class="bi bi-x-circle-fill"></i>Do not go outside during the cyclone, especially during the calm 'eye' of the storm.</li><li><i class="bi bi-x-circle-fill"></i>Do not spread or believe rumors. Rely on official sources.</li><li><i class="bi bi-x-circle-fill"></i>Do not venture out to sea or coastal areas.</li></ul></div></div>
-                    </div>
-                </div>
-                <div class="modal-footer"><a href="https://ndma.gov.in/Natural-Hazards/Cyclone" target="_blank" class="btn btn-primary">Learn More at NDMA</a><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="heatwaveModal" tabindex="-1">
-        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header"><h5 class="modal-title d-flex align-items-center"><i class="bi bi-thermometer-sun me-2"></i> Heatwave Safety</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                <div class="modal-body">
-                    <div class="ratio ratio-16x9 mb-4"><iframe src="https://www.youtube.com/embed/P2SohhX_T3g" title="Heatwave Safety Video" allowfullscreen></iframe></div>
-                    <div class="row g-4">
-                        <div class="col-lg-6"><div class="safety-card safety-card-do"><div class="card-header">DO</div><ul><li><i class="bi bi-check-circle-fill"></i>Stay hydrated; drink plenty of water even if not thirsty.</li><li><i class="bi bi-check-circle-fill"></i>Wear lightweight, light-colored, loose-fitting clothing.</li><li><i class="bi bi-check-circle-fill"></i>Stay indoors in cool places during peak heat hours (12 PM to 3 PM).</li></ul></div></div>
-                        <div class="col-lg-6"><div class="safety-card safety-card-dont"><div class="card-header">DON'T</div><ul><li><i class="bi bi-x-circle-fill"></i>Do not leave children or pets in parked vehicles.</li><li><i class="bi bi-x-circle-fill"></i>Do not drink alcohol, tea, coffee, or carbonated soft drinks.</li><li><i class="bi bi-x-circle-fill"></i>Do not engage in strenuous activity during the hottest part of the day.</li></ul></div></div>
-                    </div>
-                </div>
-                <div class="modal-footer"><a href="https://ndma.gov.in/Natural-Hazards/Heat-Wave" target="_blank" class="btn btn-primary">Learn More at NDMA</a><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="modal fade" id="wildfireModal" tabindex="-1">
-        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header"><h5 class="modal-title d-flex align-items-center"><i class="bi bi-fire me-2"></i> Wildfire Safety</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                <div class="modal-body">
-                    <div class="ratio ratio-16x9 mb-4"><iframe src="https://www.youtube.com/embed/p0j9yem8w94" title="Wildfire Safety Video" allowfullscreen></iframe></div>
-                     <div class="row g-4">
-                        <div class="col-lg-6"><div class="safety-card safety-card-do"><div class="card-header">DO</div><ul><li><i class="bi bi-check-circle-fill"></i>Create a defensible space by clearing flammable vegetation around your home.</li><li><i class="bi bi-check-circle-fill"></i>Have an emergency evacuation plan and practice it.</li><li><i class="bi bi-check-circle-fill"></i>Stay informed about fire conditions through local news and alerts.</li></ul></div></div>
-                        <div class="col-lg-6"><div class="safety-card safety-card-dont"><div class="card-header">DON'T</div><ul><li><i class="bi bi-x-circle-fill"></i>Do not throw cigarettes or matches from moving vehicles.</li><li><i class="bi bi-x-circle-fill"></i>Do not leave campfires unattended and ensure they are fully extinguished.</li><li><i class="bi bi-x-circle-fill"></i>Do not wait to evacuate. Leave as soon as an order is issued.</li></ul></div></div>
-                    </div>
-                </div>
-                <div class="modal-footer"><a href="https://ndma.gov.in/Man-made-Hazards/Forest-Fire" target="_blank" class="btn btn-primary">Learn More at NDMA</a><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="modal fade" id="chemicalModal" tabindex="-1">
-        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header"><h5 class="modal-title d-flex align-items-center"><i class="bi bi-radioactive me-2"></i> Chemical Disaster Safety</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                <div class="modal-body">
-                    <div class="ratio ratio-16x9 mb-4"><iframe src="https://www.youtube.com/embed/zX9fGAdkU5E" title="Chemical Disaster Safety Video" allowfullscreen></iframe></div>
-                     <div class="row g-4">
-                        <div class="col-lg-6"><div class="safety-card safety-card-do"><div class="card-header">DO</div><ul><li><i class="bi bi-check-circle-fill"></i>Listen to authorities for instructions (evacuate or shelter-in-place).</li><li><i class="bi bi-check-circle-fill"></i>If told to shelter, go indoors, close all windows and doors, and turn off ventilation systems.</li><li><i class="bi bi-check-circle-fill"></i>If you come in contact with a chemical, remove clothing and wash your body with soap and water.</li></ul></div></div>
-                        <div class="col-lg-6"><div class="safety-card safety-card-dont"><div class="card-header">DON'T</div><ul><li><i class="bi bi-x-circle-fill"></i>Do not create sparks or use open flames, as chemicals may be flammable.</li><li><i class="bi bi-x-circle-fill"></i>Do not touch or inhale spilled materials.</li><li><i class="bi bi-x-circle-fill"></i>Do not drink or eat contaminated food or water.</li></ul></div></div>
-                    </div>
-                </div>
-                <div class="modal-footer"><a href="https://ndma.gov.in/Man-made-Hazards/Chemical-Disasters" target="_blank" class="btn btn-primary">Learn More at NDMA</a><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script src="/js/learn-redesign.js"></script> 
 </body>
 </html>
+
