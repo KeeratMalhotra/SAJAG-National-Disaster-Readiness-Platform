@@ -89,6 +89,21 @@ const Submission = {
             console.error('Error finding submissions by email:', error);
             throw error;
         }
+    },
+     async getAverageScoreByCreator(creatorUserId) {
+        const query = `
+            SELECT AVG(ps.score) as average_score
+            FROM participant_submissions ps
+            JOIN trainings t ON ps.training_id = t.id
+            WHERE t.creator_user_id = $1;
+        `;
+        try {
+            const result = await pool.query(query, [creatorUserId]);
+            return result.rows[0].average_score || 0;
+        } catch (error) {
+            console.error('Error getting avg score by creator:', error);
+            throw error;
+        }
     }
 };
 

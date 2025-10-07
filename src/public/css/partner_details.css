@@ -1,0 +1,170 @@
+/* --- Global Variables --- */
+:root {
+    --primary-blue: #007bff;
+    --text-color: #343a40;
+    --light-text-color: #6c757d;
+    --border-color: #dee2e6;
+    --background-light: #f8f9fa;
+    --white: #ffffff;
+    --shadow-light: rgba(0, 0, 0, 0.05);
+}
+
+/* --- Main Layout & Header --- */
+.main-content {
+    margin-left: 250px; /* From sidebar.css */
+    padding: 30px;
+    background-color: var(--background-light);
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.page-title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+.breadcrumb {
+    margin-bottom: 5px;
+}
+
+.breadcrumb-item a {
+    text-decoration: none;
+    color: var(--primary-blue);
+    font-weight: 500;
+}
+
+/* --- Two-Column Profile Grid --- */
+.profile-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+/* --- Left Sidebar: Profile Card --- */
+.profile-sidebar .card {
+    border-radius: 12px;
+    box-shadow: 0 4px 15px var(--shadow-light);
+}
+
+.partner-avatar-large {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background-color: var(--primary-blue);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 3rem;
+    margin: 15px auto;
+    border: 3px solid var(--white);
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.partner-name-center {
+    text-align: center;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.partner-org-center {
+    text-align: center;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+}
+
+.profile-sidebar .list-group-item {
+    display: flex;
+    align-items: center;
+    border: none;
+    padding-left: 0;
+    padding-right: 0;
+    font-size: 0.95rem;
+}
+
+.profile-sidebar .list-group-item i {
+    font-size: 1.1rem;
+    margin-right: 15px;
+    color: var(--primary-blue);
+    width: 20px;
+    text-align: center;
+}
+
+/* --- Right Content: Stats & Activity --- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    background-color: var(--white);
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 15px var(--shadow-light);
+}
+
+.stat-card i {
+    font-size: 2.5rem;
+    color: var(--primary-blue);
+    margin-right: 20px;
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--light-text-color);
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--text-color);
+    line-height: 1;
+}
+
+.profile-content .card {
+    border-radius: 12px;
+    box-shadow: 0 4px 15px var(--shadow-light);
+}
+
+.profile-content .card-header {
+    font-weight: 600;
+    background-color: transparent;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    color: #ced4da;
+}
+
+.empty-state h5 {
+    margin-top: 15px;
+    font-weight: 600;
+    color: var(--text-color);
+}

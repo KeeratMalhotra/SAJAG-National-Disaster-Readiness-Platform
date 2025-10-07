@@ -19,7 +19,8 @@ const dashboardController = {
                     pageTitle: 'Partner Dashboard',
                     user: req.user,
                     trainings: trainings,
-                    announcements: announcements  
+                    announcements: announcements,
+                    activePage: 'dashboard'  
                 });
             } else if (role === 'sdma_admin') {
                 if (!state) {
@@ -33,7 +34,8 @@ const dashboardController = {
                     user: req.user,
                     trainings: stateTrainings,
                     state: adminState,
-                    announcements: announcements // Pass the state name to the view
+                    announcements: announcements, // Pass the state name to the view
+                    activePage: 'dashboard'
                 });
             } else if (role === 'ndma_admin'|| role === 'auditor') {
                  const allTrainings = await Training.findAll();
@@ -52,7 +54,8 @@ const dashboardController = {
                     averageScore: parseFloat(averageScore).toFixed(2),
                     gaps: trainingGaps,
                     scoresByTheme: scoresByTheme,
-                    announcements: announcements
+                    announcements: announcements,
+                    activePage: 'dashboard'
                 });
             } else {
                 res.send('Welcome to your dashboard!');

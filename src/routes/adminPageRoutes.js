@@ -8,6 +8,6 @@ const express = require('express');
     router.use(requireRole(['sdma_admin', 'ndma_admin']));
 
     // GET /admin/manage-partners
-    router.get('/manage-partners', adminController.showPendingPartnersPage);
-
+    router.get('/manage-partners', adminController.showManagePartnersPage);
+    router.get('/manage-partners/:partnerId', adminController.showPartnerDetailsPage);
     module.exports = router;

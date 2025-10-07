@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= pageTitle %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <!-- A new, dedicated CSS file for this page -->
+    <link rel="stylesheet" href="/css/partner_details.css"> 
+</head>
+<body>
+    <%- include('../partials/_sidebar') %>
+
+    <main class="main-content">
+        <!-- PAGE HEADER WITH BREADCRUMBS FOR BETTER NAVIGATION -->
+        <header class="page-header">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/admin/manage-partners">Manage Partners</a></li>
+                        <li class="breadcrumb-item active" aria-current="page"><%= partner.name %></li>
+                    </ol>
+                </nav>
+                <h1 class="page-title"><%= partner.name %></h1>
+            </div>
+        </header>
+
+        <!-- MAIN TWO-COLUMN LAYOUT -->
+        <div class="profile-grid">
+            <!-- LEFT SIDEBAR: PARTNER PROFILE CARD -->
+            <aside class="profile-sidebar">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="partner-avatar-large"><span><%= partner.name.charAt(0) %></span></div>
+                        <h4 class="partner-name-center"><%= partner.name %></h4>
+                        <p class="partner-org-center text-muted"><%= partner.organization_name %></p>
+                        <hr>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><i class="bi bi-envelope-fill"></i> <%= partner.email %></li>
+                            <li class="list-group-item"><i class="bi bi-geo-alt-fill"></i> <%= partner.state %></li>
+                            <li class="list-group-item">
+                                <i class="bi bi-check-circle-fill"></i> 
+                                <span class="badge bg-success text-capitalize"><%= partner.status %></span>
+                            </li>
+                        </ul>
+                        <hr>
+                        <% if (partner.document_url) { %>
+                            <a href="/api/admin/documents/<%= partner.document_url.split('/')[2] %>" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-file-earmark-arrow-down"></i> Download Document
+                            </a>
+                        <% } else { %>
+                            <button class="btn btn-outline-secondary w-100" disabled>No Document</button>
+                        <% } %>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- RIGHT CONTENT: STATS & TRAINING HISTORY -->
+            <div class="profile-content">
+                <!-- KPI STATS CARDS -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <i class="bi bi-bar-chart-line-fill"></i>
+                        <div class="stat-info">
+                            <span class="stat-label">Total Trainings Conducted</span>
+                            <span class="stat-value"><%= trainings.length %></span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="bi bi-patch-check-fill"></i>
+                        <div class="stat-info">
+                            <span class="stat-label">Average Assessment Score</span>
+                            <span class="stat-value"><%= averageScore.toFixed(2) %>%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TRAINING HISTORY TABLE -->
+                <div class="card">
+                    <div class="card-header">Training History</div>
+                    <div class="card-body">
+                        <% if (trainings.length > 0) { %>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Training Title</th>
+                                            <th>Theme</th>
+                                            <th>Date</th>
+                                            <th class="text-end">Score</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% trainings.forEach(training => { %>
+                                        <tr>
+                                            <td><a href="/trainings/<%= training.id %>" class="fw-bold"><%= training.title %></a></td>
+                                            <td><span class="badge bg-secondary-subtle text-secondary-emphasis rounded-pill"><%= training.theme %></span></td>
+                                            <td><%= new Date(training.start_date).toLocaleDateString() %></td>
+                                            <td class="text-end fw-bold"><%= training.assessment_score ? training.assessment_score.toFixed(2) + '%' : 'N/A' %></td>
+                                        </tr>
+                                        <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <% } else { %>
+                            <div class="empty-state">
+                                <i class="bi bi-calendar-x"></i>
+                                <h5>No Training History</h5>
+                                <p class="text-muted">This partner has not conducted any trainings yet.</p>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

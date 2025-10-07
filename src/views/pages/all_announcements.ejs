@@ -2,97 +2,134 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= pageTitle %></title>
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="/css/dashboard.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+        <%= pageTitle %>
+    </title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="/css/announcement.css" />
+
+    <link rel="stylesheet" href="/css/learn-redesign.css" /> 
+    <link rel="stylesheet" href="/css/sidebar.css" />
 </head>
 
 <body>
-
     <%- include('../partials/_sidebar') %>
 
-    <main class="main-content">
-        <header class="page-header">
-            <h1>All Announcements</h1>
-            <div class="header-actions">
-                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#announcementModal">
-                    <i class="bi bi-plus-circle"></i> Create New Announcement
-                </button>
-            </div>
-        </header>
+        <main class="main-content">
+            <header class="page-header">
+                <h1>All Announcements</h1>
+                 <% if (user.role === 'sdma_admin' || user.role === 'ndma_admin') { %>
+        <button class="btn btn-primary create-btn" data-bs-toggle="modal" data-bs-target="#announcementModal">
+            <i class="bi bi-plus-circle"></i> Create New
+        </button>
+    <% } %>
+            </header>
 
-        <div class="card">
-            <div class="card-header">
-                Announcement History
+            <div class="announcement-filters">
+                <div class="search-wrapper">
+                    <i class="bi bi-search"></i>
+                    <input type="text" id="searchInput" class="form-control"
+                        placeholder="Search by title or content..." />
+                </div>
+                <div class="filter-buttons">
+                    <button class="btn filter-btn active" data-scope="all">All</button>
+                    <button class="btn filter-btn" data-scope="national">National</button>
+                </div>
             </div>
-            <div class="card-body">
-                <% if (announcements.length > 0) { %>
-                    <div class="list-group">
-                        <% announcements.forEach(announcement => { %>
-                            <div class="list-group-item list-group-item-action flex-column align-items-start mb-3 border rounded-3 p-3">
-                                <div class="d-flex w-100 justify-content-between mb-2">
-                                    <h5 class="mb-1 fw-bold d-flex align-items-center">
-                                        <i class="bi bi-megaphone-fill me-2 text-primary"></i>
-                                        <%= announcement.title %>
-                                    </h5>
-                                    <small class="text-muted"><%= new Date(announcement.created_at).toLocaleDateString() %></small>
-                                </div>
-                                <p class="mb-2"><%= announcement.content %></p>
-                                <div class="d-flex justify-content-end">
-                                    <span class="badge bg-info-subtle text-info-emphasis rounded-pill">
-                                        Scope: <%= announcement.scope %>
-                                    </span>
-                                </div>
-                            </div>
-                        <% }) %>
-                    </div>
-                <% } else { %>
-                    <div class="text-center p-5">
-                         <i class="bi bi-info-circle fs-1 text-muted"></i>
-                         <p class="mt-3">No announcements have been posted yet.</p>
-                    </div>
-                <% } %>
+
+            <% if (announcements.length> 0) { %>
+                <div class="announcement-grid">
+                    <% announcements.forEach(announcement => { %>
+    <div class="announcement-card" data-scope="<%= announcement.scope %>">
+        <div class="card-header">
+            <div class="card-title-group">
+                <i class="bi bi-megaphone-fill"></i>
+                <h5 class="card-title"><%= announcement.title %></h5>
             </div>
+            
+            <!-- THIS IS THE CORRECTED BADGE LOGIC -->
+            <% if (announcement.scope === 'national') { %>
+                <span class="badge scope-badge scope-ndma">
+                    <i class="bi bi-globe-americas"></i> National
+                </span>
+            <% } else { %>
+                <span class="badge scope-badge scope-state">
+                    <i class="bi bi-geo-alt-fill"></i> State: <%= announcement.state %>
+                </span>
+            <% } %>
+             <% 
+              const isOwner = announcement.creator_user_id === user.id;
+              const isNdmaAdmin = user.role === 'ndma_admin';
+            %>
+            <% if (isOwner || isNdmaAdmin) { %>
+              <button class="btn btn-sm btn-outline-danger delete-announcement-btn" data-id="<%= announcement.id %>">
+                <i class="bi bi-trash-fill"></i>
+              </button>
+            <% } %>
+
         </div>
+        <div class="card-body">
+            <p><%- announcement.content %></p>
+        </div>
+        <div class="card-footer">
+            <small class="text-muted">
+                <i class="bi bi-calendar3"></i> 
+                <%= new Date(announcement.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %>
+            </small>
 
-    </main>
-
-    <div class="modal fade" id="announcementModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Create New Announcement</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="announcementForm">
-                        <div class="mb-3">
-                            <label for="title" class="form-label">Title</label>
-                            <input type="text" class="form-control" id="title" name="title" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="content" class="form-label">Content</label>
-                            <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
-                        </div>
-                        <div id="announcement-message" class="mt-3"></div>
-                        <div class="d-flex justify-content-end mt-3">
-                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Post Announcement</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
         </div>
     </div>
+<% }) %>
+                </div>
+                <% } else { %>
+                    <div class="empty-state">
+                        <i class="bi bi-inbox"></i>
+                        <h2>No Announcements Yet</h2>
+                        <p>Click "Create New" to post the first announcement.</p>
+                    </div>
+                    <% } %>
+        </main>
 
+        <div class="modal fade" id="announcementModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Create New Announcement</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="announcementForm">
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="title" name="title" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="content" class="form-label">Content</label>
+                                <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+                            </div>
+                            <div id="announcement-message" class="mt-3"></div>
+                            <div class="d-flex justify-content-end mt-3">
+                                <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">
+                                    Close
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    Post Announcement
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/announcement.js"></script>
-
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="/js/announcement.js"></script>
+         <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+    <script src="/js/announcement_view.js"></script>
 </body>
 
 </html>
