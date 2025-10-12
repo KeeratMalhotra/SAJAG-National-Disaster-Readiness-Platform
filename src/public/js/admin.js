@@ -1,18 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Look for the new container ID instead of the old table ID
-    const container = document.getElementById('pending-list-container');
+    // Find the main container that holds ALL the tab content
+    const tabContent = document.getElementById('partnerTabsContent');
 
-    if (container) {
-        container.addEventListener('click', async (event) => {
-            // Find the closest button if an icon inside it was clicked
-            const button = event.target.closest('.update-status-btn');
+    if (tabContent) {
+        // Attach a single, smart event listener to the parent container
+        tabContent.addEventListener('click', async (event) => {
+            
+            // Check if the click happened on a button with the correct class
+            const actionButton = event.target.closest('.update-status-btn');
 
-            if (button) { // If a button was clicked
-                const userId = button.dataset.userid;
-                const status = button.dataset.status;
-                const actionText = status === 'active' ? 'approve' : 'reject';
+            if (actionButton) {
+                const userId = actionButton.dataset.userid;
+                const status = actionButton.dataset.status;
+                
+                // --- THIS IS THE CORRECTED LINE ---
+                // It now looks for either .partner-name OR .partner-name-link
+                const userName = actionButton.closest('.partner-card').querySelector('.partner-name, .partner-name-link').textContent.trim();
+                
+                let confirmationMessage = `Are you sure you want to ${status} the user "${userName}"?`;
+                if (status === 'rejected') {
+                    confirmationMessage = `Are you sure you want to discontinue this partner: "${userName}"? Their status will be set to 'rejected'.`;
+                } else if (status === 'active') {
+                    confirmationMessage = `Are you sure you want to re-approve this partner: "${userName}"?`;
+                }
 
-                if (confirm(`Are you sure you want to ${actionText} this user?`)) {
+                if (confirm(confirmationMessage)) {
                     try {
                         const response = await fetch(`/api/admin/partners/${userId}/status`, {
                             method: 'PATCH',
@@ -20,11 +32,12 @@ document.addEventListener('DOMContentLoaded', () => {
                             body: JSON.stringify({ status: status })
                         });
 
+                        const result = await response.json();
+
                         if (response.ok) {
-                            // On success, remove the card from the list
-                            document.getElementById(`user-row-${userId}`).remove();
+                            // On success, simply reload the page to show the user in the correct tab
+                            window.location.reload();
                         } else {
-                            const result = await response.json();
                             alert(`Error: ${result.message}`);
                         }
                     } catch (error) {
@@ -35,3 +48,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+

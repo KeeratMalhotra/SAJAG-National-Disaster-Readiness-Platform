@@ -32,15 +32,15 @@ const User = {
     },
 
     async findPendingByState(state) {
-        const query = `SELECT id, name, email, organization_name, state, document_url, created_at FROM users WHERE status = 'pending' AND role = 'training_partner' AND state = $1 ORDER BY created_at;`;
-        try {
-            const result = await pool.query(query, [state]);
-            return result.rows;
-        } catch (error) {
-            console.error('Error finding pending users by state:', error);
-            throw error;
-        }
-    },
+    const query = `SELECT id, name, email, organization_name, state, document_url, created_at FROM users WHERE status = 'pending' AND role = 'training_partner' AND state = $1 ORDER BY created_at;`;
+    try {
+        const result = await pool.query(query, [state]);
+        return result.rows;
+    } catch (error) {
+        console.error('Error finding pending users by state:', error);
+        throw error;
+    }
+},
 
     async updateStatus(userId, status) {
         const query = `UPDATE users SET status = $1 WHERE id = $2 RETURNING id, name, status;`;
@@ -54,26 +54,26 @@ const User = {
     },
     
     async findActiveByState(state) {
-        const query = `SELECT id, name, email, organization_name, state, document_url FROM users WHERE status = 'active' AND role = 'training_partner' AND state = $1 ORDER BY name;`;
-        try {
-            const result = await pool.query(query, [state]);
-            return result.rows;
-        } catch (error) {
-            console.error('Error finding active users by state:', error);
-            throw error;
-        }
-    },
+    const query = `SELECT id, name, email, organization_name, state, document_url FROM users WHERE status = 'active' AND role = 'training_partner' AND state = $1 ORDER BY name;`;
+    try {
+        const result = await pool.query(query, [state]);
+        return result.rows;
+    } catch (error) {
+        console.error('Error finding active users by state:', error);
+        throw error;
+    }
+},
 
     async findRejectedByState(state) {
-        const query = `SELECT id, name, email, organization_name, state, document_url FROM users WHERE status = 'rejected' AND role = 'training_partner' AND state = $1 ORDER BY name;`;
-        try {
-            const result = await pool.query(query, [state]);
-            return result.rows;
-        } catch (error) {
-            console.error('Error finding rejected users by state:', error);
-            throw error;
-        }
-    },
+    const query = `SELECT id, name, email, organization_name, state, document_url FROM users WHERE status = 'rejected' AND role = 'training_partner' AND state = $1 ORDER BY name;`;
+    try {
+        const result = await pool.query(query, [state]);
+        return result.rows;
+    } catch (error) {
+        console.error('Error finding rejected users by state:', error);
+        throw error;
+    }
+},
 
     async findAllPending() {
         const query = `SELECT id, name, email, organization_name, state, document_url, created_at FROM users WHERE status = 'pending' AND role = 'training_partner' ORDER BY created_at;`;
@@ -85,25 +85,25 @@ const User = {
         }
     },
 
-    async findAllActive() {
-        const query = `SELECT id, name, email, organization_name, state, document_url FROM users WHERE status = 'active' AND role = 'training_partner' ORDER BY name;`;
-        try {
-            const result = await pool.query(query);
-            return result.rows;
-        } catch (error) {
-            throw error;
-        }
-    },
+   async findAllActive() {
+    const query = `SELECT id, name, email, organization_name, state, document_url FROM users WHERE status = 'active' AND role = 'training_partner' ORDER BY name;`;
+    try {
+        const result = await pool.query(query);
+        return result.rows;
+    } catch (error) {
+        throw error;
+    }
+},
 
     async findAllRejected() {
-        const query = `SELECT id, name, email, organization_name, state, document_url FROM users WHERE status = 'rejected' AND role = 'training_partner' ORDER BY name;`;
-        try {
-            const result = await pool.query(query);
-            return result.rows;
-        } catch (error) {
-            throw error;
-        }
-    },
+    const query = `SELECT id, name, email, organization_name, state, document_url FROM users WHERE status = 'rejected' AND role = 'training_partner' ORDER BY name;`;
+    try {
+        const result = await pool.query(query);
+        return result.rows;
+    } catch (error) {
+        throw error;
+    }
+},
     
     async findById(id) {
         const query = 'SELECT id, name, email, organization_name, state, status, document_url FROM users WHERE id = $1;';

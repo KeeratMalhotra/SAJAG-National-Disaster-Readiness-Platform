@@ -9,7 +9,6 @@ const adminController = {
         const user = req.user;
         let pendingPartners, activePartners, rejectedPartners;
 
-        // ** THIS IS THE NEW LOGIC **
         if (user.role === 'ndma_admin') {
             // NDMA Admin gets all partners from all states
             [pendingPartners, activePartners, rejectedPartners] = await Promise.all([

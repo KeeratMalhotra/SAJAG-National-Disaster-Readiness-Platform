@@ -9,5 +9,6 @@ const express = require('express');
 
     // GET /admin/manage-partners
     router.get('/manage-partners', adminController.showManagePartnersPage);
+    
     router.get('/manage-partners/:partnerId', adminController.showPartnerDetailsPage);
     module.exports = router;

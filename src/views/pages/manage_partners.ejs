@@ -83,75 +83,66 @@
                 </div>
 
                 <div class="tab-pane fade" id="approved" role="tabpanel">
-                    <div class="card mt-3">
-                        <div class="card-body">
-                            <% if (locals.activePartners && activePartners.length> 0) { %>
-                                <div class="partner-list">
-                                    <% activePartners.forEach(partner=> { %>
-                                        <a href="/admin/manage-partners/<%= partner.id %>" class="partner-card-link">
-                                            <div class="partner-card">
-                                                <div class="partner-avatar partner-avatar-active">
-                                                    <span>
-                                                        <%= partner.name.charAt(0) %>
-                                                    </span>
-                                                </div>
-                                                <div class="partner-info">
-                                                    <div class="partner-name">
-                                                        <%= partner.name %>
-                                                    </div>
-                                                    <div class="partner-org text-muted">
-                                                        <%= partner.organization_name %>
-                                                    </div>
-                                                </div>
-                                                <div class="partner-card-go">
-                                                    <i class="bi bi-chevron-right"></i>
-                                                </div>
-                                            </div>
-                                        </a>
-                                        <% }) %>
-                                </div>
-                                <% } else { %>
-                                    <div class="empty-state">
-                                        <i class="bi bi-people"></i>
-                                        <h2>No Approved Partners</h2>
-                                        <p class="text-muted">Approved training partners will appear here.</p>
-                                    </div>
-                                    <% } %>
+    <div class="card mt-3">
+        <div class="card-body">
+            <% if (activePartners.length > 0) { %>
+                <div class="partner-list" id="active-list-container">
+                    <% activePartners.forEach(partner => { %>
+                        <div class="partner-card" id="user-row-<%= partner.id %>">
+                            <div class="partner-avatar partner-avatar-active"><span><%= partner.name.charAt(0) %></span></div>
+                            <div class="partner-info">
+                                <a href="/admin/manage-partners/<%= partner.id %>" class="partner-name-link"><%= partner.name %></a>
+                                <div class="partner-org text-muted"><%= partner.organization_name %> &bull; <%= partner.state %></div>
+                            </div>
+                            <div class="partner-actions">
+                                <button class="btn btn-sm btn-outline-danger update-status-btn" data-userid="<%= partner.id %>" data-status="rejected">
+                                    <i class="bi bi-x-circle"></i> Discontinue
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    <% }) %>
                 </div>
+            <% } else { %>
+                <div class="empty-state">
+                    <i class="bi bi-people"></i>
+                    <h2>No Approved Partners</h2>
+                    <p class="text-muted">Approved training partners will appear here.</p>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
 
                 <div class="tab-pane fade" id="rejected" role="tabpanel">
-                    <div class="card mt-3">
-                        <div class="card-body">
-                            <% if (locals.rejectedPartners && rejectedPartners.length> 0) { %>
-                                <div class="partner-list">
-                                    <% rejectedPartners.forEach(partner=> { %>
-                                        <div class="partner-card">
-                                            <div class="partner-avatar partner-avatar-rejected"><span>
-                                                    <%= partner.name.charAt(0) %>
-                                                </span></div>
-                                            <div class="partner-info">
-                                                <div class="partner-name">
-                                                    <%= partner.name %>
-                                                </div>
-                                                <div class="partner-org text-muted">
-                                                    <%= partner.organization_name %>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <% }) %>
-                                </div>
-                                <% } else { %>
-                                    <div class="empty-state">
-                                        <i class="bi bi-slash-circle"></i>
-                                        <h2>No Rejected Partners</h2>
-                                        <p class="text-muted">Rejected partner applications will appear here.</p>
-                                    </div>
-                                    <% } %>
+    <div class="card mt-3">
+        <div class="card-body">
+            <% if (rejectedPartners.length > 0) { %>
+                <div class="partner-list" id="rejected-list-container">
+                    <% rejectedPartners.forEach(partner => { %>
+                        <div class="partner-card" id="user-row-<%= partner.id %>">
+                            <div class="partner-avatar partner-avatar-rejected"><span><%= partner.name.charAt(0) %></span></div>
+                            <div class="partner-info">
+                                <div class="partner-name"><%= partner.name %></div>
+                                <div class="partner-org text-muted"><%= partner.organization_name %> &bull; <%= partner.state %></div>
+                            </div>
+                            <div class="partner-actions">
+                                <button class="btn btn-sm btn-outline-success update-status-btn" data-userid="<%= partner.id %>" data-status="active">
+                                    <i class="bi bi-check-circle"></i> Re-Approve
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    <% }) %>
                 </div>
+            <% } else { %>
+                <div class="empty-state">
+                    <i class="bi bi-slash-circle"></i>
+                    <h2>No Rejected Partners</h2>
+                    <p class="text-muted">Rejected partner applications will appear here.</p>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
             </div>
 
         </main>
