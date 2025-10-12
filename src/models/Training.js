@@ -75,42 +75,46 @@ const Training = {
         }
     },
     async findAllGeoJSON() {
-        // This query fetches trainings that have valid coordinates
-        const query = `
-            SELECT id, title, theme, location_text, longitude, latitude
-            FROM trainings
-            WHERE latitude IS NOT NULL AND longitude IS NOT NULL;
-        `;
-        try {
-            const result = await pool.query(query);
-            
-            // Format the database rows into a GeoJSON FeatureCollection
-            const features = result.rows.map(row => {
-                return {
-                    type: 'Feature',
-                    geometry: {
-                        type: 'Point',
-                        coordinates: [row.longitude, row.latitude] // GeoJSON is [longitude, latitude]
-                    },
-                    properties: {
-                        id: row.id,
-                        title: row.title,
-                        theme: row.theme,
-                        location: row.location_text
-                    }
-                };
-            });
+    // We now select start_date and end_date
+    const query = `
+        SELECT id, title, theme, location_text, longitude, latitude, start_date, end_date
+        FROM trainings
+        WHERE latitude IS NOT NULL AND longitude IS NOT NULL;
+    `;
+    try {
+        const result = await pool.query(query);
+        const today = new Date();
+
+        const features = result.rows.map(row => {
+            const startDate = new Date(row.start_date);
+            const endDate = new Date(row.end_date);
+            let status = 'Upcoming';
+            if (today >= startDate && today <= endDate) {
+                status = 'Ongoing';
+            } else if (today > endDate) {
+                status = 'Completed';
+            }
 
             return {
-                type: 'FeatureCollection',
-                features: features
+                type: 'Feature',
+                geometry: {
+                    type: 'Point',
+                    coordinates: [row.longitude, row.latitude]
+                },
+                properties: {
+                    id: row.id,
+                    title: row.title,
+                    theme: row.theme,
+                    status: status // Add the status here
+                }
             };
-
-        } catch (error) {
-            console.error('Error fetching GeoJSON trainings:', error);
-            throw error;
-        }
-    },
+        });
+        return { type: 'FeatureCollection', features: features };
+    } catch (error) {
+        console.error('Error fetching GeoJSON trainings:', error);
+        throw error;
+    }
+},
     async findAllByState(state) {
         const query = `
             SELECT t.*, u.organization_name 
@@ -127,34 +131,47 @@ const Training = {
             throw error;
         }
     },async findAllGeoJSONByState(state) {
-        const query = `
-            SELECT t.id, t.title, t.theme, t.location_text, t.longitude, t.latitude
-            FROM trainings t
-            JOIN users u ON t.creator_user_id = u.id
-            WHERE u.state = $1 AND t.latitude IS NOT NULL AND t.longitude IS NOT NULL;
-        `;
-        try {
-            const result = await pool.query(query, [state]);
-            
-            const features = result.rows.map(row => ({
+    // Also select start_date and end_date here
+    const query = `
+        SELECT t.id, t.title, t.theme, t.location_text, t.longitude, t.latitude, t.start_date, t.end_date
+        FROM trainings t
+        JOIN users u ON t.creator_user_id = u.id
+        WHERE u.state = $1 AND t.latitude IS NOT NULL AND t.longitude IS NOT NULL;
+    `;
+    try {
+        const result = await pool.query(query, [state]);
+        const today = new Date();
+
+        const features = result.rows.map(row => {
+             const startDate = new Date(row.start_date);
+            const endDate = new Date(row.end_date);
+            let status = 'Upcoming';
+            if (today >= startDate && today <= endDate) {
+                status = 'Ongoing';
+            } else if (today > endDate) {
+                status = 'Completed';
+            }
+
+            return {
                 type: 'Feature',
                 geometry: {
                     type: 'Point',
                     coordinates: [row.longitude, row.latitude]
                 },
                 properties: {
+                    id: row.id,
                     title: row.title,
                     theme: row.theme,
-                    location: row.location_text
+                    status: status // And add the status here
                 }
-            }));
-
-            return { type: 'FeatureCollection', features: features };
-        } catch (error) {
-            console.error('Error fetching GeoJSON by state:', error);
-            throw error;
-        }
+            };
+        });
+        return { type: 'FeatureCollection', features: features };
+    } catch (error) {
+        console.error('Error fetching GeoJSON by state:', error);
+        throw error;
     }
+}
 
     
 };

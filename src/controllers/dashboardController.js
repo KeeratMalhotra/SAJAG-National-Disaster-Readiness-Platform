@@ -55,7 +55,8 @@ const dashboardController = {
                     gaps: trainingGaps,
                     scoresByTheme: scoresByTheme,
                     announcements: announcements,
-                    activePage: 'dashboard'
+                    activePage: 'dashboard',
+                    MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN
                 });
             } else {
                 res.send('Welcome to your dashboard!');

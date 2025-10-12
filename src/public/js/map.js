@@ -1,32 +1,59 @@
-// Wait for the DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Initialize the map and set its view to the center of India
-    const map = L.map('map').setView([20.5937, 78.9629], 5);
+    const mapContainer = document.getElementById('map');
+    if (!mapContainer) return;
 
-    // 2. Add the base map layer (tile layer) from OpenStreetMap
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+    const accessToken = mapContainer.dataset.token;
+    if (!accessToken) {
+        console.error('Mapbox Access Token is missing!');
+        return;
+    }
 
-    // 3. Fetch the training data from our GeoJSON endpoint
-    fetch('/trainings/geojson')
-        .then(response => response.json())
-        .then(data => {
-            // 4. Add the GeoJSON data to the map
-            L.geoJSON(data, {
-                // This function is called for each feature (each training point)
-                onEachFeature: (feature, layer) => {
-                    if (feature.properties) {
-                        // Create a popup with the training's title and theme
-                        const popupContent = `
-                            <strong>${feature.properties.title}</strong>
-                            <br>
-                            Theme: ${feature.properties.theme}
-                        `;
-                        layer.bindPopup(popupContent);
+    mapboxgl.accessToken = accessToken;
+
+    const bounds = [ [68, 8], [98, 37] ];
+
+    const map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/light-v11',
+        center: [78.9629, 20.5937],
+        zoom: 4,
+        minZoom: 3.5,
+        maxBounds: bounds
+    });
+
+    map.on('load', () => {
+        // Fetch the training data
+        fetch('/trainings/geojson')
+            .then(res => res.json())
+            .then(data => {
+                if (!data.features) return;
+
+                // Loop through each training (feature)
+                data.features.forEach(feature => {
+                    const el = document.createElement('div');
+                    
+                    // Check the status and apply the correct CSS class
+                    if (feature.properties.status === 'Ongoing') {
+                        el.className = 'blinking-marker';
+                    } else {
+                        el.className = 'default-marker';
                     }
-                }
-            }).addTo(map);
-        })
-        .catch(error => console.error('Error loading map data:', error));
+
+                    // Create the popup content
+                    const popupContent = `
+                        <h6>${feature.properties.title}</h6>
+                        <p class="mb-1">Theme: ${feature.properties.theme}</p>
+                        <span class="badge bg-primary">${feature.properties.status}</span>
+                        <hr class="my-2">
+                        <a href="/trainings/${feature.properties.id}" class="btn btn-sm btn-outline-primary">View Details</a>
+                    `;
+
+                    // Create the marker and add it to the map
+                    new mapboxgl.Marker(el)
+                        .setLngLat(feature.geometry.coordinates)
+                        .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(popupContent))
+                        .addTo(map);
+                });
+            });
+    });
 });
