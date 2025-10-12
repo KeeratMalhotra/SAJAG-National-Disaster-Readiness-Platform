@@ -1,4 +1,35 @@
 document.addEventListener('DOMContentLoaded', () => {
+        const getLocationBtn = document.getElementById('getLocationBtn');
+    const latitudeInput = document.getElementById('latitude');
+    const longitudeInput = document.getElementById('longitude');
+
+    if (getLocationBtn) {
+        getLocationBtn.addEventListener('click', () => {
+            if ("geolocation" in navigator) {
+                getLocationBtn.innerHTML = '<i class="bi bi-geo-alt"></i> Fetching...';
+                getLocationBtn.disabled = true;
+
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        latitudeInput.value = position.coords.latitude.toFixed(6);
+                        longitudeInput.value = position.coords.longitude.toFixed(6);
+                        getLocationBtn.innerHTML = '<i class="bi bi-geo-alt"></i> Get Location';
+                        getLocationBtn.disabled = false;
+                    },
+                    (error) => {
+                        alert(`Error getting location: ${error.message}`);
+                        getLocationBtn.innerHTML = '<i class="bi bi-geo-alt"></i> Get Location';
+                        getLocationBtn.disabled = false;
+                    }
+                );
+            } else {
+                alert("Geolocation is not supported by your browser.");
+            }
+        });
+    }
+
+
+
     const newTrainingForm = document.getElementById('newTrainingForm');
 
     const startDateInput = document.getElementById('startDate');

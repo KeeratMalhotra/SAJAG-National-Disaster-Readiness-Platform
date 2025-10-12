@@ -1,107 +1,96 @@
-/* /css/training-details-redesign.css */
-
-:root {
-    --primary-color: #0d6efd;
-    --light-gray: #f8f9fa;
-    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --card-hover-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-    --card-border-radius: 12px;
+/* --- Main Layout & Background --- */
+.main-content {
+    margin-left: 250px; /* Adjust to your sidebar's width */
+    padding: 2rem;
+    background-color: #f8f9fa;
 }
 
-body {
-    background-color: var(--light-gray);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-}
-
-.content-wrapper {
-    /* Adjust this value to match your sidebar's width */
-    padding: 30px;
-    margin-left: 250px; 
-    transition: margin-left 0.3s ease;
-}
-
+/* --- Page Header --- */
 .page-header {
-    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #dee2e6;
 }
 
+.training-title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #212529;
+}
+
+.training-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    color: #6c757d;
+    font-size: 1rem;
+}
+
+.training-meta i {
+    margin-right: 0.5rem;
+    color: #0d6efd;
+}
+
+/* --- Reusable Card Style --- */
 .card {
     border: none;
-    border-radius: var(--card-border-radius);
-    box-shadow: var(--card-shadow);
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    height: 100%; /* Important for equal height columns */
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--card-hover-shadow);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    background-color: #fff;
 }
 
 .card-header {
-    background-color: #fff;
-    border-bottom: 1px solid #f0f0f0;
-    padding: 1rem 1.25rem;
-    border-top-left-radius: var(--card-border-radius);
-    border-top-right-radius: var(--card-border-radius);
-}
-.card-header .card-title {
-    font-size: 1.1rem;
     font-weight: 600;
+    background-color: #fff;
+    border-bottom: 1px solid #e9ecef;
+    border-radius: 12px 12px 0 0 !important;
+    padding: 1rem 1.25rem;
+    color: #343a40;
+}
+
+.card-header i {
+    margin-right: 0.5rem;
+    color: #0d6efd;
 }
 
 .card-footer {
-    background-color: #fcfdff;
-    border-top: 1px solid #f0f0f0;
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
 }
 
-/* Statistics Cards */
-.stat-card .card-body {
+/* --- Statistics Card Styling --- */
+.stat-item {
     text-align: center;
-    padding: 2rem 1rem;
+    padding: 0.5rem 0;
 }
-.stat-card .card-title {
-    color: #6c757d;
-    font-size: 1rem;
-    margin-bottom: 0.75rem;
-}
-.stat-card .stat-value {
-    font-size: 2.75rem;
+
+.stat-value {
+    font-size: 2.5rem;
     font-weight: 700;
     line-height: 1.1;
 }
 
-/* Table Styles */
-.table-responsive {
-    /* Set a max height to prevent long tables from breaking the layout */
-    max-height: 450px; 
+.stat-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
 }
+
+/* --- Participant Submission Table --- */
+.submission-table-wrapper {
+    max-height: 300px; /* Allow scrolling for long lists */
+    overflow-y: auto;
+}
+
 .table thead th {
-    background-color: var(--light-gray);
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
     font-weight: 600;
-    padding: 1rem 1.25rem;
-    border-bottom: 1px solid #dee2e6;
 }
-.table td {
-    padding: 1rem 1.25rem;
+
+.table td, .table th {
     vertical-align: middle;
-}
-.table-hover tbody tr:hover {
-    background-color: rgba(13, 110, 253, 0.04);
-}
-
-/* NEW: Photo Gallery Carousel Styling */
-.carousel-inner {
-    border-radius: 8px; /* Rounded corners for the images container */
-}
-.carousel-image {
-    max-height: 500px; /* Set a max height for the gallery */
-    object-fit: cover;   /* Ensures images cover the area without distortion */
-    width: 100%;
-}
-
-@media (max-width: 992px) {
-    .content-wrapper {
-        margin-left: 0;
-        padding: 20px;
-    }
 }
