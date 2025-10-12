@@ -21,7 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 theme: formData.get('theme'),
                 startDate: formData.get('startDate'),
                 endDate: formData.get('endDate'),
-                location: formData.get('location')
+                location: formData.get('location'),
+                latitude: formData.get('latitude'),
+                longitude: formData.get('longitude')
             };
 
             try {

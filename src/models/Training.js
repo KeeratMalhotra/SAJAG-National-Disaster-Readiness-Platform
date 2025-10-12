@@ -8,24 +8,26 @@ const Training = {
      * @returns {object} The newly created training object.
      */
     async create(trainingData, userId) {
-        const { title, theme, startDate, endDate, location } = trainingData;
-        
-        const query = `
-            INSERT INTO trainings (title, theme, start_date, end_date, location_text, creator_user_id)
-            VALUES ($1, $2, $3, $4, $5, $6)
-            RETURNING *;
-        `;
-        
-        const values = [title, theme, startDate, endDate, location, userId];
+    // Destructure the new fields from the trainingData
+    const { title, theme, startDate, endDate, location, latitude, longitude } = trainingData;
 
-        try {
-            const result = await pool.query(query, values);
-            return result.rows[0];
-        } catch (error) {
-            console.error('Error creating training:', error);
-            throw error;
-        }
-    },
+    const query = `
+        INSERT INTO trainings (title, theme, start_date, end_date, location_text, latitude, longitude, creator_user_id)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        RETURNING *;
+    `;
+
+    // Add the new values to the array
+    const values = [title, theme, startDate, endDate, location, latitude || null, longitude || null, userId];
+
+    try {
+        const result = await pool.query(query, values);
+        return result.rows[0];
+    } catch (error) {
+        console.error('Error creating training:', error);
+        throw error;
+    }
+},
     
     /**
      * Finds all trainings created by a specific user.
