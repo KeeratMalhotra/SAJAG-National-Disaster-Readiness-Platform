@@ -1,0 +1,107 @@
+/* /css/training-details-redesign.css */
+
+:root {
+    --primary-color: #0d6efd;
+    --light-gray: #f8f9fa;
+    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --card-hover-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    --card-border-radius: 12px;
+}
+
+body {
+    background-color: var(--light-gray);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.content-wrapper {
+    /* Adjust this value to match your sidebar's width */
+    padding: 30px;
+    margin-left: 250px; 
+    transition: margin-left 0.3s ease;
+}
+
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.card {
+    border: none;
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    height: 100%; /* Important for equal height columns */
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--card-hover-shadow);
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 1rem 1.25rem;
+    border-top-left-radius: var(--card-border-radius);
+    border-top-right-radius: var(--card-border-radius);
+}
+.card-header .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.card-footer {
+    background-color: #fcfdff;
+    border-top: 1px solid #f0f0f0;
+}
+
+/* Statistics Cards */
+.stat-card .card-body {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+.stat-card .card-title {
+    color: #6c757d;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+}
+.stat-card .stat-value {
+    font-size: 2.75rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+/* Table Styles */
+.table-responsive {
+    /* Set a max height to prevent long tables from breaking the layout */
+    max-height: 450px; 
+}
+.table thead th {
+    background-color: var(--light-gray);
+    font-weight: 600;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #dee2e6;
+}
+.table td {
+    padding: 1rem 1.25rem;
+    vertical-align: middle;
+}
+.table-hover tbody tr:hover {
+    background-color: rgba(13, 110, 253, 0.04);
+}
+
+/* NEW: Photo Gallery Carousel Styling */
+.carousel-inner {
+    border-radius: 8px; /* Rounded corners for the images container */
+}
+.carousel-image {
+    max-height: 500px; /* Set a max height for the gallery */
+    object-fit: cover;   /* Ensures images cover the area without distortion */
+    width: 100%;
+}
+
+@media (max-width: 992px) {
+    .content-wrapper {
+        margin-left: 0;
+        padding: 20px;
+    }
+}
