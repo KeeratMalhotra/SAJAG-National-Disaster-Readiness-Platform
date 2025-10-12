@@ -104,7 +104,17 @@ const Submission = {
             console.error('Error getting avg score by creator:', error);
             throw error;
         }
+    },
+    async countByCreator(creatorUserId) {
+    const query = 'SELECT COUNT(*) FROM participant_submissions ps JOIN trainings t ON ps.training_id = t.id WHERE t.creator_user_id = $1;';
+    try {
+        const result = await pool.query(query, [creatorUserId]);
+        return parseInt(result.rows[0].count, 10);
+    } catch (error) {
+        console.error('Error counting submissions by creator:', error);
+        throw error;
     }
+}
 };
 
 module.exports = Submission;

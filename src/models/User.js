@@ -106,15 +106,16 @@ const User = {
 },
     
     async findById(id) {
-        const query = 'SELECT id, name, email, organization_name, state, status, document_url FROM users WHERE id = $1;';
-        try {
-            const result = await pool.query(query, [id]);
-            return result.rows[0];
-        } catch (error) {
-            console.error('Error finding user by id:', error);
-            throw error;
-        }
-    },
+    // We are adding the 'role' column to this SELECT query
+    const query = 'SELECT id, name, email, role, organization_name, state, status, document_url FROM users WHERE id = $1;';
+    try {
+        const result = await pool.query(query, [id]);
+        return result.rows[0];
+    } catch (error) {
+        console.error('Error finding user by id:', error);
+        throw error;
+    }
+},
 };
 
 module.exports = User;

@@ -1,100 +1,128 @@
 <!DOCTYPE html>
-
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%= pageTitle %></title>
-
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/css/sidebar.css">
-    <link rel="stylesheet" href="/css/learn-redesign.css"> 
-
-    
-
-    <style>
-      .card-link {
-        text-decoration: none;
-
-        color: inherit;
-      }
-
-      .card-link .card:hover {
-        transform: translateY(-5px);
-
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-
-        transition: all 0.2s ease-in-out;
-      }
-    </style>
-  </head>
-
-  <body class="bg-light">
+    <link rel="stylesheet" href="/css/tp_dashboard.css">
+</head>
+<body>
     <%- include('../partials/_sidebar') %>
 
-    <div class="container mt-4">
-        <% if (locals.announcements && announcements.length > 0) { %>
-            <div class="alert alert-info alert-dismissible fade show" role="alert">
-                <h4 class="alert-heading"><%= announcements[0].title %></h4>
-                <p><%= announcements[0].content %></p>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        <% } %>
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Your Training Programs</h2>
-
-        <a href="/trainings/new" class="btn btn-primary btn-lg">
-          + Create New Training
-        </a>
-      </div>
-
-      <% if (trainings.length> 0) { %>
-
-      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        <% trainings.forEach(training=> { %>
-
-        <div class="col">
-          <a href="/trainings/<%= training.id %>" class="card-link">
-            <div class="card h-100">
-              <div class="card-header bg-secondary text-white">
-                <%= training.theme %>
-              </div>
-
-              <div class="card-body">
-                <h5 class="card-title"><%= training.title %></h5>
-
-                <p class="card-text"><%= training.location_text %></p>
-              </div>
-
-              <div class="card-footer">
-                <small class="text-muted">
-                  <%= new Date(training.start_date).toLocaleDateString() %>
-                </small>
-              </div>
-            </div>
-          </a>
-        </div>
-
-        <% }) %>
-      </div>
-
-      <% } else { %>
-
-      <div class="card">
-        <div class="card-body text-center p-5">
-          <h4>You haven't created any training programs yet.</h4>
-
-          <p>Click the "+ Create New Training" button to get started!</p>
-        </div>
-      </div>
-
-      <% } %>
+    <main class="main-content">
+      <!-- Official Identity Header -->
+      <!-- This is the new, dynamic Identity Header -->
+<!-- This is the new, dynamic Identity Header -->
+<div class="identity-header">
+    <img src="/images/ndma.png" alt="NDMA Logo" class="logo">
+    <div class="org-details text-center">
+        <h1 class="org-name"><%= user.name %></h1>
+        <p class="org-state"><%= user.organization_name %> &bull; <%= user.state %></p>
     </div>
+    <img src="/images/<%= user.state.toLowerCase().replace(/ & /g, '-').replace(/\s+/g, '-') %>-logo.png" alt="<%= user.state %> SDMA Logo" class="logo state-emblem" onerror="this.style.display='none'">
+    <!-- The SDMA logo is now dynamically generated from the user's state -->
+</div>
+        <div class="container-fluid">
+            <% if (locals.announcements && announcements.length > 0) { %>
+                <div class="alert announcement-bar-tp alert-dismissible fade show" role="alert">
+                    <strong><i class="bi bi-megaphone-fill me-2"></i><%= announcements[0].title %>:</strong> 
+                    <%= announcements[0].content %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+
+
+            <!-- KPI Cards -->
+            <div class="row g-4 mb-4">
+    <div class="col-lg-4 col-md-6">
+        <div class="kpi-card">
+            <div class="kpi-icon icon-primary">
+                <i class="bi bi-card-checklist"></i>
+            </div>
+            <div class="kpi-content">
+                <h6 class="kpi-label">Total Trainings Conducted</h6>
+                <p class="kpi-value"><%= totalTrainings %></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+        <div class="kpi-card">
+            <div class="kpi-icon icon-success">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <div class="kpi-content">
+                <h6 class="kpi-label">Total People Assessed</h6>
+                <p class="kpi-value"><%= totalAssessed %></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-12">
+        <div class="kpi-card">
+            <div class="kpi-icon icon-danger">
+                <i class="bi bi-bullseye"></i>
+            </div>
+            <div class="kpi-content">
+                <h6 class="kpi-label">Your Average Readiness Score</h6>
+                <p class="kpi-value"><%= averageScore %><span class="kpi-unit">%</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+            
+            <div class="page-header mb-4">
+                <h2 class="page-title">Your Training Programs</h2>
+                <a href="/trainings/new" class="btn btn-primary">
+                    <i class="bi bi-plus-circle-fill me-2"></i>Create New Training
+                </a>
+            </div>
+
+            <% if (trainings.length > 0) { %>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+                    <% trainings.forEach(training => { 
+                        const isUpcoming = new Date(training.start_date) > new Date();
+                    %>
+                        <div class="col">
+                            <a href="/trainings/<%= training.id %>" class="training-card-link">
+                                <div class="card training-card h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <span class="badge status-badge <%= isUpcoming ? 'bg-success-light text-success' : 'bg-secondary-light text-secondary' %>">
+                                                <%= isUpcoming ? 'Upcoming' : 'Completed' %>
+                                            </span>
+                                            <span class="text-muted small"><%= training.theme %></span>
+                                        </div>
+                                        <h5 class="card-title mt-3"><%= training.title %></h5>
+                                        <p class="card-text text-muted"><%= training.location_text %></p>
+                                    </div>
+                                    <div class="card-footer">
+                                        <i class="bi bi-calendar-event"></i>
+                                        <span><%= new Date(training.start_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) %></span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <div class="card empty-state-card">
+                    <div class="card-body text-center">
+                         <div class="empty-state-icon">
+                           <i class="bi bi-journal-plus"></i>
+                         </div>
+                        <h4 class="mt-4">No Training Programs Found</h4>
+                        <p class="text-muted">Get started by creating your first training program.</p>
+                        <a href="/trainings/new" class="btn btn-primary mt-2">
+                           <i class="bi bi-plus-circle me-2"></i>Create New Training
+                        </a>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </main>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
+</body>
 </html>

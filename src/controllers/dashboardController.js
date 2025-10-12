@@ -2,6 +2,7 @@ const Training = require('../models/Training'); // Import the Training model at 
 const Submission = require('../models/Submission');
 const predictionService = require('../services/predictionService');
 const Announcement = require('../models/Announcement');
+const User = require('../models/User'); // ADD THIS LINE
 
 const dashboardController = {
     showDashboard: async (req, res) => { // Make the function async
@@ -11,18 +12,29 @@ const dashboardController = {
             const announcements = await Announcement.findForUser({ role, state });
 
             if (role === 'training_partner') {
-                // Fetch the trainings for the logged-in user
-                const trainings = await Training.findByUserId(id);
+    const [
+        fullUser, 
+        trainings, 
+        averageScore, 
+        totalAssessed
+    ] = await Promise.all([
+        User.findById(id), // Fetch the full user profile
+        Training.findByUserId(id),
+        Submission.getAverageScoreByCreator(id),
+        Submission.countByCreator(id)
+    ]);
 
-                // Pass the trainings data to the EJS view
-                res.render('pages/tp_dashboard', {
-                    pageTitle: 'Partner Dashboard',
-                    user: req.user,
-                    trainings: trainings,
-                    announcements: announcements,
-                    activePage: 'dashboard'  
-                });
-            } else if (role === 'sdma_admin') {
+    res.render('pages/tp_dashboard', {
+        pageTitle: 'Partner Dashboard',
+        user: req.user,
+        trainings: trainings,
+         user: fullUser,
+        announcements: announcements,
+        averageScore: parseFloat(averageScore).toFixed(2),
+        totalTrainings: trainings.length,
+        totalAssessed: totalAssessed
+    });
+} else if (role === 'sdma_admin') {
                 if (!state) {
                     return res.status(403).send('Access denied: SDMA Admin account is not associated with a state.');
                 }
