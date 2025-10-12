@@ -10,50 +10,152 @@ document.addEventListener('DOMContentLoaded', () => {
 
     mapboxgl.accessToken = accessToken;
 
-    const bounds = [ [68, 8], [98, 37] ];
+    const bounds = [[68, 8], [98, 37]]; // Define the geographic bounds for India
 
     const map = new mapboxgl.Map({
         container: 'map',
-        style: 'mapbox://styles/mapbox/light-v11',
-        center: [78.9629, 20.5937],
-        zoom: 4,
-        minZoom: 3.5,
-        maxBounds: bounds
+        style: 'mapbox://styles/mapbox/satellite-streets-v12',
+        // We no longer set center or zoom here
     });
 
+    // THIS IS THE MAGIC: Fit the map to the bounds perfectly on load
+    map.fitBounds(bounds, {
+        padding: 20 // Adds a 20px buffer around the edges so it doesn't feel cramped
+    });
+
+    let allTrainingsData = null; // Variable to store all fetched data
+
     map.on('load', () => {
-        // Fetch the training data
         fetch('/trainings/geojson')
             .then(res => res.json())
             .then(data => {
-                if (!data.features) return;
+                allTrainingsData = data; // Store the original data
+                if (!allTrainingsData.features) return;
 
-                // Loop through each training (feature)
-                data.features.forEach(feature => {
-                    const el = document.createElement('div');
-                    
-                    // Check the status and apply the correct CSS class
-                    if (feature.properties.status === 'Ongoing') {
-                        el.className = 'blinking-marker';
-                    } else {
-                        el.className = 'default-marker';
+                // Create a data source with clustering enabled
+                map.addSource('trainings', {
+                    type: 'geojson',
+                    data: allTrainingsData,
+                    cluster: true,
+                    clusterMaxZoom: 14,
+                    clusterRadius: 15
+                });
+
+                // Layer for the clusters (circles with numbers)
+                map.addLayer({
+                    id: 'clusters',
+                    type: 'circle',
+                    source: 'trainings',
+                    filter: ['has', 'point_count'],
+                    paint: {
+                        'circle-color': '#FF9933', // Saffron
+                        'circle-radius': ['step', ['get', 'point_count'], 20, 100, 30, 750, 40],
+                        'circle-stroke-width': 2,
+                        'circle-stroke-color': '#fff'
                     }
+                });
 
-                    // Create the popup content
-                    const popupContent = `
-                        <h6>${feature.properties.title}</h6>
-                        <p class="mb-1">Theme: ${feature.properties.theme}</p>
-                        <span class="badge bg-primary">${feature.properties.status}</span>
+                // Layer for the cluster count text
+                map.addLayer({
+                    id: 'cluster-count',
+                    type: 'symbol',
+                    source: 'trainings',
+                    filter: ['has', 'point_count'],
+                    layout: {
+                        'text-field': '{point_count_abbreviated}',
+                        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                        'text-size': 14
+                    },
+                    paint: {
+                        'text-color': '#ffffff'
+                    }
+                });
+
+                // Layer for the individual, unclustered points (custom icons)
+                map.addLayer({
+                    id: 'unclustered-point',
+                    type: 'circle', // We use circle and paint it later, easier than custom markers
+                    source: 'trainings',
+                    filter: ['!', ['has', 'point_count']],
+                    paint: {
+                       'circle-color': [
+                           'match',
+                           ['get', 'theme'],
+                           'Earthquake', '#D97706',
+                           'Flood', '#2563EB',
+                           'Cyclone', '#4B5563',
+                           '#6D28D9' // Default color
+                       ],
+                       'circle-radius': 8,
+                       'circle-stroke-width': 2,
+                       'circle-stroke-color': '#fff'
+                    }
+                });
+                
+                // Click event for clusters (to zoom in)
+                map.on('click', 'clusters', (e) => {
+                    const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+                    const clusterId = features[0].properties.cluster_id;
+                    map.getSource('trainings').getClusterExpansionZoom(clusterId, (err, zoom) => {
+                        if (err) return;
+                        map.easeTo({ center: features[0].geometry.coordinates, zoom: zoom });
+                    });
+                });
+                 // Click event for individual points (to show popup)
+                map.on('click', 'unclustered-point', (e) => {
+                    const coordinates = e.features[0].geometry.coordinates.slice();
+                    const properties = e.features[0].properties;
+
+                     const popupContent = `
+                        <h6>${properties.title}</h6>
+                        <p class="mb-1">Theme: ${properties.theme}</p>
+                        <span class="badge bg-primary">${properties.status}</span>
                         <hr class="my-2">
-                        <a href="/trainings/${feature.properties.id}" class="btn btn-sm btn-outline-primary">View Details</a>
+                        <a href="/trainings/${properties.id}" class="btn btn-sm btn-outline-primary">View Details</a>
                     `;
 
-                    // Create the marker and add it to the map
-                    new mapboxgl.Marker(el)
-                        .setLngLat(feature.geometry.coordinates)
-                        .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(popupContent))
+                    new mapboxgl.Popup()
+                        .setLngLat(coordinates)
+                        .setHTML(popupContent)
                         .addTo(map);
                 });
+                // Change cursor to pointer on hover
+                map.on('mouseenter', 'clusters', () => { map.getCanvas().style.cursor = 'pointer'; });
+                map.on('mouseleave', 'clusters', () => { map.getCanvas().style.cursor = ''; });
+                map.on('mouseenter', 'unclustered-point', () => { map.getCanvas().style.cursor = 'pointer'; });
+                map.on('mouseleave', 'unclustered-point', () => { map.getCanvas().style.cursor = ''; });
             });
     });
+
+// --- INTERACTIVE FILTER LOGIC ---
+    const filterGroup = document.getElementById('map-filter-group');
+    if(filterGroup){
+        filterGroup.addEventListener('click', (e) => {
+            if (e.target.tagName !== 'BUTTON') return;
+            
+            const filter = e.target.dataset.filter;
+
+            // This part is the same - it correctly filters the data
+            if (filter === 'All') {
+                map.getSource('trainings').setData(allTrainingsData);
+            } else {
+                const filteredData = {
+                    ...allTrainingsData,
+                    features: allTrainingsData.features.filter(f => f.properties.theme === filter)
+                };
+                map.getSource('trainings').setData(filteredData);
+            }
+            
+            // --- THIS IS THE NEW, CORRECTED UI LOGIC ---
+            // First, reset all buttons to the default outline style
+            document.querySelectorAll('#map-filter-group button').forEach(btn => {
+                btn.classList.remove('active', 'btn-primary');
+                btn.classList.add('btn-outline-secondary');
+            });
+
+            // Then, apply the primary style to the clicked button
+            e.target.classList.remove('btn-outline-secondary');
+            e.target.classList.add('active', 'btn-primary');
+        });
+    }
 });

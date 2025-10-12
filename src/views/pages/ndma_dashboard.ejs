@@ -4,195 +4,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= pageTitle %> | Dashboard</title>
-    
+    <title>
+        <%= pageTitle %> | Dashboard
+    </title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet' />
     <link rel="stylesheet" href="/css/sidebar.css" />
-    <link rel="stylesheet" href="/css/dashboard_reorganized.css" /> 
-    <link rel="stylesheet" href="/css/map.css" /> 
+    <link rel="stylesheet" href="/css/dashboard_reorganized.css" />
+    <link rel="stylesheet" href="/css/map.css" />
 </head>
 
 <body>
     <%- include('../partials/_sidebar') %>
 
-    <main class="main-content">
-        <header class="page-header">
-            <h1>National Dashboard</h1>
-            <div class="header-actions">
-                <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#importModal">
-                    <i class="bi bi-upload"></i> Bulk Import
-                </button>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#announcementModal">
-                    <i class="bi bi-plus-circle"></i> New Announcement
-                </button>
-                <button id="downloadReportBtn" class="btn btn-secondary"><i class="bi bi-download"></i> Download Report</button>
-            </div>
-        </header>
+        <main class="main-content">
+            <header class="page-header">
+                <h1>National Dashboard</h1>
+                <div class="header-actions">
+                    <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#importModal">
+                        <i class="bi bi-upload"></i> Bulk Import
+                    </button>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#announcementModal">
+                        <i class="bi bi-plus-circle"></i> New Announcement
+                    </button>
+                    <button id="downloadReportBtn" class="btn btn-secondary"><i class="bi bi-download"></i> Download
+                        Report</button>
+                </div>
+            </header>
 
-        <div id="report-content">
-            
-            <% if (locals.announcements && announcements.length > 0) { %>
-                <div class="alert announcement-bar alert-dismissible fade show" role="alert">
-                    <strong><i class="bi bi-megaphone-fill"></i> <%= announcements[0].title %>:</strong> 
-                    <%= announcements[0].content %>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            <% } %>
+            <div id="report-content">
 
-            <div class="row g-4 mb-4">
-                <div class="col-lg-4 col-md-6">
-                    <div class="kpi-card">
-                        <div class="kpi-icon icon-primary"><i class="bi bi-kanban fs-3"></i></div>
-                        <div>
-                            <h5 class="kpi-label">Total Trainings Conducted</h5>
-                            <p class="kpi-value"><%= totalTrainings %></p>
-                        </div>
+                <% if (locals.announcements && announcements.length> 0) { %>
+                    <div class="alert announcement-bar alert-dismissible fade show" role="alert">
+                        <strong><i class="bi bi-megaphone-fill"></i>
+                            <%= announcements[0].title %>:
+                        </strong>
+                        <%= announcements[0].content %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="kpi-card">
-                        <div class="kpi-icon icon-success"><i class="bi bi-people fs-3"></i></div>
-                        <div>
-                            <h5 class="kpi-label">Active Training Partners</h5>
-                            <p class="kpi-value"><%= uniquePartners %></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-12">
-                     <div class="kpi-card">
-                        <div class="kpi-icon icon-danger"><i class="bi bi-bullseye fs-3"></i></div>
-                        <div>
-                            <h5 class="kpi-label">National Readiness Score</h5>
-                            <p class="kpi-value"><%= averageScore %><span class="kpi-unit">%</span></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                    <% } %>
 
-            <div class="row g-4">
-                <div class="col-lg-7">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            <i class="bi bi-geo-alt-fill"></i> National Training Map
-                        </div>
-                        <div class="card-body p-2">
-                            <div id="map" data-token="<%= MAPBOX_ACCESS_TOKEN %>"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-5">
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <i class="bi bi-exclamation-triangle-fill"></i> Priority Training Gaps
-                        </div>
-                        <div class="card-body">
-                             <% if (gaps.length > 0) { %>
-                                <div class="table-responsive">
-                                    <table class="table table-hover mb-0">
-                                        <thead>
-                                            <tr><th>District</th><th>Theme</th><th>Priority</th></tr>
-                                        </thead>
-                                        <tbody>
-                                            <% gaps.slice(0, 5).forEach(gap => { %> <tr>
-                                                <td><%= gap.district %></td>
-                                                <td><%= gap.theme %></td>
-                                                <td><span class="badge bg-danger rounded-pill"><%= gap.priority %></span></td>
-                                            </tr>
-                                            <% }) %>
-                                        </tbody>
-                                    </table>
+                        <div class="row g-4">
+                            <div class="col-lg-7">
+                                <div class="card h-100">
+                                    <div class="card-header">
+                                        <i class="bi bi-geo-alt-fill"></i> National Training Map
+                                    </div>
+                                    <div class="card-body d-flex flex-column">
+                                        <div class="btn-group mb-3" role="group" id="map-filter-group">
+                                            <button type="button" class="btn btn-sm btn-primary active"
+                                                data-filter="All">All</button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                data-filter="Earthquake">Earthquake</button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                data-filter="Flood">Flood</button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                data-filter="Cyclone">Cyclone</button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                data-filter="Landslide">Landslide</button>
+                                        </div>
+                                        <div id="map" data-token="<%= MAPBOX_ACCESS_TOKEN %>"
+                                            style="flex-grow: 1; border-radius: 8px;"></div>
+                                    </div>
                                 </div>
-                            <% } else { %>
-                                <div class="empty-state">
-                                    <i class="bi bi-check-circle-fill"></i>
-                                    <h5>No Gaps Detected</h5>
-                                    <p class="text-muted small">National readiness targets are currently met.</p>
+                            </div>
+
+
+                            <div class="col-lg-5">
+                                <div class="d-flex flex-column" style="gap: 1.5rem;">
+
+                                    <div class="row g-3">
+                                        <div class="col-6">
+                                            <div class="kpi-card-small">
+                                                <div class="kpi-icon-small icon-primary"><i class="bi bi-kanban"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="kpi-label-small">Trainings Conducted</div>
+                                                    <div class="kpi-value-small">
+                                                        <%= totalTrainings %>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="kpi-card-small">
+                                                <div class="kpi-icon-small icon-success"><i class="bi bi-people"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="kpi-label-small">Active Partners</div>
+                                                    <div class="kpi-value-small">
+                                                        <%= uniquePartners %>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="kpi-card-small">
+                                                <div class="kpi-icon-small icon-danger"><i class="bi bi-bullseye"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="kpi-label-small">Readiness Score</div>
+                                                    <div class="kpi-value-small">
+                                                        <%= averageScore %>%
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                        </div>
+                                    </div>
+
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <i class="bi bi-exclamation-triangle-fill"></i> Priority Training Gaps
+                                        </div>
+                                        <div class="card-body">
+                                            <% if (gaps.length> 0) { %>
+                                                <div class="table-responsive" style="max-height: 220px;">
+                                                    <table class="table table-hover mb-0">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>District</th>
+                                                                <th>Theme</th>
+                                                                <th>Priority</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <% gaps.slice(0, 5).forEach(gap=> { %> <tr>
+                                                                    <td>
+                                                                        <%= gap.district %>
+                                                                    </td>
+                                                                    <td>
+                                                                        <%= gap.theme %>
+                                                                    </td>
+                                                                    <td><span class="badge bg-danger rounded-pill">
+                                                                            <%= gap.priority %>
+                                                                        </span></td>
+                                                                </tr>
+                                                                <% }) %>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <% } else { %>
+                                                    <div class="empty-state">
+                                                    </div>
+                                                    <% } %>
+                                        </div>
+                                    </div>
+
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <i class="bi bi-pie-chart-fill"></i> Readiness Score by Theme
+                                        </div>
+                                        <div class="card-body d-flex align-items-center justify-content-center">
+                                            <canvas id="scoresByThemeChart"></canvas>
+                                        </div>
+                                    </div>
+
                                 </div>
-                            <% } %>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="card">
-                        <div class="card-header">
-                            <i class="bi bi-pie-chart-fill"></i> Readiness Score by Theme
-                        </div>
-                        <div class="card-body d-flex align-items-center justify-content-center">
-                            <canvas id="scoresByThemeChart"></canvas>
-                        </div>
-                    </div>
-                </div>
             </div>
-        </div> 
-    </main>
+        </main>
 
-    <div class="modal fade" id="announcementModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Create New Announcement</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="announcementForm">
-                        <div class="mb-3">
-                            <label for="title" class="form-label">Title</label>
-                            <input type="text" class="form-control" id="title" name="title" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="content" class="form-label">Content</label>
-                            <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
-                        </div>
-                        <div id="announcement-message" class="mt-3"></div>
-                        <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Post Announcement</button>
-                        </div>
-                    </form>
+        <div class="modal fade" id="announcementModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Create New Announcement</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="announcementForm">
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="title" name="title" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="content" class="form-label">Content</label>
+                                <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+                            </div>
+                            <div id="announcement-message" class="mt-3"></div>
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-secondary me-2"
+                                    data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Post Announcement</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <div class="modal fade" id="importModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Bulk Import Training Data</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Upload a CSV file with historical training data. The file must match the template format.</p>
-                    <a href="/trainings_template.csv" class="btn btn-sm btn-outline-secondary mb-3" download><i class="bi bi-filetype-csv"></i> Download CSV Template</a>
-                    <hr>
-                    <form id="importForm" enctype="multipart/form-data">
-                        <div class="input-group">
-                            <input type="file" class="form-control" name="trainingsCsv" accept=".csv" required>
-                            <button class="btn btn-primary" type="submit">Upload</button>
-                        </div>
-                    </form>
-                    <div id="import-message" class="mt-3"></div>
+
+        <div class="modal fade" id="importModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Bulk Import Training Data</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Upload a CSV file with historical training data. The file must match the template format.</p>
+                        <a href="/trainings_template.csv" class="btn btn-sm btn-outline-secondary mb-3" download><i
+                                class="bi bi-filetype-csv"></i> Download CSV Template</a>
+                        <hr>
+                        <form id="importForm" enctype="multipart/form-data">
+                            <div class="input-group">
+                                <input type="file" class="form-control" name="trainingsCsv" accept=".csv" required>
+                                <button class="btn btn-primary" type="submit">Upload</button>
+                            </div>
+                        </form>
+                        <div id="import-message" class="mt-3"></div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
-    <script id="chart-data" data-scores="<%= JSON.stringify(scoresByTheme) %>"></script>
+        <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <script src="/js/import.js"></script>
-    <script src="/js/map.js"></script>
-    <script src="/js/ndma_dashboard.js"></script>
-    <script src="/js/announcement.js"></script>
-    <script src="/js/reporting.js"></script>
+        <script id="chart-data" data-scores="<%= JSON.stringify(scoresByTheme) %>"></script>
+
+        <script src="/js/import.js"></script>
+        <script src="/js/map.js"></script>
+        <script src="/js/ndma_dashboard.js"></script>
+        <script src="/js/announcement.js"></script>
+        <script src="/js/reporting.js"></script>
 
 </body>
+
 </html>
