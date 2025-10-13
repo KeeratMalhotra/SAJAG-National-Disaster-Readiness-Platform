@@ -1,318 +1,52 @@
-<!-- 
-    SAJAG Training Partner Registration Form - Custom SAJAG Theme
-    Uses custom CSS for the two-panel, branded layout and Firebase for functionality.
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Training Partner Registration</title>
+    <title><%= pageTitle %></title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
-    <style>
-        /* --- SAJAG AUTHENTICATION STYLING - Enhanced Aesthetics --- */
-        
-        /* 1. Define Design System Variables (Enhanced) */
-        :root {
-            --primary-saffron: #FF9933;      /* Core Saffron */
-            --primary-hover: #E68A2E;        /* Darker Saffron for hover */
-            --navy-blue: #000080;            /* Core Navy Blue */
-            --text-dark: #1a1a2e;            /* Very dark navy/charcoal for main text */
-            --text-light: #5f6a7d;           /* Muted grey for subtitles */
-            --background-light: #f4f7f9;     /* Soft background grey */
-            --background-white: #ffffff;
-            --border-soft: #d3dbdf;          /* Soft input border */
-            --success-green: #138808;
-            --error-red: #dc3545;
-        }
-
-        /* 2. Base Body & Page Layout */
-        body.auth-body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--background-light); 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 2rem;
-            margin: 0;
-        }
-
-        .auth-container {
-            display: grid;
-            grid-template-columns: 1fr 1.2fr;
-            width: 950px; /* Slightly wider */
-            max-width: 95%;
-            min-height: 650px; /* Slightly taller */
-            background-color: var(--background-white);
-            border-radius: 2rem; /* More rounded */
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15); /* Stronger shadow */
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        /* 3. Branding Panel (Left Side - Dynamic Gradient) */
-        .branding-panel {
-            /* Richer, multi-tone saffron/orange gradient */
-            background: linear-gradient(135deg, var(--primary-saffron) 0%, #ffc482 100%);
-            color: var(--background-white); 
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 3rem;
-            position: relative;
-            border-right: 5px solid var(--primary-hover); /* Accent border */
-        }
-
-        .branding-panel::before {
-            content: '☸';
-            font-size: 18rem; /* Larger Chakra */
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: var(--navy-blue); /* Navy Chakra symbol */
-            opacity: 0.15; /* Slightly more visible */
-            z-index: 1;
-        }
-
-        .branding-panel .logo, .branding-panel p {
-            z-index: 2;
-            position: relative;
-        }
-
-        .branding-panel .logo {
-            font-size: 4rem; /* Larger logo */
-            font-weight: 900;
-            letter-spacing: 2px; /* Wider spacing */
-            margin-bottom: 0.75rem;
-            /* === CHANGE: Translucent Orange/Light Saffron Color === */
-            color: rgba(255, 240, 200, 0.8); 
-            /* === CHANGE: Stronger shadow for readability === */
-            text-shadow: 0 2px 8px rgba(0,0,0,0.4); 
-        }
-
-        .branding-panel p {
-            font-size: 1.05rem;
-            line-height: 1.6;
-            opacity: 1; /* Opacity handled by rgba color below */
-            /* === CHANGE: Translucent Orange/Light Saffron Color === */
-            color: rgba(255, 240, 200, 0.8); 
-            font-weight: 600;
-        }
-
-        /* 4. Form Panel (Right Side) */
-        .form-panel {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 4rem; /* Increased padding */
-        }
-
-        .form-panel h2 {
-            font-weight: 800; /* Bolder title */
-            color: var(--text-dark);
-            margin-bottom: 0.75rem;
-            font-size: 1.8rem;
-        }
-
-        .form-panel .subtitle {
-            color: var(--text-light);
-            margin-bottom: 2.5rem; /* More spacing */
-            font-size: 0.9rem;
-        }
-        
-        /* Grid for form elements (User Credentials section) */
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr; /* Default to one column on mobile */
-            gap: 1rem; /* Spacing between grid items */
-        }
-
-        .form-grid .full-width {
-            grid-column: span 1;
-        }
-
-        @media (min-width: 640px) {
-            .form-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-            .form-grid .full-width {
-                grid-column: span 2 / span 2;
-            }
-        }
-
-
-        .input-group {
-            margin-bottom: 1rem; /* Reduced spacing between inputs */
-        }
-
-        .input-group label {
-            font-size: 0.9rem;
-            font-weight: 600; /* Bolder labels */
-            color: var(--text-dark);
-        }
-
-        .input-group input, .input-group select {
-            width: 100%;
-            padding: 0.85rem 1.1rem; /* Taller inputs */
-            border: 2px solid var(--border-soft); /* Slightly thicker, softer border */
-            background-color: var(--background-white); /* White background for contrast */
-            border-radius: 0.65rem; /* Slightly more rounded */
-            transition: all 0.2s ease-in-out;
-            color: var(--text-dark); 
-            font-size: 1rem;
-        }
-
-        .input-group input:focus, .input-group select:focus {
-            outline: none;
-            border-color: var(--primary-saffron);
-            box-shadow: 0 0 0 4px rgba(255, 153, 51, 0.3); /* Stronger glow effect */
-        }
-
-        /* Enhanced Button Styling */
-        .form-panel button {
-            padding: 1rem; /* Taller button */
-            border: none;
-            border-radius: 0.65rem;
-            background: linear-gradient(180deg, var(--primary-saffron) 0%, var(--primary-hover) 100%);
-            color: var(--white);
-            font-weight: 700;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            margin-top: 1.5rem;
-            box-shadow: 0 4px 15px rgba(255, 153, 51, 0.4); /* Strong saffron shadow */
-            border-bottom: 3px solid #cc7722; /* Depth effect */
-        }
-
-        .form-panel button:hover:not(:disabled) {
-            background-color: var(--primary-hover);
-            transform: translateY(-1px);
-            box-shadow: 0 2px 10px rgba(255, 153, 51, 0.6);
-            border-bottom: 1px solid #cc7722;
-        }
-        
-        .form-panel button:disabled {
-            background: #e0e0e0;
-            box-shadow: none;
-            border-bottom: none;
-            cursor: not-allowed;
-            color: #999;
-        }
-
-        .form-panel .links {
-            text-align: center;
-            margin-top: 1.5rem;
-            font-size: 0.875rem;
-        }
-
-        .form-panel .links a {
-            color: var(--navy-blue);
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.2s;
-        }
-        .form-panel .links a:hover {
-            text-decoration: underline;
-            color: var(--primary-hover);
-        }
-        
-        /* Custom Message Box Styles (Refined) */
-        .message-box {
-            padding: 1rem 1.5rem;
-            font-size: 0.9rem;
-            border-radius: 0.75rem;
-            margin-top: 1.5rem;
-            border: 1px solid transparent;
-            font-weight: 500;
-        }
-        .message-success {
-            background-color: rgba(19, 136, 8, 0.1); 
-            color: var(--success-green);
-            border-color: rgba(19, 136, 8, 0.3);
-        }
-        .message-error {
-            background-color: rgba(220, 53, 69, 0.1); 
-            color: var(--error-red);
-            border-color: rgba(220, 53, 69, 0.3);
-        }
-        .message-info {
-            background-color: rgba(255, 153, 51, 0.1); 
-            color: var(--primary-saffron);
-            border-color: rgba(255, 153, 51, 0.3);
-        }
-
-
-        /* 5. Responsive Design */
-        @media (max-width: 768px) {
-            .auth-container {
-                grid-template-columns: 1fr;
-                border-radius: 1.5rem;
-            }
-            .branding-panel {
-                display: none;
-            }
-            .form-panel {
-                padding: 2.5rem 2rem; /* Adjusted mobile padding */
-            }
-        }
-    </style>
-</head>
+    <link rel="stylesheet" href="/css/sajag-theme.css"> </head>
 <body class="auth-body">
 
-    <!-- Main Authentication Container -->
     <div class="auth-container">
         
-        <!-- 1. Branding Panel (Left Side - Saffron Theme) -->
         <div class="branding-panel">
             <div class="logo">SAJAG</div>
             <p>Empowering India with Disaster Resilience Training and Management.</p>
             <p style="margin-top: 1rem; font-weight: 600;">Partner with us to build a safer nation.</p>
-            
         </div>
 
-        <!-- 2. Form Panel (Right Side) -->
         <div class="form-panel">
             <h2>Register as a Training Partner</h2>
             <p class="subtitle">
                 Create your account to submit your organization's application for review.
             </p>
             
-            <form id="registerForm">
+            <form id="registerForm" enctype="multipart/form-data">
                 
-                <!-- User Credentials -->
-                <!-- NOTE: 'grid grid-cols-1 sm:grid-cols-2 gap-4' replaced with 'form-grid' for custom CSS handling -->
-                <div class="form-grid">
-                    <div class="input-group full-width">
-                        <label for="name">Full Name</label>
-                        <input type="text" id="name" name="name" required>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password" required>
-                    </div>
+                <div class="input-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required>
                 </div>
                 
-                <!-- Organization Details -->
+                <div class="input-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
                 <div class="input-group">
                     <label for="organizationName">Organization Name</label>
                     <input type="text" id="organizationName" name="organizationName" required>
                 </div>
 
-                <!-- State Selection -->
                 <div class="input-group">
-                    <label for="state">State/UT of Operation</label>
+                    <label for="state">State/UT</label>
                     <select id="state" name="state" required>
                         <option value="" disabled selected>Select your State/UT...</option>
                         <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
@@ -354,176 +88,23 @@
                     </select>
                 </div>
                 
-                <!-- Document Link/ID Input (Replaced file upload) -->
                 <div class="input-group">
-                    <label for="documentId">Registration Document ID / Link</label>
-                    <input type="text" id="documentId" name="documentId" required
-                           placeholder="e.g., CIN or a link to the registration certificate">
+                    <label for="registrationDocument">Registration Document (PDF only)</label>
+                    <input type="file" id="registrationDocument" name="registrationDocument" accept=".pdf" required>
                 </div>
 
-                <!-- Submit Button -->
-                <button type="submit" id="submitButton">
-                    Register for Approval
-                </button>
+                <button type="submit">Register for Approval</button>
             </form>
             
-            <!-- Message Area -->
             <div id="message">
-                <!-- Messages (errors/success) will appear here -->
-            </div>
+                </div>
 
             <div class="links">
-                Already have an account? 
-                <a href="#" onclick="alert('This link would redirect to the Login page.')">Login here</a>
+                Already have an account? <a href="/api/auth/login">Login here</a>
             </div>
         </div>
     </div>
 
-    <!-- Firebase SDK Imports and Logic -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Global Firebase variables provided by the environment
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-        let app, db, auth;
-        let isAuthReady = false;
-
-        /**
-         * Initializes Firebase and authenticates the user.
-         */
-        async function initializeFirebase() {
-            try {
-                if (Object.keys(firebaseConfig).length === 0) {
-                    throw new Error("Firebase configuration is missing.");
-                }
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                // Authenticate user with custom token or anonymously
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
-                isAuthReady = true;
-            } catch (error) {
-                console.error("Firebase initialization or authentication failed:", error);
-                displayMessage('System Error: Could not connect to the database. Check console for details.', 'error');
-            }
-        }
-
-        /**
-         * Displays a temporary status message to the user using the custom CSS theme.
-         * @param {string} msg - The message text.
-         * @param {'success'|'error'|'info'} type - The type of message.
-         */
-        function displayMessage(msg, type = 'info') {
-            const messageDiv = document.getElementById('message');
-            let classes = 'message-box my-4 '; // Base class
-
-            // Assign the new custom classes
-            if (type === 'success') {
-                classes += 'message-success';
-            } else if (type === 'error') {
-                classes += 'message-error';
-            } else {
-                classes += 'message-info';
-            }
-
-            messageDiv.className = classes;
-            messageDiv.textContent = msg;
-
-            // Clear message after 5 seconds
-            setTimeout(() => {
-                messageDiv.textContent = '';
-                messageDiv.className = '';
-            }, 5000);
-        }
-
-        /**
-         * Handles the form submission: creates user, then saves application details.
-         * @param {Event} e - The form submit event.
-         */
-        document.getElementById('registerForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            if (!isAuthReady) {
-                displayMessage('Database is not ready. Please wait a moment and try again.', 'info');
-                return;
-            }
-
-            const button = document.getElementById('submitButton');
-            button.disabled = true;
-            button.textContent = 'Processing...';
-
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const organizationName = document.getElementById('organizationName').value;
-            const state = document.getElementById('state').value;
-            const documentId = document.getElementById('documentId').value;
-
-            try {
-                // 1. Create User in Firebase Auth
-                displayMessage('Creating user account...', 'info');
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-                
-                // 2. Save Partner Application Data to Firestore
-                // We save this to a PUBLIC collection for admin review, using the new user's UID as the document ID
-                const partnerDocRef = doc(collection(db, 'artifacts', appId, 'public', 'data', 'trainingPartners'), user.uid);
-                
-                await setDoc(partnerDocRef, {
-                    uid: user.uid,
-                    fullName: name,
-                    email: email, // Email stored for easy lookup/contact
-                    organizationName: organizationName,
-                    state: state,
-                    documentId: documentId,
-                    role: 'training_partner',
-                    applicationStatus: 'Pending Review', // Initial status
-                    appliedAt: new Date().toISOString()
-                });
-                
-                displayMessage('Registration successful! Your application has been submitted for review. Please check your email for confirmation.', 'success');
-                // Optionally clear the form
-                document.getElementById('registerForm').reset();
-                
-            } catch (error) {
-                console.error("Registration failed:", error);
-                let errorMessage = 'An unknown error occurred during registration.';
-
-                if (error.code) {
-                    switch (error.code) {
-                        case 'auth/email-already-in-use':
-                            errorMessage = 'This email address is already registered.';
-                            break;
-                        case 'auth/invalid-email':
-                            errorMessage = 'The email address is not valid.';
-                            break;
-                        case 'auth/weak-password':
-                            errorMessage = 'Password should be at least 6 characters.';
-                            break;
-                        default:
-                            errorMessage = `Authentication failed: ${error.message}`;
-                    }
-                }
-                displayMessage(errorMessage, 'error');
-            } finally {
-                button.disabled = false;
-                button.textContent = 'Register for Approval';
-            }
-        });
-
-        // Initialize Firebase when the script loads
-        initializeFirebase();
-
-    </script>
+    <script src="/js/auth.js"></script>
 </body>
 </html>
