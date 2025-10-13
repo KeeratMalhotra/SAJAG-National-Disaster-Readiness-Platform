@@ -14,6 +14,8 @@ body {
     padding: 30px;
     max-width: calc(100% - 250px); /* Ensure content doesn't overflow */
     box-sizing: border-box; /* Include padding in width calculation */
+    position: relative; /* needed for gradient overlays */
+    overflow-y: auto;
 }
 
 /* Header Section */
@@ -87,9 +89,11 @@ body {
     border-radius: 12px;
     box-shadow: 0 4px 20px var(--shadow-light);
     overflow: hidden; /* Contains child floats/margins */
-    opacity: 0; /* Start hidden for animation */
-    transform: translateY(20px); /* Start slightly below for animation */
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    opacity: 0.3; /* Start hidden for animation */
+    /* transform: translateY(20px); Start slightly below for animation */
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    transform: scale(0.98);
+
 }
 
 .disaster-section.is-active {
@@ -309,4 +313,33 @@ body {
 
 .learn-more-btn i {
     font-size: 0.9rem; /* Slightly smaller icon */
+}
+
+.main-content::before,
+.main-content::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 100px; /* height of fade */
+    pointer-events: none;
+    z-index: 10;
+}
+
+.main-content::before {
+    top: 0;
+    background: linear-gradient(to bottom, var(--background-light), rgba(255,255,255,0));
+}
+
+.main-content::after {
+    bottom: 0;
+    background: linear-gradient(to top, var(--background-light), rgba(255,255,255,0));
+}
+
+/* 3. Optional: make disaster sections initially visible but still animate */
+
+
+.disaster-section.is-active {
+    opacity: 1;
+    transform: translateY(0);
 }
