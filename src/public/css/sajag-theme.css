@@ -1,21 +1,21 @@
-/* --- SAJAG AUTHENTICATION STYLING - Enhanced Aesthetics --- */
+/* === SAJAG OFFICIAL THEME - NDMA Blue === */
 
-/* 1. Define Design System Variables (Enhanced) */
+/* 1. Core Variables */
 :root {
-    --primary-saffron: #FF9933;      /* Core Saffron */
-    --primary-hover: #E68A2E;        /* Darker Saffron for hover */
-    --navy-blue: #000080;            /* Core Navy Blue */
-    --text-dark: #1a1a2e;            /* Very dark navy/charcoal for main text */
-    --text-light: #5f6a7d;           /* Muted grey for subtitles */
-    --background-light: #f4f7f9;     /* Soft background grey */
-    --background-white: #ffffff;
-    --border-soft: #d3dbdf;          /* Soft input border */
+    --primary-blue: #1C3D6E;               /* Official Dark Blue from Dashboard Sidebar */
+    --primary-saffron-accent: #FF9933;     /* Saffron for buttons and highlights */
+    --primary-saffron-hover: #E68A2E;      /* Darker Saffron for hover */
+    --text-dark: #21334F;                  /* Dark Navy for headings and text */
+    --text-light: #5F6A7D;                 /* Muted Grey for subtitles */
+    --background-light: #F4F7F9;           /* Soft background grey */
+    --background-white: #FFFFFF;
+    --border-soft: #D1D9E4;                /* Soft input border */
     --success-green: #138808;
-    --error-red: #dc3545;
-    --white: #ffffff;
+    --error-red: #DC3545;
+    --white: #FFFFFF;
 }
 
-/* 2. Base Body & Page Layout */
+/* 2. Base & Layout */
 body.auth-body {
     font-family: 'Inter', sans-serif;
     background-color: var(--background-light); 
@@ -23,68 +23,46 @@ body.auth-body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    padding: 1.5rem; /* Slightly reduced overall page padding */
+    padding: 1.5rem;
     margin: 0;
 }
 
 .auth-container {
     display: grid;
-    grid-template-columns: 1fr 1.2fr;
-    width: 800px; /* SHRUNK: Reduced from 950px */
+    grid-template-columns: 1fr 1.3fr; /* Give slightly more space to the form */
+    width: 850px;
     max-width: 95%;
-    min-height: 580px; /* SHRUNK: Reduced from 650px */
+    min-height: 600px;
     background-color: var(--background-white);
-    border-radius: 2rem;
-    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+    border-radius: 1.25rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    transition: all 0.3s ease;
 }
 
-/* 3. Branding Panel (Left Side - Dynamic Gradient) */
+/* 3. Branding Panel (Left Side) - Updated with NDMA Blue */
 .branding-panel {
-    background: linear-gradient(135deg, var(--primary-saffron) 0%, #ffc482 100%);
-    color: var(--background-white); 
+    background-color: var(--primary-blue);
+    color: var(--white); 
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 2.5rem; /* SHRUNK: Reduced padding */
-    position: relative;
-    border-right: 5px solid var(--primary-hover);
-}
-
-.branding-panel::before {
-    content: '☸';
-    font-size: 16rem; /* SHRUNK: Reduced Chakra size */
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: var(--navy-blue);
-    opacity: 0.15;
-    z-index: 1;
-}
-
-.branding-panel .logo, .branding-panel p {
-    z-index: 2;
-    position: relative;
+    padding: 2.5rem;
 }
 
 .branding-panel .logo {
-    font-size: 3.5rem; /* SHRUNK: Reduced logo size */
-    font-weight: 900;
-    letter-spacing: 2px;
-    margin-bottom: 0.6rem; /* Adjusted margin */
-    color: rgba(255, 240, 200, 0.8); 
-    text-shadow: 0 2px 8px rgba(0,0,0,0.4); 
+    width: 100px;  /* Adjust size as needed */
+    height: 100px; /* Adjust size as needed */
+    margin-bottom: 1.5rem;
 }
 
 .branding-panel p {
-    font-size: 0.95rem; /* SHRUNK: Reduced font size */
+    font-size: 0.95rem;
     line-height: 1.6;
-    color: rgba(255, 240, 200, 0.8); 
-    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85); 
+    font-weight: 500;
+    max-width: 300px; /* Constrain text width */
 }
 
 /* 4. Form Panel (Right Side) */
@@ -92,143 +70,208 @@ body.auth-body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 3.5rem; /* SHRUNK: Reduced padding */
+    padding: 3rem 3.5rem;
 }
 
 .form-panel h2 {
-    font-weight: 800;
+    font-weight: 700;
     color: var(--text-dark);
-    margin-bottom: 0.6rem; /* Adjusted margin */
-    font-size: 1.6rem; /* SHRUNK: Reduced title size */
+    margin-bottom: 0.5rem;
+    font-size: 1.75rem;
 }
 
 .form-panel .subtitle {
     color: var(--text-light);
-    margin-bottom: 2rem; /* Adjusted spacing */
-    font-size: 0.85rem; /* SHRUNK: Reduced subtitle size */
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
 }
 
 .input-group {
-    margin-bottom: 1rem; /* SHRUNK: Reduced spacing between inputs */
+    margin-bottom: 1.1rem;
 }
 
 .input-group label {
     display: block;
-    font-size: 0.85rem; /* SHRUNK: Reduced label font size */
+    font-size: 0.875rem;
     font-weight: 600;
     color: var(--text-dark);
-    margin-bottom: 0.4rem; /* Adjusted margin */
+    margin-bottom: 0.5rem;
 }
 
-.input-group input, .input-group select {
+.input-group input, 
+.input-group select {
     width: 100%;
-    padding: 0.75rem 1rem; /* SHRUNK: Reduced input padding */
-    border: 2px solid var(--border-soft);
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--border-soft);
     background-color: var(--background-white);
-    border-radius: 0.65rem;
+    border-radius: 0.5rem;
     transition: all 0.2s ease-in-out;
     color: var(--text-dark); 
-    font-size: 0.95rem; /* SHRUNK: Reduced input font size */
+    font-size: 0.95rem;
     box-sizing: border-box;
 }
 
-/* Specific styling for file input to look better */
 .input-group input[type="file"] {
-    padding: 0.5rem 1rem; /* SHRUNK: Adjusted file input padding */
+    padding: 0.65rem 1rem;
 }
 
-.input-group input:focus, .input-group select:focus {
+.input-group input:focus, 
+.input-group select:focus {
     outline: none;
-    border-color: var(--primary-saffron);
-    box-shadow: 0 0 0 3px rgba(255, 153, 51, 0.25); /* Slightly smaller glow */
+    border-color: var(--primary-saffron-accent);
+    box-shadow: 0 0 0 3px rgba(255, 153, 51, 0.25);
 }
 
-.form-panel button {
+/* Main action button styling */
+form button {
     width: 100%;
-    padding: 0.9rem; /* SHRUNK: Reduced button padding */
+    padding: 0.9rem;
     border: none;
-    border-radius: 0.65rem;
-    background: linear-gradient(180deg, var(--primary-saffron) 0%, var(--primary-hover) 100%);
+    border-radius: 0.5rem;
+    background-color: var(--primary-saffron-accent);
     color: var(--white);
     font-weight: 700;
-    font-size: 1rem; /* SHRUNK: Reduced button font size */
+    font-size: 1rem;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
-    margin-top: 1.25rem; /* Adjusted margin */
-    box-shadow: 0 4px 12px rgba(255, 153, 51, 0.35); /* Slightly softer shadow */
-    border-bottom: 2px solid #cc7722; /* Slightly thinner depth effect */
+    margin-top: 1.25rem;
 }
 
-.form-panel button:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(255, 153, 51, 0.5);
-    border-bottom: 1px solid #cc7722;
+form button:hover:not(:disabled) {
+    background-color: var(--primary-saffron-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 153, 51, 0.3);
 }
 
-.form-panel button:disabled {
-    background: #e0e0e0;
-    box-shadow: none;
-    border-bottom: none;
+form button:disabled {
+    background: #E0E0E0;
     cursor: not-allowed;
-    color: #999;
 }
 
-.form-panel .links {
+/* 5. Message & Links */
+.links {
     text-align: center;
-    margin-top: 1.25rem; /* Adjusted margin */
-    font-size: 0.8rem; /* SHRUNK: Reduced link font size */
+    margin-top: 1.5rem;
+    font-size: 0.875rem;
+    color: var(--text-light);
 }
 
-.form-panel .links a {
-    color: var(--navy-blue);
+.links a {
+    color: var(--primary-blue);
     text-decoration: none;
     font-weight: 600;
-    transition: color 0.2s;
 }
-.form-panel .links a:hover {
+.links a:hover {
     text-decoration: underline;
-    color: var(--primary-hover);
 }
 
-/* Custom Message Box Styles */
-.message-box {
-    padding: 0.8rem 1.2rem; /* SHRUNK: Reduced message box padding */
-    font-size: 0.85rem; /* SHRUNK: Reduced message box font size */
-    border-radius: 0.65rem; /* Slightly less rounded */
-    margin-top: 1.25rem; /* Adjusted margin */
+#message {
+    padding: 0.9rem 1.2rem;
+    font-size: 0.9rem;
+    border-radius: 0.5rem;
+    margin-top: 1.25rem;
     border: 1px solid transparent;
     font-weight: 500;
+    display: none; /* Hide by default */
 }
-.message-success {
+#message.success {
+    display: block;
     background-color: rgba(19, 136, 8, 0.1); 
     color: var(--success-green);
     border-color: rgba(19, 136, 8, 0.3);
 }
-.message-error {
+#message.error {
+    display: block;
     background-color: rgba(220, 53, 69, 0.1); 
     color: var(--error-red);
     border-color: rgba(220, 53, 69, 0.3);
 }
 
-/* 5. Responsive Design */
-@media (max-width: 900px) {
+
+/* 6. Responsive Design */
+@media (max-width: 800px) {
     .auth-container {
         grid-template-columns: 1fr;
-        border-radius: 1.5rem;
         width: 100%;
-        max-width: 450px; /* SHRUNK: Mobile max-width */
-        min-height: auto; /* Allow height to adjust naturally on mobile */
+        max-width: 450px;
+        min-height: auto;
     }
     .branding-panel {
-        display: none;
+        display: none; /* Hide branding panel on small screens to save space */
     }
     .form-panel {
-        padding: 2rem 1.5rem; /* SHRUNK: Adjusted mobile padding */
+        padding: 2.5rem 2rem;
     }
-    .form-panel h2 {
-        font-size: 1.5rem; /* Adjusted mobile title size */
-    }
-    .form-panel .subtitle {
-        margin-bottom: 1.5rem;
+}
+
+/* Add these new rules inside sajag-theme.css */
+
+.branding-panel .platform-name {
+    color: var(--white);
+    font-size: 2.25rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.branding-panel .tagline {
+    font-size: 1rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 1.5rem;
+}
+
+.branding-panel .description {
+    font-size: 0.9rem;
+    font-weight: 400;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.8);
+    max-width: 320px;
+}
+/* Update these rules inside sajag-theme.css */
+
+.branding-panel .logo {
+    width: 120px;  /* LOGO BIGGER: Increased size */
+    height: 120px; /* LOGO BIGGER: Increased size */
+    margin-bottom: 0.75rem; /* Reduced gap */
+}
+
+.branding-panel .platform-name {
+    color: var(--white);
+    font-size: 2.5rem; /* Slightly larger */
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem; /* REDUCED GAP: Between SAJAG and tagline */
+}
+
+.branding-panel .tagline {
+    font-size: 1.05rem; /* Slightly larger */
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.95); /* Slightly more opaque */
+    margin-bottom: 1.5rem; /* Consistent margin below tagline */
+}
+
+.branding-panel .description {
+    font-size: 0.9rem;
+    font-weight: 400;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.85); /* Slightly more opaque */
+    max-width: 320px; /* Keep text width constrained */
+}
+
+/* Ensure the branding panel itself can accommodate the larger content */
+.branding-panel {
+    /* ... existing rules ... */
+    padding: 2rem; /* Adjust padding as needed if content feels too squeezed */
+}
+
+/* Also adjust responsive sizes for the logo if needed, though this might be fine */
+@media (max-width: 800px) {
+    .branding-panel .logo {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 1rem;
     }
 }

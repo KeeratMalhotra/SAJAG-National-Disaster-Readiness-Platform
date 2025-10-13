@@ -19,6 +19,15 @@
 <body>
 
     <%- include('../partials/_sidebar') %> <main class="main-content">
+        <div class="identity-header">
+    <img src="/images/ndma.png" alt="NDMA Logo" class="logo">
+    <div class="org-details text-center">
+        <h1 class="org-name"><%= user.name %></h1>
+        <p class="org-state"><%= user.organization_name %> &bull; <%= user.state %></p>
+    </div>
+    <img src="/images/<%= user.state.toLowerCase().replace(/ & /g, '-').replace(/\s+/g, '-') %>-logo.png" alt="<%= user.state %> SDMA Logo" class="logo state-emblem" onerror="this.style.display='none'">
+    <!-- The SDMA logo is now dynamically generated from the user's state -->
+</div>
         <header class="page-header">
             <h1>Dashboard for <%= state %></h1>
             <div class="header-actions">

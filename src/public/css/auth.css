@@ -1,108 +1,105 @@
-/* --- SAJAG AUTHENTICATION STYLING --- */
-/* This file will style the login, register, and other auth pages. */
+/* === SAJAG OFFICIAL AUTH THEME - NDMA Blue === */
 
-/* 1. Import Font & Define Design System Variables */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
+/* 1. Core Variables */
 :root {
-    --primary-saffron: #FF9933;
-    --primary-hover: #E68A2E;
-    --navy-blue: #000080;
-    --text-dark: #212529;
-    --text-light: #6c757d;
-    --background-grey: #f8f9fa;
-    --border-grey: #dee2e6;
-    --white: #ffffff;
+    --primary-blue: #1C3D6E;               /* Official Dark Blue from Dashboard Sidebar */
+    --primary-saffron-accent: #FF9933;     /* Saffron for buttons and highlights */
+    --primary-saffron-hover: #E68A2E;      /* Darker Saffron for hover */
+    --text-dark: #21334F;                  /* Dark Navy for headings and text */
+    --text-light: #5F6A7D;                 /* Muted Grey for subtitles */
+    --background-light: #F4F7F9;           /* Soft background grey */
+    --background-white: #FFFFFF;
+    --border-soft: #D1D9E4;                /* Soft input border */
     --success-green: #138808;
+    --error-red: #DC3545;
+    --white: #FFFFFF;
 }
 
-/* 2. Base Body & Page Layout */
+/* 2. Base & Layout */
 body.auth-body {
     font-family: 'Inter', sans-serif;
-    background-color: var(--background-grey);
+    background-color: var(--background-light); 
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    padding: 2rem;
+    padding: 1.5rem;
+    margin: 0;
 }
 
 .auth-container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    width: 900px;
-    max-width: 100%;
-    min-height: 550px;
-    background-color: var(--white);
-    border-radius: 1.5rem;
+    grid-template-columns: 1fr 1.3fr;
+    width: 850px;
+    max-width: 95%;
+    min-height: 600px;
+    background-color: var(--background-white);
+    border-radius: 1.25rem;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
     overflow: hidden;
 }
 
-/* 3. Branding Panel (Left Side) */
+/* 3. Branding Panel */
 .branding-panel {
-    background: linear-gradient(rgba(255, 153, 51, 0.85), rgba(255, 153, 51, 0.85)), url('https://images.unsplash.com/photo-1619864551322-90e788939c39?q=80&w=1974') center/cover no-repeat;
-    color: var(--navy-blue);
+    background-color: var(--primary-blue);
+    color: var(--white); 
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 3rem;
-    position: relative;
-}
-
-.branding-panel::before {
-    content: '☸'; /* Ashoka Chakra symbol */
-    font-size: 15rem;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: var(--white);
-    opacity: 0.1;
-    z-index: 1;
-}
-
-.branding-panel .logo, .branding-panel p {
-    z-index: 2;
-    position: relative;
+    padding: 2.5rem;
 }
 
 .branding-panel .logo {
-    font-size: 3.5rem;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 0.75rem;
+}
+
+.branding-panel .platform-name {
+    color: var(--white);
+    font-size: 2.5rem;
     font-weight: 800;
-    letter-spacing: -1px;
-    margin-bottom: 1rem;
-    color: var(--white);
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+    letter-spacing: 1.5px;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
-.branding-panel p {
-    font-size: 1rem;
+.branding-panel .tagline {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 1.5rem;
+}
+
+.branding-panel .description {
+    font-size: 0.9rem;
+    font-weight: 400;
     line-height: 1.6;
-    opacity: 1;
-    color: var(--white);
-    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85);
+    max-width: 320px;
 }
 
-/* 4. Form Panel (Right Side) */
+/* 4. Form Panel */
 .form-panel {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 3rem;
+    padding: 3rem 3.5rem;
 }
 
 .form-panel h2 {
     font-weight: 700;
     color: var(--text-dark);
     margin-bottom: 0.5rem;
+    font-size: 1.75rem;
 }
 
 .form-panel .subtitle {
     color: var(--text-light);
     margin-bottom: 2rem;
+    font-size: 0.9rem;
 }
 
 .input-group {
@@ -112,74 +109,105 @@ body.auth-body {
 .input-group label {
     display: block;
     font-size: 0.875rem;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--text-dark);
     margin-bottom: 0.5rem;
 }
 
 .input-group input {
     width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid var(--border-grey);
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--border-soft);
+    background-color: var(--background-white);
     border-radius: 0.5rem;
-    background-color: var(--background-grey);
     transition: all 0.2s ease-in-out;
+    color: var(--text-dark); 
+    font-size: 0.95rem;
+    box-sizing: border-box;
 }
 
 .input-group input:focus {
     outline: none;
-    border-color: var(--primary-saffron);
+    border-color: var(--primary-saffron-accent);
     box-shadow: 0 0 0 3px rgba(255, 153, 51, 0.25);
 }
 
-.form-panel button {
+form button {
     width: 100%;
-    padding: 0.875rem;
+    padding: 0.9rem;
     border: none;
     border-radius: 0.5rem;
-    background-color: var(--primary-saffron);
+    background-color: var(--primary-saffron-accent);
     color: var(--white);
-    font-weight: 600;
+    font-weight: 700;
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
+    margin-top: 1rem;
 }
 
-.form-panel button:hover {
-    background-color: var(--primary-hover);
+form button:hover:not(:disabled) {
+    background-color: var(--primary-saffron-hover);
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 153, 51, 0.3);
 }
 
-.form-panel .links {
+form button:disabled {
+    background: #E0E0E0;
+    cursor: not-allowed;
+}
+
+/* 5. Message & Links */
+.links {
     text-align: center;
     margin-top: 1.5rem;
     font-size: 0.875rem;
+    color: var(--text-light);
 }
 
-.form-panel .links a {
-    color: var(--navy-blue);
+.links a {
+    color: var(--primary-blue);
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
 }
-.form-panel .links a:hover {
+.links a:hover {
     text-decoration: underline;
 }
 
-#message .alert {
-    padding: 0.75rem 1.25rem;
-    font-size: 0.875rem;
+#message {
+    padding: 0.9rem 1.2rem;
+    font-size: 0.9rem;
+    border-radius: 0.5rem;
+    margin-top: 1.25rem;
+    border: 1px solid transparent;
+    font-weight: 500;
+    display: none;
+}
+#message.success {
+    display: block;
+    background-color: rgba(19, 136, 8, 0.1); 
+    color: var(--success-green);
+    border-color: rgba(19, 136, 8, 0.3);
+}
+#message.error {
+    display: block;
+    background-color: rgba(220, 53, 69, 0.1); 
+    color: var(--error-red);
+    border-color: rgba(220, 53, 69, 0.3);
 }
 
-/* 5. Responsive Design */
-@media (max-width: 768px) {
+/* 6. Responsive Design */
+@media (max-width: 800px) {
     .auth-container {
         grid-template-columns: 1fr;
+        width: 100%;
+        max-width: 450px;
+        min-height: auto;
     }
     .branding-panel {
         display: none;
     }
     .form-panel {
-        padding: 2rem;
+        padding: 2.5rem 2rem;
     }
 }
-
