@@ -54,7 +54,8 @@ const dashboardController = {
                     state: adminState,
                     announcements: announcements, // Pass the state name to the view
                     activePage: 'dashboard',
-                    unreadCount: unreadCount // Add this line
+                    unreadCount: unreadCount ,// Add this line
+                    MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN
                 });
             } else if (role === 'ndma_admin'|| role === 'auditor') {
                  const allTrainings = await Training.findAll();
