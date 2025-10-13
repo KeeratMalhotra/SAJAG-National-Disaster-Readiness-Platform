@@ -5,6 +5,7 @@ const Assessment = require('../models/Assessment');
 const Training = require('../models/Training');
 const User = require('../models/User');
 const Submission = require('../models/Submission'); // Assuming this is your participant model
+const pool = require('../config/database');
 
 const publicController = {
     /**
@@ -12,11 +13,22 @@ const publicController = {
      */
     getHomePage: async (req, res) => {
         try {
-            // Fetch the live stats from the database
-            const totalTrainings = await Training.countDocuments();
-            const activePartners = await User.countDocuments({ role: 'Training Partner', status: 'approved' });
-            // This counts unique participants who have made a submission.
-            const totalParticipants = await Submission.distinct('participantEmail').then(emails => emails.length);
+            // --- FIXED QUERIES START HERE ---
+
+            // 1. Get total trainings count using SQL
+            const trainingsResult = await pool.query('SELECT COUNT(*) FROM trainings');
+            const totalTrainings = parseInt(trainingsResult.rows[0].count);
+
+            // 2. Get active partners count using SQL
+            const partnersResult = await pool.query("SELECT COUNT(*) FROM users WHERE role = 'training_partner' AND status = 'active'");
+            const activePartners = parseInt(partnersResult.rows[0].count);
+
+            // 3. Get unique participants count using SQL
+            // Make sure the table and column names ('submissions', '"participantEmail"') are correct for your database
+            const participantsResult = await pool.query('SELECT COUNT(DISTINCT "participant_email") FROM participant_submissions');
+            const totalParticipants = parseInt(participantsResult.rows[0].count);
+
+            // --- FIXED QUERIES END HERE ---
 
             // Render the home page and pass the stats to the EJS template
             res.render('pages/home', {
