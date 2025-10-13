@@ -1,7 +1,46 @@
+// src/controllers/publicController.js
+
+// Import all necessary models
 const Assessment = require('../models/Assessment');
 const Training = require('../models/Training');
+const User = require('../models/User');
+const Submission = require('../models/Submission'); // Assuming this is your participant model
 
 const publicController = {
+    /**
+     * Renders the public-facing homepage with live statistics.
+     */
+    getHomePage: async (req, res) => {
+        try {
+            // Fetch the live stats from the database
+            const totalTrainings = await Training.countDocuments();
+            const activePartners = await User.countDocuments({ role: 'Training Partner', status: 'approved' });
+            // This counts unique participants who have made a submission.
+            const totalParticipants = await Submission.distinct('participantEmail').then(emails => emails.length);
+
+            // Render the home page and pass the stats to the EJS template
+            res.render('pages/home', {
+                MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN,
+                totalTrainings: totalTrainings,
+                totalParticipants: totalParticipants,
+                activePartners: activePartners,
+            });
+        } catch (error) {
+            console.error('Error fetching homepage stats:', error);
+            // If the database query fails, render the page with 0s to prevent crashing.
+            res.status(500).render('pages/home', {
+                MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN,
+                totalTrainings: 0,
+                totalParticipants: 0,
+                activePartners: 0,
+            });
+        }
+    },
+
+    /**
+     * Renders the assessment page for a specific training.
+     * (Your existing function)
+     */
     showPublicAssessmentPage: async (req, res) => {
         try {
             const { trainingId } = req.params;
@@ -26,6 +65,7 @@ const publicController = {
             res.status(500).send('Server error');
         }
     }
+    // You can add other public-facing controller functions here in the future
 };
 
 module.exports = publicController;
