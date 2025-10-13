@@ -90,7 +90,61 @@ async findById(id) {
             console.error('Error deleting announcement:', error);
             throw error;
         }
+    },
+    async getUnreadCountForUser({ id, role, state }) {
+    let relevantAnnouncementsQuery;
+    const params = [id]; // User ID is always the first parameter
+
+    if (role === 'ndma_admin' || role === 'auditor') {
+        relevantAnnouncementsQuery = `SELECT id FROM announcements`;
+    } else {
+        relevantAnnouncementsQuery = `SELECT id FROM announcements WHERE scope = 'national' OR state = $2`;
+        params.push(state);
     }
+
+    const query = `
+        SELECT COUNT(*) FROM (${relevantAnnouncementsQuery}) AS relevant
+        WHERE relevant.id NOT IN (
+            SELECT announcement_id FROM user_announcement_views WHERE user_id = $1
+        );
+    `;
+
+    try {
+        const result = await pool.query(query, params);
+        return parseInt(result.rows[0].count, 10);
+    } catch (error) {
+        console.error('Error getting unread announcement count:', error);
+        throw error;
+    }
+},
+
+async markAllAsReadForUser(userId, announcementIds) {
+    if (announcementIds.length === 0) return;
+
+    const values = [];
+    let valueStrings = [];
+    let paramCount = 1;
+
+    announcementIds.forEach(announcementId => {
+        valueStrings.push(`($1, $${paramCount + 1})`);
+        values.push(announcementId);
+        paramCount++;
+    });
+
+    // Use ON CONFLICT DO NOTHING to prevent errors if a user re-views the page
+    const query = `
+        INSERT INTO user_announcement_views (user_id, announcement_id)
+        VALUES ${valueStrings.join(', ')}
+        ON CONFLICT (user_id, announcement_id) DO NOTHING;
+    `;
+
+    try {
+        await pool.query(query, [userId, ...values]);
+    } catch (error) {
+        console.error('Error marking announcements as read:', error);
+        throw error;
+    }
+}
     
 };
 

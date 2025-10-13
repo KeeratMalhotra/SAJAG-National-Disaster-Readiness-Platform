@@ -1,9 +1,13 @@
 <aside class="sidebar">
     <div class="sidebar-header">
-        <a href="/">
-            <i class="bi bi-shield-check"></i> SAJAG Portal
-        </a>
-    </div>
+    <a href="/" class="sidebar-logo">
+        
+        <div class="logo-text-wrapper">
+            <span class="logo-main-text">SAJAG</span>
+            <span class="logo-sub-text">Trainings Monitoring Portal</span>
+        </div>
+    </a>
+</div>
 
     <nav class="sidebar-nav flex-grow-1">
         <a href="/dashboard" class="<%- (locals.activePage === 'dashboard') ? 'active' : '' %>">
@@ -11,6 +15,11 @@
         </a>
         <a href="/announcements/all" class="<%- (locals.activePage === 'announcements') ? 'active' : '' %>">
             <i class="bi bi-megaphone-fill"></i> All Announcements
+             <% if (locals.unreadCount && unreadCount > 0) { %>
+        <span class="badge notification-badge rounded-pill bg-danger ms-auto">
+            <%= unreadCount %>
+        </span>
+    <% } %>
         </a>
         <a href="/learn" class="<%- (locals.activePage === 'learn') ? 'active' : '' %>">
             <i class="bi bi-book-fill"></i> Learn

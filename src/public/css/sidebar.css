@@ -165,3 +165,215 @@
     background-color: #f0f2f5; /* Slightly darker on hover */
     color: var(--primary-blue);
 }
+
+:root {
+    --sidebar-bg: #0d2c54; /* Deep, official blue */
+    --sidebar-text: #adb5bd; /* Light grey for readability */
+    --sidebar-text-hover: #ffffff;
+    --sidebar-active-bg: #007bff;
+    --sidebar-active-text: #ffffff;
+    --sidebar-divider: #2c4464; /* Subtle divider color */
+    --shadow-light: rgba(0, 0, 0, 0.08);
+}
+
+.sidebar {
+    width: 250px;
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    box-shadow: 2px 0 10px var(--shadow-light);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    transition: width 0.3s ease; /* For potential future collapse functionality */
+}
+
+/* --- New Sidebar Header & Logo --- */
+.sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--sidebar-divider);
+    margin-bottom: 15px;
+}
+
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+}
+
+.logo-svg path:first-of-type {
+    stroke: #ffffff30; /* Adds a subtle border to the shield */
+    stroke-width: 0.5;
+}
+
+.logo-text {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--sidebar-text-hover);
+    line-height: 1;
+}
+
+/* --- Navigation Links --- */
+.sidebar-nav {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0 15px;
+}
+
+.sidebar-nav a {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    margin-bottom: 5px;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sidebar-nav a i {
+    font-size: 1.1rem;
+    margin-right: 12px;
+    width: 20px; /* Ensures text aligns even with different icon widths */
+    text-align: center;
+    color: var(--sidebar-text);
+    transition: color 0.2s ease;
+}
+
+.sidebar-nav a:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--sidebar-text-hover);
+}
+
+.sidebar-nav a:hover i {
+    color: var(--sidebar-text-hover);
+}
+
+/* Active Link Style */
+.sidebar-nav a.active {
+    background-color: var(--sidebar-active-bg);
+    color: var(--sidebar-active-text);
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.25);
+}
+
+.sidebar-nav a.active i {
+    color: var(--sidebar-active-text);
+}
+
+.sidebar-divider {
+    border: none;
+    border-top: 1px solid var(--sidebar-divider);
+    margin: 20px 15px;
+}
+
+/* --- Sidebar Footer --- */
+.sidebar-footer {
+    padding: 20px;
+    border-top: 1px solid var(--sidebar-divider);
+    margin-top: auto; /* Pushes footer to the bottom */
+}
+
+.sidebar-user-info {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+
+.sidebar-user-info .welcome-text {
+    font-weight: 600;
+    color: var(--sidebar-text-hover);
+    margin-bottom: 3px;
+}
+
+.sidebar-user-info .role-text {
+    color: var(--sidebar-text);
+    text-transform: capitalize;
+}
+
+.logout-link {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--sidebar-text);
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.logout-link i {
+    margin-right: 8px;
+}
+
+.logout-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--sidebar-text-hover);
+}
+/* --- New Sidebar Header & Logo --- */
+.sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--sidebar-divider);
+    margin-bottom: 15px;
+}
+
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+}
+
+.logo-svg {
+    flex-shrink: 0; /* Prevents the SVG from shrinking */
+}
+
+.logo-svg path:first-of-type {
+    stroke: #ffffff30;
+    stroke-width: 0.5;
+}
+
+/* New Styles for the two-line text */
+.logo-text-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.logo-main-text {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--sidebar-text-hover); /* Bright white */
+    line-height: 1.1;
+}
+
+.logo-sub-text {
+    font-size: 0.8rem; /* Smaller, subtitle font */
+    color: var(--sidebar-text); /* Lighter grey text */
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.5px; /* Adds an official, spaced-out look */
+    line-height: 1.3;
+}
+/* --- Notification Badge --- */
+.sidebar-nav a {
+    display: flex;
+    align-items: center;
+}
+
+.notification-badge {
+    font-size: 0.7em;
+    padding: .3em .5em;
+    line-height: 1;
+}

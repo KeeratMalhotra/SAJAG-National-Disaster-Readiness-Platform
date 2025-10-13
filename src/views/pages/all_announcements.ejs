@@ -44,11 +44,17 @@
             <% if (announcements.length> 0) { %>
                 <div class="announcement-grid">
                     <% announcements.forEach(announcement => { %>
-    <div class="announcement-card" data-scope="<%= announcement.scope %>">
+    <div class="announcement-card" data-scope="<%= announcement.scope %>" data-id="<%= announcement.id %>">
         <div class="card-header">
             <div class="card-title-group">
                 <i class="bi bi-megaphone-fill"></i>
-                <h5 class="card-title"><%= announcement.title %></h5>
+                <h5 class="card-title">
+    <!-- ADD THIS 'IF' STATEMENT -->
+    <% if (!announcement.is_read) { %>
+        <span class="unread-dot" title="New Announcement"></span>
+    <% } %>
+    <%= announcement.title %>
+</h5>
             </div>
             
             <!-- THIS IS THE CORRECTED BADGE LOGIC -->

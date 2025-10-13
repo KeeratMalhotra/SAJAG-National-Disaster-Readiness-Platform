@@ -155,7 +155,17 @@ showPartnerDetailsPage: async (req, res) => {
         } catch (error) {
             res.status(500).send('Server error');
         }
+    },
+    markAnnouncementsAsRead: async (req, res) => {
+    try {
+        const { announcementIds } = req.body;
+        const userId = req.user.id;
+        await Announcement.markAllAsReadForUser(userId, announcementIds);
+        res.status(200).json({ message: 'Announcements marked as read.' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error.' });
     }
+}
     
 };
 

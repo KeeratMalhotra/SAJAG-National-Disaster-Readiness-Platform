@@ -9,7 +9,11 @@ const dashboardController = {
         
         try {
             const { role, id , state} = req.user;
-            const announcements = await Announcement.findForUser({ role, state });
+           const [announcements, unreadCount] = await Promise.all([
+            Announcement.findForUser({ role, state }),
+            Announcement.getUnreadCountForUser(req.user)
+        ]);
+            
 
             if (role === 'training_partner') {
     const [
@@ -22,6 +26,7 @@ const dashboardController = {
         Training.findByUserId(id),
         Submission.getAverageScoreByCreator(id),
         Submission.countByCreator(id)
+        
     ]);
 
     res.render('pages/tp_dashboard', {
@@ -32,7 +37,8 @@ const dashboardController = {
         announcements: announcements,
         averageScore: parseFloat(averageScore).toFixed(2),
         totalTrainings: trainings.length,
-        totalAssessed: totalAssessed
+        totalAssessed: totalAssessed,
+        unreadCount: unreadCount // Add this line
     });
 } else if (role === 'sdma_admin') {
                 if (!state) {
@@ -47,7 +53,8 @@ const dashboardController = {
                     trainings: stateTrainings,
                     state: adminState,
                     announcements: announcements, // Pass the state name to the view
-                    activePage: 'dashboard'
+                    activePage: 'dashboard',
+                    unreadCount: unreadCount // Add this line
                 });
             } else if (role === 'ndma_admin'|| role === 'auditor') {
                  const allTrainings = await Training.findAll();
@@ -68,7 +75,8 @@ const dashboardController = {
                     scoresByTheme: scoresByTheme,
                     announcements: announcements,
                     activePage: 'dashboard',
-                    MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN
+                    MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN,
+                    unreadCount: unreadCount // Add this line
                 });
             } else {
                 res.send('Welcome to your dashboard!');

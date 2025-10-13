@@ -17,4 +17,5 @@ router.post('/announcements', adminController.createAnnouncement);
 
 router.delete('/announcements/:id', adminController.deleteAnnouncement);
 router.get('/documents/:filename', adminController.downloadDocument);
+router.post('/announcements/mark-as-read', adminController.markAnnouncementsAsRead);
 module.exports = router;

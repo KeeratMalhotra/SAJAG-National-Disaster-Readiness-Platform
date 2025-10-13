@@ -1,3 +1,24 @@
+function markVisibleAnnouncementsAsRead() {
+    const announcementCards = document.querySelectorAll('.announcement-card[data-id]');
+    const unreadAnnouncements = [];
+
+    announcementCards.forEach(card => {
+        // We'll add a simple check. If a card doesn't have an 'is-read' class, we count it as unread.
+        if (!card.classList.contains('is-read')) {
+            unreadAnnouncements.push(card.dataset.id);
+        }
+    });
+
+    if (unreadAnnouncements.length > 0) {
+        fetch('/api/admin/announcements/mark-as-read', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ announcementIds: unreadAnnouncements })
+        })
+        .catch(error => console.error('Failed to mark announcements as read:', error));
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // --- 1. MARKDOWN CONVERSION (Your existing code) ---
     const converter = new showdown.Converter();
@@ -46,4 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    markVisibleAnnouncementsAsRead();
 });
+
+

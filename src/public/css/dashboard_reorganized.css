@@ -25,12 +25,11 @@ body {
 
 /* --- Page Header --- */
 .page-header {
-    display: flex;
+    
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    gap: 1rem;
-    margin-bottom: 2rem;
+    
 }
 
 .page-header h1 {
@@ -239,4 +238,92 @@ body {
     font-weight: 700;
     line-height: 1.1;
     color: var(--text-color);
+}
+
+/* --- Official Identity Header --- */
+.identity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(90deg, #003366 0%, #0055A4 100%); /* Official blue gradient */
+    color: white;
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 25px rgba(0, 51, 102, 0.2);
+}
+
+.identity-header .logo {
+    max-height: 120px;
+    object-fit: contain;
+}
+
+.identity-header .org-name {
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.identity-header .org-state {
+    font-size: 1.1rem;
+    margin-bottom: 0;
+    opacity: 0.9;
+}
+
+/* public/css/dashboard_redesign.css */
+
+/* --- Header Action Buttons Redesign --- */
+
+/* Base style for all buttons in the header */
+.header-actions .btn {
+    background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent white background */
+    border: 1px solid rgba(255, 255, 255, 0.3);  /* Subtle white border */
+    color: #ffffff;                             /* White text and icon */
+    padding: 0.6rem 1.2rem;                     /* A bit more padding for a premium feel */
+    border-radius: 8px;                         /* Modern rounded corners */
+    transition: all 0.2s ease-in-out;           /* Smooth transition for hover effects */
+    font-weight: 500;
+}
+
+/* Hover and focus states for interaction */
+.header-actions .btn:hover,
+.header-actions .btn:focus {
+    background-color: rgba(255, 255, 255, 0.2); /* Becomes slightly more opaque */
+    border-color: rgba(255, 255, 255, 0.5);
+    color: #ffffff;
+    transform: translateY(-2px);                /* Subtle "lift" effect */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);  /* Add a soft shadow on hover */
+}
+
+/* Make the primary button stand out a little more */
+.header-actions .btn.btn-primary {
+    background-color: rgba(255, 255, 255, 0.2); /* Slightly more opaque by default */
+    font-weight: 600;
+}
+
+.header-actions .btn.btn-primary:hover,
+.header-actions .btn.btn-primary:focus {
+    background-color: rgba(255, 255, 255, 0.3); /* Even more opaque on hover */
+}
+
+/* Remove the default focus shadow from Bootstrap which looks out of place here */
+.header-actions .btn:focus {
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.2);
+}
+
+/* Base style for all buttons in the header */
+.header-actions .btn {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    
+    /* === CHANGES ARE HERE === */
+    padding: 0.35rem 0.8rem; /* Reduced padding for a more compact button */
+    font-size: 0.875rem;     /* Slightly smaller font for better proportion */
+    /* ======================== */
+
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+    font-weight: 500;
+    line-height: 1.5; /* Ensures icon and text are vertically aligned well */
 }
