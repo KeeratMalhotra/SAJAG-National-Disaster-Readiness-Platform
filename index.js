@@ -72,7 +72,12 @@ app.get('/public-map', (req, res) => {
 
 
 // A simple test route to make sure everything is working
-
+app.get('/', (req, res) => {
+    res.render('pages/home', {
+        pageTitle: 'Welcome to SAJAG',
+        
+    });
+});
 app.get('/learn', (req, res) => {
     res.render('pages/learn', { pageTitle: 'Learn & Prepare' , activePage: 'learn'});
 });
