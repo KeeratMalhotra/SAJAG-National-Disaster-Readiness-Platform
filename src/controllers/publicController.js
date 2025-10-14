@@ -14,13 +14,13 @@ const publicController = {
     getHomePage: async (req, res) => {
         try {
             // --- FIXED QUERIES START HERE ---
-
+            const allTrainings = await Training.findAll();
             // 1. Get total trainings count using SQL
             const trainingsResult = await pool.query('SELECT COUNT(*) FROM trainings');
             const totalTrainings = parseInt(trainingsResult.rows[0].count);
 
             // 2. Get active partners count using SQL
-            const partnersResult = await pool.query("SELECT t.*, u.organization_name FROM trainings t JOIN users u ON t.creator_user_id = u.id ORDER BY t.start_date DESC;");
+            const partnersResult = await pool.query("SELECT count(*) from users where role = 'training_partner' and status = 'active'");
             const activePartners = parseInt(partnersResult.rows[0].count);
 
             // 3. Get unique participants count using SQL
