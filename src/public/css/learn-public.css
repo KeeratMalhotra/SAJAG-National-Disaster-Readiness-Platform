@@ -283,3 +283,11 @@ body {
     transform: translateY(30px);
     transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
+
+/* Peek effect for previous and next sections */
+.disaster-section.peek {
+    transform: scale(0.95);        /* Slightly smaller */
+    filter: blur(4px);             /* Blur effect */
+    opacity: 0.5;                  /* Semi-transparent */
+    transition: transform 0.3s ease, filter 0.3s ease, opacity 0.3s ease;
+}
