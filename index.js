@@ -6,6 +6,7 @@ const pool = require('./src/config/database');
 const cookieParser = require('cookie-parser'); 
 const { checkUser } = require('./src/middleware/checkUserMiddleware'); 
 
+
 // --- APP INITIALIZATION ---
 const app = express();
 
@@ -65,17 +66,19 @@ app.use('/assessments', assessmentPageRoutes);
 app.use('/api/predictions', predictionRoutes);
 app.use('/api/admin', adminApiRoutes); 
 app.use('/admin', adminPageRoutes); 
+app.use('/', publicRoutes);
 app.get('/public-map', (req, res) => {
     res.render('pages/public_map');
 });
 
 
 // A simple test route to make sure everything is working
-app.get('/', (req, res) => {
-    res.render('pages/home', {
-        pageTitle: 'Welcome to SAJAG'
-    });
-});
+// app.get('/', (req, res) => {
+//     res.render('pages/home', {
+//         pageTitle: 'Welcome to SAJAG',
+        
+//     });
+// });
 app.get('/learn', (req, res) => {
     res.render('pages/learn', { pageTitle: 'Learn & Prepare' , activePage: 'learn'});
 });

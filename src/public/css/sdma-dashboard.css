@@ -1,0 +1,640 @@
+/* === SAJAG OFFICIAL SDMA DASHBOARD THEME (REVISED) === */
+
+:root {
+    --primary-blue: #003366;
+    --light-blue: #0055A4;
+    --background-grey: #F0F2F5;
+    --card-bg: #FFFFFF;
+    --text-dark: #21334F;
+    --text-light: #5F6A7D;
+    --border-color: #E5E9F2;
+    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    background-color: var(--background-grey);
+}
+
+.main-content {
+    margin-left: 280px; /* Match your sidebar width */
+    width: calc(100% - 280px);
+    
+    box-sizing: border-box;
+    
+}
+/* .p-4{
+    padding: 0;
+} */
+
+/* 1. Identity Header (From NDMA Reference) */
+.identity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(90deg, var(--primary-blue) 0%, var(--light-blue) 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 25px rgba(0, 51, 102, 0.2);
+    gap: 1rem;
+}
+
+.identity-header .logo {
+    height: 60px; /* Standardized logo height */
+    object-fit: contain;
+}
+
+.identity-header .org-details {
+    text-align: center;
+    flex-grow: 1; /* Allows text to take available space */
+}
+
+.identity-header .org-name {
+    font-weight: 700;
+    font-size: 1.75rem;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.identity-header .org-subtitle {
+    font-size: 0.9rem;
+    margin: 0;
+    opacity: 0.9;
+}
+
+/* Header Buttons (From NDMA Reference) */
+.header-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+.header-actions .btn {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+    font-weight: 500;
+}
+.header-actions .btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+.header-actions .btn.btn-primary {
+    background-color: rgba(255, 255, 255, 0.2);
+    font-weight: 600;
+}
+
+/* 2. Announcement Bar */
+.announcement-bar {
+    display: flex;
+    align-items: center;
+    background-color: #E0F7FA;
+    color: #006064;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    border: 1px solid #B2EBF2;
+}
+.announcement-bar .icon { font-size: 1.5rem; margin-right: 1rem; }
+.announcement-bar .content { flex-grow: 1; }
+
+/* 3. KPI Cards */
+.kpi-card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.kpi-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+.kpi-icon {
+    font-size: 1.5rem;
+    padding: 0.8rem;
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    margin-right: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+.kpi-icon.icon-blue { background: linear-gradient(45deg, #0d6efd, #4dabf7); }
+.kpi-icon.icon-green { background: linear-gradient(45deg, #198754, #40c057); }
+.kpi-icon.icon-red { background: linear-gradient(45deg, #dc3545, #fa5252); }
+
+.kpi-label {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-bottom: 0.25rem;
+}
+.kpi-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+/* 4. Dashboard Cards (Map & Table) */
+.dashboard-card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+}
+.card-title-bar {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin: 0;
+}
+.card-body-content { padding: 1.25rem; }
+
+/* 5. Table Styling */
+.table-responsive {
+    max-height: 520px; /* Adjust height to fit new layout */
+    overflow-y: auto;
+}
+.training-table { width: 100%; }
+.training-table thead th {
+    background-color: #F8F9FC;
+    color: var(--text-light);
+    font-weight: 600;
+    padding: 0.75rem 1rem;
+    border-bottom: 2px solid var(--border-color);
+}
+.training-table tbody td {
+    padding: 0.75rem 1rem;
+    color: var(--text-dark);
+    border-top: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+.theme-badge {
+    background-color: #E9ECEF;
+    color: #495057;
+    font-weight: 500;
+    padding: 0.4em 0.8em;
+    border-radius: 1rem;
+}
+
+/* 6. Responsive Design */
+@media (max-width: 1200px) {
+    .identity-header {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+}
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 1rem;
+    }
+    .identity-header .org-name { font-size: 1.25rem; }
+    .identity-header .state-logo { display: none; }
+    .header-actions {
+        width: 100%;
+        justify-content: center;
+    }
+}
+/* === SAJAG OFFICIAL SDMA DASHBOARD THEME (RESTORED) === */
+
+:root {
+    --primary-blue: #1C3D6E;
+    --light-blue: #0055A4;
+    --background-grey: #F0F2F5;
+    --card-bg: #FFFFFF;
+    --text-dark: #21334F;
+    --text-light: #5F6A7D;
+    --border-color: #E5E9F2;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+body {
+    background-color: var(--background-grey);
+}
+
+.main-content {
+    margin-left: 265px; /* Adjust to your sidebar width */
+    width: calc(100% - 280px);
+    padding-bottom: 3rem;
+    box-sizing: border-box;
+}
+
+/* 1. Identity Header */
+.identity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(90deg, var(--primary-blue) 0%, var(--light-blue) 100%);
+    color: white;
+    padding: 1.25rem 2rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 25px rgba(0, 51, 102, 0.2);
+}
+/* .identity-header .logo {
+    height: 100px;
+    object-fit: contain;
+} */
+.identity-header .org-details { text-align: center; }
+.identity-header .org-name {
+    font-weight: 700;
+    font-size: 2rem;
+    margin: 0;
+}
+.identity-header .org-subtitle { font-size: 1rem; margin: 0; opacity: 0.9; }
+
+/* 2. REVERTED: Page Actions Bar */
+.page-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.action-group {
+    display: flex;
+    gap: 1rem;
+}
+.btn-theme-primary {
+    background-color: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+.btn-theme-primary:hover {
+    background-color: var(--light-blue);
+    color: white;
+}
+.btn-theme-secondary {
+    background-color: var(--card-bg);
+    color: var(--primary-blue);
+    border: 1px solid var(--border-color);
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.btn-theme-secondary:hover {
+    background-color: #F8F9FA;
+    border-color: #C1C9D8;
+}
+
+/* 3. Announcement Bar */
+.announcement-bar {
+    display: flex;
+    align-items: center;
+    background-color: #E0F7FA;
+    color: #006064;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    border: 1px solid #B2EBF2;
+}
+.announcement-bar .icon { font-size: 1.5rem; margin-right: 1rem; }
+.announcement-bar .content { flex-grow: 1; }
+
+/* 4. KPI Cards */
+.kpi-card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+.kpi-icon {
+    font-size: 1.75rem;
+    padding: 1rem;
+    border-radius: 50%;
+    margin-right: 1.25rem;
+}
+.kpi-icon.icon-blue { background-color: #E6F2FF; color: #007BFF; }
+.kpi-icon.icon-green { background-color: #E3F9E5; color: #28A745; }
+.kpi-icon.icon-red { background-color: #FEECEB; color: #DC3545; }
+
+.kpi-label { font-size: 0.9rem; color: var(--text-light); margin-bottom: 0.25rem; }
+.kpi-value { font-size: 2rem; font-weight: 700; color: var(--text-dark); margin: 0; }
+
+/* 5. Dashboard Cards (Map & Table) */
+.dashboard-card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+.card-title-bar { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); }
+.card-title { font-size: 1.2rem; font-weight: 600; color: var(--text-dark); margin: 0; }
+.card-body-content { padding: 1.5rem; }
+.dashboard-card .table-responsive { padding: 0; }
+
+/* 6. Table Styling */
+.table.training-table { margin-bottom: 0; }
+.training-table thead th { background-color: #F8F9FC; color: var(--text-light); font-weight: 600; padding: 1rem; border-bottom: 2px solid var(--border-color); }
+.training-table tbody td { padding: 1rem; color: var(--text-dark); border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+.training-table tbody tr:last-child td { border-bottom: none; }
+.theme-badge { background-color: #E9ECEF; color: #495057; font-weight: 500; padding: 0.4em 0.8em; }
+
+/* 7. Responsive Design */
+@media (max-width: 992px) {
+    .identity-header .org-name { font-size: 1.5rem; }
+    .identity-header .logo { height: 60px; }
+}
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 1rem;
+    }
+    .identity-header { flex-direction: column; gap: 1rem; text-align: center; }
+    .page-actions { flex-direction: column; align-items: stretch; }
+}
+/* --- Official Identity Header --- */
+.identity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(90deg, #003366 0%, #0055A4 100%); /* Official blue gradient */
+    color: white;
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    
+    box-shadow: 0 8px 25px rgba(0, 51, 102, 0.2);
+}
+
+.identity-header .logo {
+    max-height: 120px;
+    object-fit: contain;
+}
+
+.identity-header .org-name {
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.identity-header .org-state {
+    font-size: 1.1rem;
+    margin-bottom: 0;
+    opacity: 0.9;
+}
+.p-4 {
+    padding: 0rem !important;
+}
+/* === SAJAG OFFICIAL SDMA DASHBOARD THEME (UNIFIED & FIXED) === */
+
+:root {
+    --primary-blue: #003366;
+    --light-blue: #0055A4;
+    --background-grey: #F0F2F5;
+    --card-bg: #FFFFFF;
+    --text-dark: #21334F;
+    --text-light: #5F6A7D;
+    --border-color: #E5E9F2;
+    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    background-color: var(--background-grey);
+    font-family: 'Inter', sans-serif; /* A clean, modern font choice */
+}
+
+
+/* 1. Identity Header */
+.identity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(90deg, var(--primary-blue) 0%, var(--light-blue) 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 25px rgba(0, 51, 102, 0.2);
+    gap: 1rem;
+}
+
+.identity-header .logo {
+    height: 120px;
+    object-fit: contain;
+}
+
+.identity-header .org-details {
+    text-align: center;
+    flex-grow: 1;
+}
+
+.identity-header .org-name {
+    font-weight: 700;
+    font-size: 1.75rem;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.identity-header .org-subtitle {
+    font-size: 0.9rem;
+    margin: 0;
+    opacity: 0.9;
+}
+
+/* 2. Page Actions Bar */
+.page-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.action-group {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.btn-theme-primary {
+    background-color: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+.btn-theme-primary:hover {
+    background-color: var(--light-blue);
+    color: white;
+}
+
+.btn-theme-secondary {
+    background-color: var(--card-bg);
+    color: var(--primary-blue);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.btn-theme-secondary:hover {
+    background-color: #F8F9FA;
+    border-color: #C1C9D8;
+}
+
+/* 3. Announcement Bar */
+.announcement-bar {
+    display: flex;
+    align-items: center;
+    background-color: #E0F7FA;
+    color: #006064;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    border: 1px solid #B2EBF2;
+}
+.announcement-bar .icon { font-size: 1.5rem; margin-right: 1rem; }
+.announcement-bar .content { flex-grow: 1; }
+
+/* 4. KPI Cards */
+.kpi-card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kpi-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.kpi-icon {
+    font-size: 1.5rem;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%; /* Changed to circle to match your screenshot */
+    margin-right: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.kpi-icon.icon-blue { background-color: #E6F2FF; color: #007BFF; }
+.kpi-icon.icon-green { background-color: #E3F9E5; color: #28A745; }
+.kpi-icon.icon-red { background-color: #FEECEB; color: #DC3545; }
+
+.kpi-label {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-bottom: 0.25rem;
+}
+
+.kpi-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+/* 5. Dashboard Cards (Map & Table) */
+.dashboard-card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.card-title-bar {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+/*
+ * CRITICAL FIX FOR MAP
+ * The map container needs a minimum height to be visible.
+ * flex-grow-1 works, but min-height is a robust fallback.
+*/
+#map {
+    min-height: 450px; 
+}
+
+/* 6. Table Styling */
+.table-responsive {
+    /* Adjust height based on the map's new height */
+    max-height: 500px; 
+    overflow-y: auto;
+}
+.training-table { width: 100%; }
+.training-table thead th {
+    background-color: #F8F9FC;
+    color: var(--text-light);
+    font-weight: 600;
+    padding: 0.75rem 1rem;
+    border-bottom: 2px solid var(--border-color);
+    position: sticky; /* Makes header stick during scroll */
+    top: 0;
+}
+.training-table tbody td {
+    padding: 0.75rem 1rem;
+    color: var(--text-dark);
+    border-top: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+.theme-badge {
+    background-color: #E9ECEF;
+    color: #495057;
+    font-weight: 500;
+    padding: 0.4em 0.8em;
+    border-radius: 1rem;
+}
+
+/* 7. Responsive Design */
+@media (max-width: 992px) {
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 1rem !important; /* Override inline styles for mobile */
+    }
+    .identity-header .org-name { font-size: 1.5rem; }
+    .identity-header .logo { height: 60px; }
+}
+
+@media (max-width: 768px) {
+    .identity-header { flex-direction: column; gap: 1rem; text-align: center; }
+    .page-actions { flex-direction: column; align-items: stretch; }
+}
+.p-3 {
+    padding: 0rem !important;
+}

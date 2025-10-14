@@ -26,6 +26,24 @@ document.addEventListener('DOMContentLoaded', () => {
     let allTrainingsData = null; // Variable to store all fetched data
 
     map.on('load', () => {
+        map.addSource('india-boundary', {
+        'type': 'geojson',
+        // A publicly available GeoJSON for India's boundary
+        'data': '/data/india_state.geojson'
+    });
+
+    // 2. Add the layer to draw the outline
+    map.addLayer({
+        'id': 'india-boundary-layer',
+        'type': 'line',
+        'source': 'india-boundary', // Link to the source above
+        'layout': {},
+        'paint': {
+            'line-color': '#003366', // A dark blue that matches your theme
+            'line-width': 2.5,        // Make it clearly visible
+            'line-opacity': 0.9
+        }
+    });
         fetch('/trainings/geojson')
             .then(res => res.json())
             .then(data => {
