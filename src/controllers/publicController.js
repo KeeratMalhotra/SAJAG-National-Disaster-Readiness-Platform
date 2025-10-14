@@ -20,7 +20,7 @@ const publicController = {
             const totalTrainings = parseInt(trainingsResult.rows[0].count);
 
             // 2. Get active partners count using SQL
-            const partnersResult = await pool.query("SELECT COUNT(*) FROM users WHERE role = 'training_partner' AND status = 'active'");
+            const partnersResult = await pool.query("SELECT t.*, u.organization_name FROM trainings t JOIN users u ON t.creator_user_id = u.id ORDER BY t.start_date DESC;");
             const activePartners = parseInt(partnersResult.rows[0].count);
 
             // 3. Get unique participants count using SQL
@@ -75,6 +75,20 @@ const publicController = {
         } catch (error) {
             console.error('Error showing public assessment:', error);
             res.status(500).send('Server error');
+        }
+    },getTickerData: async (req, res) => {
+        try {
+            const recentTrainings = await Training.findRecentActivity();
+
+            // Format the data into simple strings
+            const tickerItems = recentTrainings.map(t => {
+                const status = new Date(t.start_date) > new Date() ? 'starting soon' : 'recently completed';
+                return `${t.theme} training ${status} in ${t.location_text}`;
+            });
+
+            res.status(200).json(tickerItems);
+        } catch (error) {
+            res.status(500).json({ message: 'Server error.' });
         }
     }
     // You can add other public-facing controller functions here in the future

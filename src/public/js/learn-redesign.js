@@ -8,9 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const observerOptions = {
-        root: null, // observes intersections relative to the viewport
+        root: null,
         rootMargin: '0px',
-        threshold: 0.8 // Trigger when 40% of the section is visible
+        threshold: 0.6 
     };
 
     const sectionObserver = new IntersectionObserver((entries, observer) => {

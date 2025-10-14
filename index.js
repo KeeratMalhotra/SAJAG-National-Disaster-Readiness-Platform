@@ -49,7 +49,10 @@ const announcementPageRoutes = require('./src/routes/announcementPageRoutes');
 const participantApiRoutes = require('./src/routes/participantRoutes'); 
 const participantPageRoutes = require('./src/routes/participantPageRoutes'); 
 const importRoutes = require('./src/routes/importRoutes'); // Add this
+const publicApiRoutes = require('./src/routes/publicRoutes'); // Add this if new
 
+// ... after other app.use() statements
+app.use('/api/public', publicApiRoutes);
 
 app.use('/api/import', importRoutes);
 app.use('/participant', participantPageRoutes);
@@ -81,6 +84,9 @@ app.get('/public-map', (req, res) => {
 // });
 app.get('/learn', (req, res) => {
     res.render('pages/learn', { pageTitle: 'Learn & Prepare' , activePage: 'learn'});
+});
+app.get('/learn-public', (req, res) => {
+    res.render('pages/learn-public', { pageTitle: 'Learn & Prepare' , activePage: 'learn'});
 });
 // --- SERVER STARTUP ---
 app.listen(PORT, () => {

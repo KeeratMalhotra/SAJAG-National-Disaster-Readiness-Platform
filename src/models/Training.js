@@ -171,7 +171,21 @@ const Training = {
         console.error('Error fetching GeoJSON by state:', error);
         throw error;
     }
-}
+},async findRecentActivity(limit = 5) {
+    // Fetches the 5 most recently created trainings
+    const query = `
+        SELECT title, theme, location_text, start_date 
+        FROM trainings 
+        ORDER BY created_at DESC 
+        LIMIT $1;
+    `;
+    try {
+        const result = await pool.query(query, [limit]);
+        return result.rows;
+    } catch (error) {
+        console.error('Error finding recent activity:', error);
+        throw error;
+    }}
 
     
 };

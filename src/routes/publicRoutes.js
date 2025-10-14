@@ -4,4 +4,5 @@ const publicController = require('../controllers/publicController');
 
 router.get('/assessment/take/:trainingId', publicController.showPublicAssessmentPage);
 router.get('/', publicController.getHomePage);
+router.get('/ticker-data', publicController.getTickerData);
 module.exports = router;

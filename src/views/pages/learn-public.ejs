@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= pageTitle %></title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Teko:wght@500;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/learn-public.css"> 
+</head>
+<body>
+
+    <nav id="sajagNavbar" class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <img src="/images/ndma.png" alt="NDMA Logo" class="brand-logo">
+                <div class="brand-text-wrapper">
+                    <span class="brand-name-en">SAJAG</span>
+                    <span class="brand-name-hi">सजग</span>
+                </div>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/#main-content">Training Map</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/learn-public">Learn</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/#lookup-section">Check Score</a></li>
+                </ul>
+                <div class="d-flex align-items-center mt-3 mt-lg-0">
+                    <a href="/api/auth/login" class="nav-link me-3">Portal Login</a>
+                    <a href="/api/auth/register" class="btn btn-register">Register as Partner</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header class="learn-header">
+            <div class="container">
+                <h1>Learn About Disaster Preparedness</h1>
+                <p>Select a disaster type below to learn crucial safety information. Knowledge is the first step to safety.</p>
+            </div>
+        </header>
+
+        <nav class="disaster-nav">
+            <div class="container d-flex justify-content-center flex-wrap">
+                <a href="#earthquake" class="active">Earthquake</a>
+                <a href="#tsunami">Tsunami</a>
+                <a href="#landslides">Landslides</a>
+                <a href="#cyclone">Cyclone</a>
+                <a href="#floods">Floods</a>
+            </div>
+        </nav>
+
+<div class="disaster-content">
+            <!-- EARTHQUAKE SECTION -->
+            <section id="earthquake" class="disaster-section">
+                <div class="content-wrapper">
+                    <div class="image-panel">
+                        <div class="bg-image" style="background-image: url('/images/Earthquake.jpg');"></div>
+                        <div class="text-content">
+                            <h1 class="disaster-title">Earthquake</h1>
+                            <p class="disaster-subtitle">When the ground betrays you, knowledge is your only stability.</p>
+                        </div>
+                    </div>
+                    <div class="info-panel">
+                        <h3><i class="bi bi-tsunami"></i> Earthquake Safety Essentials</h3>
+                        <div class="do-dont-grid">
+                            <div class="do-card">
+                                <h4><i class="bi bi-check-circle-fill"></i> DO</h4>
+                                <ul>
+                                    <li><strong>Drop, Cover, and Hold On</strong> immediately.</li>
+                                    <li>Stay clear of windows & heavy furniture.</li>
+                                    <li>Find an open area if outside.</li>
+                                </ul>
+                            </div>
+                            <div class="dont-card">
+                                <h4><i class="bi bi-x-circle-fill"></i> DON'T</h4>
+                                <ul>
+                                    <li>Do not rush outside during shaking.</li>
+                                    <li>Do not stand in doorways.</li>
+                                    <li>Avoid using elevators after a quake.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <a href="https://ndma.gov.in/" target="_blank" class="learn-more-btn">
+        Learn More on NDMA.gov.in <i class="bi bi-box-arrow-up-right"></i>
+    </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TSUNAMI SECTION -->
+            <section id="tsunami" class="disaster-section">
+                <div class="content-wrapper">
+                    <div class="image-panel">
+                        <div class="bg-image" style="background-image: url('/images/Tsunami.jpg');"></div>
+                        <div class="text-content">
+                            <h1 class="disaster-title">Tsunami</h1>
+                            <p class="disaster-subtitle">The silent retreat of the sea is a deceptive warning.</p>
+                        </div>
+                    </div>
+                    <div class="info-panel">
+                        <h3><i class="bi bi-water"></i> Tsunami Survival Guide</h3>
+                        <div class="do-dont-grid">
+                            <div class="do-card">
+                                <h4><i class="bi bi-check-circle-fill"></i> DO</h4>
+                                <ul>
+                                    <li>Move to higher ground immediately.</li>
+                                    <li>Listen for official evacuation notices.</li>
+                                    <li>Stay on high ground until it's safe.</li>
+                                </ul>
+                            </div>
+                            <div class="dont-card">
+                                <h4><i class="bi bi-x-circle-fill"></i> DON'T</h4>
+                                <ul>
+                                    <li>Do not go to the coast to watch.</li>
+                                    <li>Do not assume the first wave is the last.</li>
+                                    <li>Don't return until cleared by officials.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <a href="https://ndma.gov.in/" target="_blank" class="learn-more-btn">
+        Learn More on NDMA.gov.in <i class="bi bi-box-arrow-up-right"></i>
+    </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LANDSLIDES SECTION -->
+            <section id="landslides" class="disaster-section">
+                <div class="content-wrapper">
+                    <div class="image-panel">
+                        <div class="bg-image" style="background-image: url('/images/Landslide.jpg');"></div>
+                        <div class="text-content">
+                            <h1 class="disaster-title">Landslides</h1>
+                            <p class="disaster-subtitle">The mountains themselves can become a threat.</p>
+                        </div>
+                    </div>
+                    <div class="info-panel">
+                         <h3><i class="bi bi-image-alt"></i> Landslide Readiness</h3>
+                        <div class="do-dont-grid">
+                            <div class="do-card">
+                                <h4><i class="bi bi-check-circle-fill"></i> DO</h4>
+                                <ul>
+                                    <li>Watch for warning signs like cracking sounds.</li>
+                                    <li>Move to stable ground if you suspect danger.</li>
+                                    <li>Report any warning signs to authorities.</li>
+                                </ul>
+                            </div>
+                            <div class="dont-card">
+                                <h4><i class="bi bi-x-circle-fill"></i> DON'T</h4>
+                                <ul>
+                                    <li>Do not build near steep slopes.</li>
+                                    <li>Do not block natural drainage paths.</li>
+                                    <li>Do not travel in prone areas during heavy rain.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <a href="https://ndma.gov.in/" target="_blank" class="learn-more-btn">
+        Learn More on NDMA.gov.in <i class="bi bi-box-arrow-up-right"></i>
+    </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CYCLONE SECTION -->
+            <section id="cyclone" class="disaster-section">
+                 <div class="content-wrapper">
+                    <div class="image-panel">
+                        <div class="bg-image" style="background-image: url('/images/Cyclone.jpg');"></div>
+                        <div class="text-content">
+                            <h1 class="disaster-title">Cyclone</h1>
+                            <p class="disaster-subtitle">Nature's rotating fury requires respect and preparation.</p>
+                        </div>
+                    </div>
+                    <div class="info-panel">
+                        <h3><i class="bi bi-hurricane"></i> Cyclone Preparedness</h3>
+                        <div class="do-dont-grid">
+                            <div class="do-card">
+                                <h4><i class="bi bi-check-circle-fill"></i> DO</h4>
+                                <ul>
+                                    <li>Listen to weather forecasts and heed warnings.</li>
+                                    <li>Secure your house and loose items.</li>
+                                    <li>Prepare an emergency kit and evacuate if advised.</li>
+                                </ul>
+                            </div>
+                            <div class="dont-card">
+                                <h4><i class="bi bi-x-circle-fill"></i> DON'T</h4>
+                                <ul>
+                                    <li>Do not go outside, especially in the 'eye'.</li>
+                                    <li>Do not spread or believe rumors.</li>
+                                    <li>Do not venture out to sea or coastal areas.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <a href="https://ndma.gov.in/" target="_blank" class="learn-more-btn">
+        Learn More on NDMA.gov.in <i class="bi bi-box-arrow-up-right"></i>
+    </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FLOODS SECTION -->
+            <section id="floods" class="disaster-section">
+                <div class="content-wrapper">
+                    <div class="image-panel">
+                        <div class="bg-image" style="background-image: url('/images/Floods.jpg');"></div>
+                        <div class="text-content">
+                            <h1 class="disaster-title">Floods</h1>
+                            <p class="disaster-subtitle">Rising waters are a pervasive threat. Never underestimate them.</p>
+                        </div>
+                    </div>
+                    <div class="info-panel">
+                        <h3><i class="bi bi-house-door-fill"></i> Flood Safety</h3>
+                        <div class="do-dont-grid">
+                            <div class="do-card">
+                                <h4><i class="bi bi-check-circle-fill"></i> DO</h4>
+                                <ul>
+                                    <li>Move to higher ground immediately.</li>
+                                    <li>Turn off utilities if instructed to.</li>
+                                    <li>Prepare a go-bag with essentials.</li>
+                                </ul>
+                            </div>
+                            <div class="dont-card">
+                                <h4><i class="bi bi-x-circle-fill"></i> DON'T</h4>
+                                <ul>
+                                    <li>Do not walk, swim, or drive through floodwaters.</li>
+                                    <li>Do not touch wet electrical equipment.</li>
+                                    <li>Do not consume contaminated food or water.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <a href="https://ndma.gov.in/" target="_blank" class="learn-more-btn">
+        Learn More on NDMA.gov.in <i class="bi bi-box-arrow-up-right"></i>
+    </a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <img src="/images/ndma.png" alt="NDMA Logo" class="footer-logo">
+            <p>&copy; <%= new Date().getFullYear() %> Project SAJAG | National Disaster Management Authority, Government of India.</p>
+            <a href="#" class="footer-link">Back to Top</a>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/learn-redesign.js"></script> 
+</body>
+</html>
