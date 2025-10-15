@@ -126,18 +126,20 @@
         <div class="container-fluid">
 
             <header class="page-header mb-4">
-                <div class="header-content">
-                    <h1 class="training-title"><%= training.title %></h1>
-                    <div class="training-meta">
-                        <span><i class="bi bi-tag-fill"></i> <%= training.theme %></span>
-                        <span><i class="bi bi-calendar-range"></i> <%= new Date(training.start_date).toLocaleDateString() %> - <%= new Date(training.end_date).toLocaleDateString() %></span>
-                        <span><i class="bi bi-geo-alt-fill"></i> <%= training.location_text %></span>
-                    </div>
-                </div>
-                <a href="/dashboard" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
-                </a>
-            </header>
+    <div class="header-content">
+        <h1 class="training-title"><%= training.title %></h1>
+        <div class="training-meta">
+            <!-- This new span displays the creator's name and organization -->
+            <span><i class="bi bi-person-fill"></i> Conducted by: <%= training.creator_name %> (<%= training.organization_name %>)</span>
+            <span><i class="bi bi-tag-fill"></i> <%= training.theme %></span>
+            <span><i class="bi bi-calendar-range"></i> <%= new Date(training.start_date).toLocaleDateString() %> - <%= new Date(training.end_date).toLocaleDateString() %></span>
+            <span><i class="bi bi-geo-alt-fill"></i> <%= training.location_text %></span>
+        </div>
+    </div>
+    <a href="/dashboard" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+    </a>
+</header>
 
             <div class="row g-4">
                 <div class="col-lg-5 col-xl-4">
@@ -162,6 +164,17 @@
                             <div class="card-body d-grid gap-2">
                                 <a href="/public/assessment/take/<%= training.id %>" target="_blank" class="btn btn-primary"><i class="bi bi-box-arrow-up-right me-2"></i>Get Public Link</a>
                                 <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#qrModal"><i class="bi bi-qr-code me-2"></i>Show QR Code</button>
+                                <% 
+        let canDelete = false;
+        if (user.role === 'ndma_admin') canDelete = true;
+        if (user.role === 'sdma_admin' && training.creator_state === user.state) canDelete = true;
+        if (training.creator_user_id === user.id) canDelete = true;
+    %>
+    <% if (canDelete) { %>
+        <button class="btn btn-outline-danger" id="deleteTrainingBtn" data-id="<%= training.id %>">
+            <i class="bi bi-trash-fill me-2"></i>Delete Training
+        </button>
+    <% } %>
                             </div>
                         </div>
                     </div>

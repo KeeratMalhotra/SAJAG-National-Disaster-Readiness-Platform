@@ -64,16 +64,38 @@ const Training = {
             throw error;
         }
     },
-    async findById(id) {
-        const query = 'SELECT * FROM trainings WHERE id = $1;';
-        try {
-            const result = await pool.query(query, [id]);
-            return result.rows[0];
-        } catch (error) {
-            console.error('Error finding training by id:', error);
-            throw error;
-        }
-    },
+   async findById(id) {
+    // This query now also selects the user's name and organization name
+    const query = `
+        SELECT 
+            t.*, 
+            u.state as creator_state,
+            u.name as creator_name,
+            u.organization_name
+        FROM trainings t
+        JOIN users u ON t.creator_user_id = u.id
+        WHERE t.id = $1;
+    `;
+    try {
+        const result = await pool.query(query, [id]);
+        return result.rows[0];
+    } catch (error) {
+        console.error('Error finding training by id:', error);
+        throw error;
+    }
+},
+
+// ADD THIS NEW deleteById function
+async deleteById(id) {
+    const query = 'DELETE FROM trainings WHERE id = $1;';
+    try {
+        await pool.query(query, [id]);
+        return { success: true };
+    } catch (error) {
+        console.error('Error deleting training:', error);
+        throw error;
+    }
+},
     async findAllGeoJSON() {
     // We now select start_date and end_date
     const query = `

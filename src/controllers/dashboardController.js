@@ -58,7 +58,7 @@ const dashboardController = {
                     MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN
                 });
             } else if (role === 'ndma_admin'|| role === 'auditor') {
-                 const allTrainings = await Training.findAll();
+                const allTrainings = await Training.findAll();
                 // --- ADD THESE TWO LINES ---
                 const averageScore = await Submission.getNationalAverageScore();
                 const trainingGaps = await predictionService.calculateGaps();

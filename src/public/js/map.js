@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         map.addSource('india-boundary', {
         'type': 'geojson',
         // A publicly available GeoJSON for India's boundary
-        'data': '/data/india_state.geojson'
+        'data': '/data/india.geojson'
     });
 
     // 2. Add the layer to draw the outline

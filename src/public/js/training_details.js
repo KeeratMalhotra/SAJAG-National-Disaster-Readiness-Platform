@@ -12,4 +12,25 @@ document.addEventListener('DOMContentLoaded', () => {
         // Display it as an image in the modal
         qrcodeContainer.innerHTML = qr.createImgTag(5, 5);
     }
+const deleteBtn = document.getElementById('deleteTrainingBtn');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', async () => {
+            const trainingId = deleteBtn.dataset.id;
+            if (confirm('Are you sure you want to permanently delete this training? This action cannot be undone.')) {
+                try {
+                    const response = await fetch(`/api/trainings/${trainingId}`, {
+                        method: 'DELETE'
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                        window.location.href = result.redirectTo;
+                    } else {
+                        alert(`Error: ${result.message}`);
+                    }
+                } catch (error) {
+                    alert('A network error occurred.');
+                }
+            }
+        });
+    }
 });

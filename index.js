@@ -50,7 +50,11 @@ const participantApiRoutes = require('./src/routes/participantRoutes');
 const participantPageRoutes = require('./src/routes/participantPageRoutes'); 
 const importRoutes = require('./src/routes/importRoutes'); // Add this
 const publicApiRoutes = require('./src/routes/publicRoutes'); // Add this if new
+// ... in index.js, in the ROUTES section ...
+const trainingApiRoutes = require('./src/routes/trainingApiRoutes'); // Add this
 
+// ... after your other app.use() statements ...
+app.use('/api/trainings', trainingApiRoutes); // And add this
 // ... after other app.use() statements
 app.use('/api/public', publicApiRoutes);
 
