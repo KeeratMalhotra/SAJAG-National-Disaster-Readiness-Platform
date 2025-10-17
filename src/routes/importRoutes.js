@@ -1,13 +1,22 @@
 const express = require('express');
 const router = express.Router();
-const importController = require('../controllers/importController');
+const multer = require('multer');
 const { protectRoute } = require('../middleware/authMiddleware');
 const { requireRole } = require('../middleware/roleMiddleware');
-const multer = require('multer');
+const importController = require('../controllers/importController');
 
-// Configure multer for CSV files only
-const csvUpload = multer({
-    dest: 'uploads/',
+// Configure multer for CSV file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/'); // Temporarily store uploaded files
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`);
+    }
+});
+
+const upload = multer({ 
+    storage: storage,
     fileFilter: (req, file, cb) => {
         if (file.mimetype === 'text/csv') {
             cb(null, true);
@@ -17,10 +26,12 @@ const csvUpload = multer({
     }
 });
 
-router.use(protectRoute);
-router.use(requireRole(['sdma_admin', 'ndma_admin']));
-
-// POST /api/import/trainings
-router.post('/trainings', csvUpload.single('trainingsCsv'), importController.importTrainings);
+router.post(
+    '/', 
+    protectRoute, 
+    requireRole(['sdma_admin', 'ndma_admin']), 
+    upload.single('trainingsCsv'), 
+    importController.bulkImportTrainings // Correctly reference the function
+);
 
 module.exports = router;

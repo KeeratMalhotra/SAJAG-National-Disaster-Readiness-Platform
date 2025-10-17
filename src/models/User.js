@@ -115,7 +115,16 @@ const User = {
         console.error('Error finding user by id:', error);
         throw error;
     }
-},
+},async countActiveByState(state) {
+    const query = "SELECT COUNT(*) FROM users WHERE status = 'active' AND state = $1 AND role = 'training_partner';";
+    try {
+        const result = await pool.query(query, [state]);
+        return parseInt(result.rows[0].count, 10);
+    } catch (error) {
+        console.error('Error counting active users by state:', error);
+        throw error;
+    }
+}
 };
 
 module.exports = User;

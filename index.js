@@ -2,6 +2,7 @@
 require('dotenv').config(); 
 const express = require('express');
 const path = require('path');
+const fs = require('fs'); // --- ADD THIS LINE ---
 const pool = require('./src/config/database');
 const cookieParser = require('cookie-parser'); 
 const { checkUser } = require('./src/middleware/checkUserMiddleware'); 
@@ -9,6 +10,15 @@ const { checkUser } = require('./src/middleware/checkUserMiddleware');
 
 // --- APP INITIALIZATION ---
 const app = express();
+
+// --- ENSURE UPLOADS DIRECTORY EXISTS --- (*** NEW CODE BLOCK ***)
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir);
+    console.log(`Created directory: ${uploadsDir}`);
+}
+// --- END OF NEW CODE BLOCK ---
+
 
 // --- CONFIGURATION ---
 const PORT = process.env.PORT || 3000;

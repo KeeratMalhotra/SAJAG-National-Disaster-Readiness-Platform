@@ -114,6 +114,22 @@ const Submission = {
         console.error('Error counting submissions by creator:', error);
         throw error;
     }
+},
+async getAverageScoreByState(state) {
+    const query = `
+        SELECT AVG(ps.score) as average_score
+        FROM participant_submissions ps
+        JOIN trainings t ON ps.training_id = t.id
+        JOIN users u ON t.creator_user_id = u.id
+        WHERE u.state = $1;
+    `;
+    try {
+        const result = await pool.query(query, [state]);
+        return result.rows[0].average_score || 0;
+    } catch (error) {
+        console.error('Error getting avg score by state:', error);
+        throw error;
+    }
 }
 };
 

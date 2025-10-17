@@ -41,23 +41,33 @@ const dashboardController = {
         unreadCount: unreadCount // Add this line
     });
 } else if (role === 'sdma_admin') {
-                if (!state) {
-                    return res.status(403).send('Access denied: SDMA Admin account is not associated with a state.');
-                }
-                const adminState = req.user.state; 
-                const stateTrainings = await Training.findAllByState(adminState);
+    if (!state) {
+        return res.status(403).send('Access denied: SDMA Admin account is not associated with a state.');
+    }
+    const adminState = req.user.state;
+    const [
+        stateTrainings,
+        activePartnersInState,
+        readinessScoreInState
+    ] = await Promise.all([
+        Training.findAllByState(adminState),
+        User.countActiveByState(adminState),
+        Submission.getAverageScoreByState(adminState)
+    ]);
 
-                res.render('pages/sdma_dashboard', {
-                    pageTitle: `SDMA Dashboard - ${adminState}`,
-                    user: req.user,
-                    trainings: stateTrainings,
-                    state: adminState,
-                    announcements: announcements, // Pass the state name to the view
-                    activePage: 'dashboard',
-                    unreadCount: unreadCount ,// Add this line
-                    MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN
-                });
-            } else if (role === 'ndma_admin'|| role === 'auditor') {
+    res.render('pages/sdma_dashboard', {
+        pageTitle: `SDMA Dashboard - ${adminState}`,
+        user: req.user,
+        trainings: stateTrainings,
+        state: adminState,
+        announcements: announcements, // Pass the state name to the view
+        activePage: 'dashboard',
+        unreadCount: unreadCount, // Add this line
+        MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN,
+        activePartners: activePartnersInState,
+        readinessScore: parseFloat(readinessScoreInState).toFixed(2)
+    });
+} else if (role === 'ndma_admin'|| role === 'auditor') {
                 const allTrainings = await Training.findAll();
                 // --- ADD THESE TWO LINES ---
                 const averageScore = await Submission.getNationalAverageScore();
