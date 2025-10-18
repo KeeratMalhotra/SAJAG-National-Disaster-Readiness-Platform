@@ -3,6 +3,7 @@ const Submission = require('../models/Submission');
 const predictionService = require('../services/predictionService');
 const Announcement = require('../models/Announcement');
 const User = require('../models/User'); // ADD THIS LINE
+const pool = require('../config/database');
 
 const dashboardController = {
     showDashboard: async (req, res) => { // Make the function async
@@ -68,28 +69,44 @@ const dashboardController = {
         readinessScore: parseFloat(readinessScoreInState).toFixed(2)
     });
 } else if (role === 'ndma_admin'|| role === 'auditor') {
-                const allTrainings = await Training.findAll();
-                // --- ADD THESE TWO LINES ---
-                const averageScore = await Submission.getNationalAverageScore();
-                const trainingGaps = await predictionService.calculateGaps();
-                const totalTrainings = allTrainings.length;
-                const uniquePartners = [...new Set(allTrainings.map(t => t.creator_user_id))].length;
-                const scoresByTheme = await Submission.getAverageScoresByTheme();
+                
+    // Use Promise.all for efficient data fetching
+    const [
+        allTrainings,
+        averageScore,
+        trainingGaps,
+        scoresByTheme,
+        allActivePartners,
+        participantsResult 
+    ] = await Promise.all([
+        Training.findAll(),
+        Submission.getNationalAverageScore(),
+        predictionService.calculateGaps(),
+        Submission.getAverageScoresByTheme(),
+        User.findAllActive() ,
+        pool.query('SELECT COUNT(DISTINCT "participant_email") FROM participant_submissions')
+    ]);
 
-                res.render('pages/ndma_dashboard', {
-                    pageTitle: 'National Dashboard',
-                    user: req.user,
-                    totalTrainings: totalTrainings,
-                    uniquePartners: uniquePartners,
-                    averageScore: parseFloat(averageScore).toFixed(2),
-                    gaps: trainingGaps,
-                    scoresByTheme: scoresByTheme,
-                    announcements: announcements,
-                    activePage: 'dashboard',
-                    MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN,
-                    unreadCount: unreadCount // Add this line
-                });
-            } else {
+    const totalTrainings = allTrainings.length;
+    const activePartnersCount = allActivePartners.length;
+    const totalParticipants = parseInt(participantsResult.rows[0].count);
+
+    res.render('pages/ndma_dashboard', {
+        pageTitle: 'National Dashboard',
+        user: req.user,
+        totalTrainings: totalTrainings,
+        totalParticipants: totalParticipants,
+        uniquePartners: activePartnersCount, 
+        
+        averageScore: parseFloat(averageScore).toFixed(2),
+        gaps: trainingGaps,
+        scoresByTheme: scoresByTheme,
+        announcements: announcements,
+        activePage: 'dashboard',
+        MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN,
+        unreadCount: unreadCount
+    });
+} else {
                 res.send('Welcome to your dashboard!');
             }
         } catch (error) {

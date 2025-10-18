@@ -15,7 +15,7 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ 
+const upload = multer({
     storage: storage,
     fileFilter: (req, file, cb) => {
         if (file.mimetype === 'text/csv') {
@@ -27,11 +27,11 @@ const upload = multer({
 });
 
 router.post(
-    '/', 
-    protectRoute, 
-    requireRole(['sdma_admin', 'ndma_admin']), 
-    upload.single('trainingsCsv'), 
-    importController.bulkImportTrainings // Correctly reference the function
+    '/trainings', // Corrected route
+    protectRoute,
+    requireRole(['sdma_admin', 'ndma_admin']),
+    upload.single('trainingsCsv'),
+    importController.bulkImportTrainings
 );
 
 module.exports = router;
