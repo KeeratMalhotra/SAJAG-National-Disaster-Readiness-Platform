@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'line-opacity': 0.9
         }
     });
-        fetch('/trainings/geojson')
+        fetch('/geojson')
             .then(res => res.json())
             .then(data => {
                 allTrainingsData = data; // Store the original data

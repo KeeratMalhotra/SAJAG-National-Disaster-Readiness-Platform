@@ -17,23 +17,6 @@
 </head>
 <body>
 
-    <!-- <div class="top-branding-bar">
-        <div class="container">
-            <div class="branding-content">
-                <div class="gov-branding-left">
-                    <img src="/images/ndma.png" alt="NDMA logo" class="emblem-logo">
-                    <div class="gov-branding-text">
-                        <span class="gov-text">Government of India</span>
-                        <span class="ministry-text">National Disaster Management Authority</span>
-                    </div>
-                </div>
-                <div class="header-logos d-none d-md-block">
-                    <img src="/images/ie.png" alt="G20 Logo">
-                    <img src="/images/aam.png" alt="Azadi Ka Amrit Mahotsav Logo">
-                </div>
-            </div>
-        </div>
-    </div> -->
 
     <nav id="sajagNavbar" class="navbar navbar-expand-lg sticky-top">
         <div class="container">
@@ -55,8 +38,13 @@
                     <li class="nav-item"><a class="nav-link" href="#lookup-section">Check Score</a></li>
                 </ul>
                 <div class="d-flex align-items-center mt-3 mt-lg-0">
-                    <a href="/api/auth/login" class="nav-link me-3">Portal Login</a>
-                    <a href="/api/auth/register" class="btn btn-register">Register as Partner</a>
+                    <% if (user) { %>
+                        <a href="/dashboard" class="btn btn-register">Go to Dashboard</a>
+                        <a href="/api/auth/logout" class="nav-link ms-3">Logout</a>
+                    <% } else { %>
+                        <a href="/api/auth/login" class="nav-link me-3">Portal Login</a>
+                        <a href="/api/auth/register" class="btn btn-register">Register as Partner</a>
+                    <% } %>
                 </div>
             </div>
         </div>

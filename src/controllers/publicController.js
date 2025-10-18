@@ -90,6 +90,15 @@ const publicController = {
         } catch (error) {
             res.status(500).json({ message: 'Server error.' });
         }
+    },
+    getPublicGeoJSON: async (req, res) => {
+        try {
+            const geoJsonData = await Training.findAllGeoJSON();
+            res.status(200).json(geoJsonData);
+        } catch (error) {
+            console.error('Error fetching public GeoJSON:', error);
+            res.status(500).json({ message: 'Server error' });
+        }
     }
     // You can add other public-facing controller functions here in the future
 };
