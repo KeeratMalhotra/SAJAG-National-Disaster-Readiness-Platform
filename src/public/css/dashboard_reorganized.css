@@ -328,3 +328,136 @@ body {
     line-height: 1.5; /* Ensures icon and text are vertically aligned well */
 }
 
+.gaps-table-wrapper {
+    /* Sets a max height and enables scrolling */
+    max-height: 295px; 
+    overflow-y: auto;
+}
+
+/* Style for the new card header */
+.gaps-card .card-header i {
+    color: var(--danger-red); /* Uses your existing red variable */
+}
+
+/* General table styling */
+.gaps-table {
+    font-size: 0.9rem; /* Makes text slightly more compact */
+}
+
+.gaps-table thead th {
+    background-color: var(--background-light);
+    color: var(--light-text-color);
+    font-weight: 600;
+    position: sticky; /* Makes the header stick when scrolling */
+    top: 0;
+    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
+}
+
+.gaps-table td {
+    vertical-align: middle;
+    padding: 0.8rem 1rem;
+}
+
+/* Rank column styling */
+.rank-cell {
+    width: 60px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-color);
+}
+
+/* District name styling */
+.district-name {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+/* Base Theme badge styling */
+.theme-badge {
+    display: inline-block;
+    padding: 0.3em 0.75em;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-color);
+    background-color: var(--border-color); /* Default fallback */
+}
+
+/* Specific theme colors */
+.theme-badge.theme-flood {
+    background-color: #e7f3ff;
+    color: #007bff;
+}
+.theme-badge.theme-earthquake {
+    background-color: #fff4e6;
+    color: #fd7e14;
+}
+.theme-badge.theme-cyclone {
+    background-color: #f0f1f3;
+    color: #6c757d;
+}
+.theme-badge.theme-landslide {
+    background-color: #f6e6d1;
+    color: #8b5a2b;
+}
+
+
+/* Priority score column */
+.priority-cell {
+    width: 100px;
+    text-align: center;
+}
+
+/* Base Priority badge styling */
+.priority-badge {
+    display: inline-block;
+    padding: 0.4em 0.8em;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #fff;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* Priority badge colors */
+.priority-badge.priority-high {
+    background-color: var(--danger-red);
+}
+.priority-badge.priority-medium {
+    background-color: #fd7e14; /* Bootstrap Orange */
+}
+.priority-badge.priority-low {
+    background-color: #ffc107; /* Bootstrap Yellow */
+    color: #333;
+}
+
+/* Justification text styling */
+.justification-cell {
+    font-size: 0.85rem;
+    color: var(--light-text-color);
+    line-height: 1.4;
+    /* Prevents text from becoming too wide */
+    white-space: normal; 
+}
+
+/* Empty state styling for the gaps table */
+.empty-state-gaps {
+    text-align: center;
+    padding: 2rem;
+}
+.empty-state-gaps i {
+    font-size: 2.5rem;
+    color: var(--success-green);
+}
+.empty-state-gaps h5 {
+    margin-top: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+.empty-state-gaps p {
+    color: var(--light-text-color);
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}

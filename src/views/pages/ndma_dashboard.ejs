@@ -134,51 +134,63 @@
                                         </div>
                                     </div>
 
-                                    <div class="card">
-                                        <h3>Prioritized Training Gaps</h3>
-
-                                        <table class="gaps-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Rank</th>
-                                                    <th>District</th>
-                                                    <th>Theme</th>
-                                                    <th>Priority Score</th>
-                                                    <th>Justification</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <% if (gaps && gaps.length> 0) { %>
-                                                    <% gaps.forEach((gap, index)=> { %>
-                                                        <tr>
-                                                            <td><strong>
-                                                                    <%= index + 1 %>
-                                                                </strong></td>
-                                                            <td>
-                                                                <%= gap.district %>
-                                                            </td>
-                                                            <td>
-                                                                <%= gap.theme %>
-                                                            </td>
-                                                            <td>
-                                                                <span class="priority-badge">
-                                                                    <%= gap.priorityScore %>
-                                                                </span>
-                                                            </td>
-                                                            <td class="justification">
-                                                                <%= gap.reason %>
-                                                            </td>
-                                                        </tr>
-                                                        <% }) %>
-                                                            <% } else { %>
-                                                                <tr>
-                                                                    <td colspan="5">No significant training gaps
-                                                                        identified.</td>
-                                                                </tr>
-                                                                <% } %>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                    <div class="card gaps-card">
+                <div class="card-header">
+                    <i class="bi bi-bullseye"></i> Prioritized Training Gaps
+                </div>
+                <div class="card-body p-0">
+                    <div class="gaps-table-wrapper">
+                        <table class="table gaps-table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="rank-cell">Rank</th>
+                                    <th>District</th>
+                                    <th>Theme</th>
+                                    <th class="priority-cell">Priority</th>
+                                    <th>Justification</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (gaps && gaps.length > 0) { %>
+                                    <% gaps.forEach((gap, index) => { %>
+                                        <tr>
+                                            <td class="rank-cell">
+                                                <strong><%= index + 1 %></strong>
+                                            </td>
+                                            <td>
+                                                <div class="district-name"><%= gap.district %></div>
+                                            </td>
+                                            <td>
+                                                <span class="theme-badge theme-<%= gap.theme.toLowerCase().split(' ')[0] %>">
+                                                    <%= gap.theme %>
+                                                </span>
+                                            </td>
+                                            <td class="priority-cell">
+                                                <span class="priority-badge priority-<%= gap.priorityScore.toLowerCase() %>">
+                                                    <%= gap.priorityScore %>
+                                                </span>
+                                            </td>
+                                            <td class="justification-cell">
+                                                <%= gap.reason %>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="5">
+                                            <div class="empty-state-gaps">
+                                                <i class="bi bi-check2-circle"></i>
+                                                <h5>All Clear!</h5>
+                                                <p>No significant training gaps identified.</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
                                     <div class="card">
                                         <div class="card-header">
