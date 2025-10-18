@@ -26,19 +26,19 @@
                     <img src="/images/ndma.png" alt="NDMA Logo" class="logo">
                     <div class="org-details text-center">
                         <h1 class="org-name">National Defence Management Authority</h1>
-                         <p class="org-state">National Dashboard</p>
+                        <p class="org-state">National Dashboard</p>
                     </div>
                     <div class="header-actions">
-                    <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#importModal">
-                        <i class="bi bi-upload"></i> Bulk Import
-                    </button>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#announcementModal">
-                        <i class="bi bi-plus-circle"></i> New Announcement
-                    </button>
-                    <button id="downloadReportBtn" class="btn btn-secondary"><i class="bi bi-download"></i> Download
-                        Report</button>
-                </div>
-                    
+                        <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#importModal">
+                            <i class="bi bi-upload"></i> Bulk Import
+                        </button>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#announcementModal">
+                            <i class="bi bi-plus-circle"></i> New Announcement
+                        </button>
+                        <button id="downloadReportBtn" class="btn btn-secondary"><i class="bi bi-download"></i> Download
+                            Report</button>
+                    </div>
+
                 </div>
             </header>
 
@@ -122,7 +122,7 @@
                                         </div>
                                         <div class="col-6">
                                             <div class="kpi-card-small">
-                                                <div class="kpi-icon-small icon-danger"><i class="bi bi-bullseye"></i>
+                                                <div class="kpi-icon-small icon-danger"><i class="bi bi-pass"></i></i>
                                                 </div>
                                                 <div>
                                                     <div class="kpi-label-small">Individuals Assessed</div>
@@ -135,41 +135,49 @@
                                     </div>
 
                                     <div class="card">
-                                        <div class="card-header">
-                                            <i class="bi bi-exclamation-triangle-fill"></i> Priority Training Gaps
-                                        </div>
-                                        <div class="card-body">
-                                            <% if (gaps.length> 0) { %>
-                                                <div class="table-responsive" style="max-height: 220px;">
-                                                    <table class="table table-hover mb-0">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>District</th>
-                                                                <th>Theme</th>
-                                                                <th>Priority</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <% gaps.slice(0, 5).forEach(gap=> { %> <tr>
-                                                                    <td>
-                                                                        <%= gap.district %>
-                                                                    </td>
-                                                                    <td>
-                                                                        <%= gap.theme %>
-                                                                    </td>
-                                                                    <td><span class="badge bg-danger rounded-pill">
-                                                                            <%= gap.priority %>
-                                                                        </span></td>
+                                        <h3>Prioritized Training Gaps</h3>
+
+                                        <table class="gaps-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Rank</th>
+                                                    <th>District</th>
+                                                    <th>Theme</th>
+                                                    <th>Priority Score</th>
+                                                    <th>Justification</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% if (gaps && gaps.length> 0) { %>
+                                                    <% gaps.forEach((gap, index)=> { %>
+                                                        <tr>
+                                                            <td><strong>
+                                                                    <%= index + 1 %>
+                                                                </strong></td>
+                                                            <td>
+                                                                <%= gap.district %>
+                                                            </td>
+                                                            <td>
+                                                                <%= gap.theme %>
+                                                            </td>
+                                                            <td>
+                                                                <span class="priority-badge">
+                                                                    <%= gap.priorityScore %>
+                                                                </span>
+                                                            </td>
+                                                            <td class="justification">
+                                                                <%= gap.reason %>
+                                                            </td>
+                                                        </tr>
+                                                        <% }) %>
+                                                            <% } else { %>
+                                                                <tr>
+                                                                    <td colspan="5">No significant training gaps
+                                                                        identified.</td>
                                                                 </tr>
-                                                                <% }) %>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                                <% } else { %>
-                                                    <div class="empty-state">
-                                                    </div>
-                                                    <% } %>
-                                        </div>
+                                                                <% } %>
+                                            </tbody>
+                                        </table>
                                     </div>
 
                                     <div class="card">

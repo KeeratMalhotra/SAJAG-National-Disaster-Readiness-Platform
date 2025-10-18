@@ -115,6 +115,21 @@ const Submission = {
         throw error;
     }
 },
+async getParticipantCountByLocation(theme, location) {
+    const query = `
+        SELECT COUNT(DISTINCT ps.participant_email) as participant_count
+        FROM participant_submissions ps
+        JOIN trainings t ON ps.training_id = t.id
+        WHERE t.theme = $1 AND t.location_text ILIKE $2;
+    `;
+    try {
+        const result = await pool.query(query, [theme, `%${location}%`]);
+        return parseInt(result.rows[0].participant_count, 10);
+    } catch (error) {
+        console.error('Error getting participant count by location:', error);
+        throw error;
+    }
+},
 async getAverageScoreByState(state) {
     const query = `
         SELECT AVG(ps.score) as average_score

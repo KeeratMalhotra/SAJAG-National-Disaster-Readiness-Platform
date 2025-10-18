@@ -1,12 +1,22 @@
 {
-    "Flood": [
-        "Patna",
-        "Cuttack",
-        "Chennai"
-    ],
-    "Earthquake": [
-        "Guwahati",
-        "Srinagar",
-        "Dehradun"
-    ]
+    "Patna": {
+        "themes": ["Flood", "Heatwave"],
+        "vulnerability_score": 0.9,
+        "population": 100 
+    },
+    "Cuttack": {
+        "themes": ["Flood", "Cyclone"],
+        "vulnerability_score": 0.8,
+        "population": 100
+    },
+    "Guwahati": {
+        "themes": ["Earthquake", "Flood"],
+        "vulnerability_score": 0.9,
+        "population": 100
+    },
+    "Dehradun": {
+        "themes": ["Earthquake", "Landslide"],
+        "vulnerability_score": 0.7,
+        "population": 100
+    }
 }

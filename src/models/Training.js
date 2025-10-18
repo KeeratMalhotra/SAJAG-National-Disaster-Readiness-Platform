@@ -84,6 +84,21 @@ const Training = {
         throw error;
     }
 },
+async findMostRecentTrainingDate(theme, location) {
+    const query = `
+        SELECT MAX(start_date) as most_recent_date
+        FROM trainings
+        WHERE theme = $1 AND location_text ILIKE $2;
+    `;
+    // Using ILIKE to be case-insensitive and '%' to match partial location names
+    try {
+        const result = await pool.query(query, [theme, `%${location}%`]);
+        return result.rows[0].most_recent_date; // This will be null if no training is found
+    } catch (error) {
+        console.error('Error finding most recent training date:', error);
+        throw error;
+    }
+},
 
 // ADD THIS NEW deleteById function
 async deleteById(id) {
