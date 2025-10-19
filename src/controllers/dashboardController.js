@@ -86,11 +86,11 @@ const dashboardController = {
         User.findAllActive() ,
         pool.query('SELECT COUNT(DISTINCT "participant_email") FROM participant_submissions')
     ]);
+    console.log('--- Gaps Data for NDMA Dashboard ---', trainingGaps);
 
     const totalTrainings = allTrainings.length;
     const activePartnersCount = allActivePartners.length;
     const totalParticipants = parseInt(participantsResult.rows[0].count);
-
     res.render('pages/ndma_dashboard', {
         pageTitle: 'National Dashboard',
         user: req.user,
@@ -100,12 +100,14 @@ const dashboardController = {
         
         averageScore: parseFloat(averageScore).toFixed(2),
         gaps: trainingGaps,
+        
         scoresByTheme: scoresByTheme,
         announcements: announcements,
         activePage: 'dashboard',
         MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN,
         unreadCount: unreadCount
     });
+    
 } else {
                 res.send('Welcome to your dashboard!');
             }
