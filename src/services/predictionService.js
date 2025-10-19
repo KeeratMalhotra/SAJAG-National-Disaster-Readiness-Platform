@@ -1,11 +1,48 @@
-// --- NEW src/services/predictionService.js ---
-
-// Import the models you now need
 const Submission = require('../models/Submission');
 const Training = require('../models/Training');
 const riskProfiles = require('../data/risk_profiles.json');
+const pool = require('../config/database');
 
 const predictionService = {
+    async getScoresByTheme(state = null) {
+        try {
+            let query = `
+                SELECT 
+                    t.theme, 
+                    AVG(ps.score) as average_score
+                FROM 
+                    participant_submissions ps
+                JOIN 
+                    trainings t ON ps.training_id = t.id
+            `;
+            
+            const params = [];
+            
+            if (state) {
+                // Join with users table to filter by state
+                query += `
+                    JOIN 
+                        users u ON t.creator_user_id = u.id
+                    WHERE 
+                        u.state = $1
+                `;
+                params.push(state);
+            }
+            
+            query += `
+                GROUP BY 
+                    t.theme
+                ORDER BY 
+                    average_score DESC
+            `;
+
+            const { rows } = await pool.query(query, params);
+            return rows;
+        } catch (error) {
+            console.error('Error getting scores by theme:', error);
+            return [];
+        }
+    },
     async calculateGaps() {
         const gaps = [];
         const today = new Date();

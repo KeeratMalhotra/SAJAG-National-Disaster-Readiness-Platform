@@ -11,7 +11,7 @@ const pool = require('../config/database'); // For direct DB queries if needed
 
 // --- Initialize Gemini ---
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-pro"}); // Or whichever model you prefer
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash"});
 
 const reportController = {
 
@@ -37,7 +37,7 @@ const reportController = {
             const averageScore = parseFloat(avgScoreResult.rows[0].average_score || 0).toFixed(2);
 
             const scoresByTheme = await predictionService.getScoresByTheme(); // Use existing service
-            const gaps = await predictionService.getPrioritizedGaps();       // Use existing service
+            const gaps = await predictionService.calculateGaps();   // Use existing service
 
             console.log("Data fetched:", { totalTrainings, uniquePartners, totalParticipants, averageScore, scoresByTheme: scoresByTheme.length, gaps: gaps.length });
 
@@ -148,7 +148,7 @@ const reportController = {
             const averageScore = parseFloat(avgScoreResult.rows[0].average_score || 0).toFixed(2);
 
             const scoresByTheme = await predictionService.getScoresByTheme(userState); // Pass state
-            const gaps = await predictionService.getPrioritizedGaps(userState);       // Pass state
+            const gaps = await predictionService.calculateGaps(userState);    // Pass state
 
              console.log("Data fetched:", { totalTrainings, uniquePartners, totalParticipants, averageScore, scoresByTheme: scoresByTheme.length, gaps: gaps.length });
 
