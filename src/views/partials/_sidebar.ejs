@@ -40,10 +40,6 @@
 
     <% if (locals.user) { %>
         <div class="sidebar-footer">
-            <div class="sidebar-user-info">
-                <span class="welcome-text">Welcome, <%= user.name || 'User' %></span>
-                <span class="role-text"><%= user.role.replace('_', ' ') %></span>
-            </div>
             
             <a href="/api/auth/logout" class="logout-link"><i class="bi bi-box-arrow-left"></i> Logout</a>
         </div>

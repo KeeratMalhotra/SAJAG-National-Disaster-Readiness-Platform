@@ -94,6 +94,11 @@ const publicController = {
     getPublicGeoJSON: async (req, res) => {
         try {
             const geoJsonData = await Training.findAllGeoJSON();
+            console.log('--- publicController.getPublicGeoJSON ---');
+        console.log(`Sending ${geoJsonData.features.length} features.`);
+         // Log the IDs of the first few features
+        console.log('Feature IDs:', geoJsonData.features.slice(0, 10).map(f => f.properties.id));
+        console.log('-----------------------------------------');
             res.status(200).json(geoJsonData);
         } catch (error) {
             console.error('Error fetching public GeoJSON:', error);

@@ -124,10 +124,22 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch(`/trainings/geojson?state=${encodeURIComponent(stateName)}`)
             .then(res => res.json())
             .then(data => {
-                // --- END OF CHANGES ---
-
                 allTrainingsData = data;
                 if (!allTrainingsData.features) return;
+                console.log('--- sdma-map.js: Data received from fetch ---');
+        console.log(`Received ${data.features?.length || 0} features.`);
+        if (data.features) {
+            console.log('Received Feature IDs:', data.features.slice(0, 10).map(f => f.properties.id));
+             // Check specifically for duplicates
+             const ids = data.features.map(f => f.properties.id);
+             const uniqueIds = new Set(ids);
+             if (ids.length !== uniqueIds.size) {
+                 console.warn('DUPLICATES DETECTED IN RECEIVED DATA!');
+             } else {
+                  console.log('No duplicates detected in received data.');
+             }
+        }
+        console.log('---------------------------------------------');
                 
                 // --- NEW FIX: Add a "count" property to each feature ---
                 // allTrainingsData.features.forEach(feature => {
@@ -190,19 +202,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     type: 'circle',
                     source: 'trainings',
                     filter: ['!', ['has', 'point_count']],
-                    paint: {
-                       'circle-color': [
-                           'match',
-                           ['get', 'theme'],
-                           'Earthquake', '#D97706',
-                           'Flood', '#2563EB',
-                           'Cyclone', '#4B5563',
-                           '#6D28D9' // Default color
-                       ],
-                       'circle-radius': 8,
-                       'circle-stroke-width': 2,
-                       'circle-stroke-color': '#fff'
-                    }
+                   paint: {
+                    'circle-color': [
+                        'match',
+                        ['get', 'theme'],
+                        'Earthquake', '#D97706',  // Amber
+                        'Flood', '#2563EB',       // Blue
+                        'Cyclone', '#4B5563',      // Gray
+                        'Landslide', '#6D28D9',    // Purple (as it was)
+                        'Fire Safety', '#DC2626',
+                        '#1F2937' 
+                    ],
+                    'circle-radius': 8,
+                    'circle-stroke-width': 2,
+                    'circle-stroke-color': '#fff'
+                }
                 });
                 
                 // Click event for clusters (to zoom in)
@@ -218,21 +232,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Click event for individual points (to show popup)
                 // Click event for individual points (to show popup)
                 // Click event for individual points (to show popup)
+                // Click event for individual points (to show popup)
                 map.on('click', 'unclustered-point', (e) => {
-                    // --- FIX #2: Get ALL features at the clicked point ---
-                    const features = map.queryRenderedFeatures(e.point, {
+                    // Get ALL features at the clicked point
+                    const allFeatures = map.queryRenderedFeatures(e.point, {
                         layers: ['unclustered-point']
                     });
 
-                    if (!features.length) {
+                    if (!allFeatures.length) {
                         return;
                     }
 
-                    const coordinates = features[0].geometry.coordinates.slice();
+                    // --- START: DEDUPLICATION FIX ---
+                    // Even with clean data, queryRenderedFeatures can return
+                    // multiple features. We MUST deduplicate them manually.
+                    const uniqueFeaturesMap = new Map();
+                    allFeatures.forEach(feature => {
+                        // Use the training 'id' as the unique key
+                        uniqueFeaturesMap.set(feature.properties.id, feature);
+                    });
+                    const uniqueFeatures = Array.from(uniqueFeaturesMap.values());
+                    // --- END: DEDUPLICATION FIX ---
+
+
+                    // Use the coordinates from the first unique feature
+                    const coordinates = uniqueFeatures[0].geometry.coordinates.slice();
                     let popupContent = '';
 
-                    // Loop through all features and build one HTML string
-                    features.forEach((feature, index) => {
+                    // Loop through the CLEAN, UNIQUE features
+                    uniqueFeatures.forEach((feature, index) => {
                         const properties = feature.properties;
 
                         if (index > 0) {
@@ -248,10 +276,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         `;
                     });
 
-                    // If there's more than one, add a title and scrollbar
-                    if (features.length > 1) {
+                    // Use the UNIQUE length for the title
+                    if (uniqueFeatures.length > 1) {
                         popupContent = `
-                            <h5 class="mb-2" style="font-size: 1.1rem;">${features.length} Trainings at this Location</h5>
+                            <h5 class="mb-2" style="font-size: 1.1rem;">${uniqueFeatures.length} Trainings at this Location</h5>
                             <div style="max-height: 220px; overflow-y: auto; padding-right: 10px;">
                                 ${popupContent}
                             </div>
@@ -264,7 +292,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         .setHTML(popupContent)
                         .addTo(map);
                 });
-
                 // Change cursor to pointer on hover
                 map.on('mouseenter', 'clusters', () => { map.getCanvas().style.cursor = 'pointer'; });
                 map.on('mouseleave', 'clusters', () => { map.getCanvas().style.cursor = ''; });

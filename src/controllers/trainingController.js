@@ -95,6 +95,11 @@ const trainingController = {
     getTrainingsAsGeoJSON: async (req, res) => {
         try {
             const geojsonData = await Training.findAllGeoJSON();
+            console.log('--- trainingController.getTrainingsAsGeoJSON ---');
+        console.log(`Sending ${geojsonData.features.length} features.`);
+        // Log the IDs of the first few features to check for duplicates
+        console.log('Feature IDs:', geojsonData.features.slice(0, 10).map(f => f.properties.id)); 
+        console.log('--------------------------------------------');
             res.status(200).json(geojsonData);
         } catch (error) {
             res.status(500).json({ message: 'Server error while fetching GeoJSON data.' });
@@ -105,6 +110,11 @@ const trainingController = {
         try {
             const adminState = req.user.state;
             const geojsonData = await Training.findAllGeoJSONByState(adminState);
+            console.log('--- trainingController.getTrainingsAsGeoJSONByState ---');
+        console.log(`State: ${adminState}, Sending ${geojsonData.features.length} features.`);
+        // Log the IDs of the first few features
+        console.log('Feature IDs:', geojsonData.features.slice(0, 10).map(f => f.properties.id));
+        console.log('----------------------------------------------------');
             res.status(200).json(geojsonData);
         } catch (error) {
             res.status(500).json({ message: 'Server error while fetching state GeoJSON data.' });

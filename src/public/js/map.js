@@ -111,19 +111,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     type: 'circle', // We use circle and paint it later, easier than custom markers
                     source: 'trainings',
                     filter: ['!', ['has', 'point_count']],
-                    paint: {
-                       'circle-color': [
-                           'match',
-                           ['get', 'theme'],
-                           'Earthquake', '#D97706',
-                           'Flood', '#2563EB',
-                           'Cyclone', '#4B5563',
-                           '#6D28D9' // Default color
-                       ],
-                       'circle-radius': 8,
-                       'circle-stroke-width': 2,
-                       'circle-stroke-color': '#fff'
-                    }
+                   paint: {
+                    'circle-color': [
+                        'match',
+                        ['get', 'theme'],
+                        'Earthquake', '#D97706',  // Amber
+                        'Flood', '#2563EB',       // Blue
+                        'Cyclone', '#4B5563',      // Gray
+                        'Landslide', '#6D28D9',    // Purple (as it was)
+                        'Fire Safety', '#DC2626', // Red
+                        // Add any other themes you have here
+                        // 'YourOtherTheme', '#some-color',
+                        '#1F2937' // New default (dark gray) for any others
+                    ],
+                    'circle-radius': 8,
+                    'circle-stroke-width': 2,
+                    'circle-stroke-color': '#fff'
+                }
                 });
                 
                 // Click event for clusters (to zoom in)
@@ -137,26 +141,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                  // Click event for individual points (to show popup)
                 // Click event for individual points (to show popup)
+                // Click event for individual points (to show popup)
                 map.on('click', 'unclustered-point', (e) => {
-                    // Use queryRenderedFeatures to get ALL features at the click point
-                    const features = map.queryRenderedFeatures(e.point, {
+                    // Get ALL features at the clicked point
+                    const allFeatures = map.queryRenderedFeatures(e.point, {
                         layers: ['unclustered-point']
                     });
 
-                    if (!features.length) {
+                    if (!allFeatures.length) {
                         return;
                     }
 
-                    // All features at this point share the same coordinate
-                    const coordinates = features[0].geometry.coordinates.slice();
-                    
+                    // --- START: DEDUPLICATION FIX ---
+                    // Even with clean data, queryRenderedFeatures can return
+                    // multiple features. We MUST deduplicate them manually.
+                    const uniqueFeaturesMap = new Map();
+                    allFeatures.forEach(feature => {
+                        // Use the training 'id' as the unique key
+                        uniqueFeaturesMap.set(feature.properties.id, feature);
+                    });
+                    const uniqueFeatures = Array.from(uniqueFeaturesMap.values());
+                    // --- END: DEDUPLICATION FIX ---
+
+
+                    // Use the coordinates from the first unique feature
+                    const coordinates = uniqueFeatures[0].geometry.coordinates.slice();
                     let popupContent = '';
 
-                    // Generate HTML for each feature
-                    features.forEach((feature, index) => {
+                    // Loop through the CLEAN, UNIQUE features
+                    uniqueFeatures.forEach((feature, index) => {
                         const properties = feature.properties;
 
-                        // Add a separator, but not before the first item
                         if (index > 0) {
                             popupContent += '<hr class="my-2">';
                         }
@@ -170,17 +185,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         `;
                     });
 
-                    // If there's more than one feature, wrap it in a scrollable container
-                    if (features.length > 1) {
+                    // Use the UNIQUE length for the title
+                    if (uniqueFeatures.length > 1) {
                         popupContent = `
-                            <h5 class="mb-2" style="font-size: 1.1rem;">${features.length} Trainings at this Location</h5>
+                            <h5 class="mb-2" style="font-size: 1.1rem;">${uniqueFeatures.length} Trainings at this Location</h5>
                             <div style="max-height: 220px; overflow-y: auto; padding-right: 10px;">
                                 ${popupContent}
                             </div>
                         `;
                     }
 
-                    // Create and show the popup
+                    // Create a single popup
                     new mapboxgl.Popup({ maxWidth: '300px' })
                         .setLngLat(coordinates)
                         .setHTML(popupContent)
