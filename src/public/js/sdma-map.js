@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // 5. Update fetch URL to get data for the specific state.
+       // 5. Update fetch URL to get data for the specific state.
         fetch(`/trainings/geojson?state=${encodeURIComponent(stateName)}`)
             .then(res => res.json())
             .then(data => {
@@ -128,6 +128,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 allTrainingsData = data;
                 if (!allTrainingsData.features) return;
+                
+                // --- NEW FIX: Add a "count" property to each feature ---
+                allTrainingsData.features.forEach(feature => {
+                    if (feature.properties) {
+                        feature.properties.count = 1;
+                    } else {
+                        feature.properties = { count: 1 };
+                    }
+                });
 
                 // Create a data source with clustering enabled
                 map.addSource('trainings', {
@@ -135,10 +144,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     data: allTrainingsData,
                     cluster: true,
                     clusterMaxZoom: 14,
-                    clusterRadius: 15
+                    clusterRadius: 15,
+                    // --- NEW CLUSTER PROPERTIES ---
+                    clusterProperties: {
+                        'sum': ['+', ['get', 'count']]
+                    }
                 });
 
-                // Layer for the clusters (circles with numbers)
+              // Layer for the clusters (circles with numbers)
                 map.addLayer({
                     id: 'clusters',
                     type: 'circle',
@@ -146,20 +159,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     filter: ['has', 'point_count'],
                     paint: {
                         'circle-color': '#FF9933', // Saffron
-                        'circle-radius': ['step', ['get', 'point_count'], 20, 100, 30, 750, 40],
+                        // --- UPDATED: Use 'sum' instead of 'point_count' ---
+                        'circle-radius': ['step', ['get', 'sum'], 20, 100, 30, 750, 40],
                         'circle-stroke-width': 2,
                         'circle-stroke-color': '#fff'
                     }
                 });
 
                 // Layer for the cluster count text
+               // Layer for the cluster count text
                 map.addLayer({
                     id: 'cluster-count',
                     type: 'symbol',
                     source: 'trainings',
                     filter: ['has', 'point_count'],
                     layout: {
-                        'text-field': '{point_count_abbreviated}',
+                         // --- UPDATED: Use 'sum' instead of 'point_count' ---
+                        'text-field': ['get', 'sum'],
                         'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
                         'text-size': 14
                     },
@@ -200,19 +216,52 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 // Click event for individual points (to show popup)
+                // Click event for individual points (to show popup)
                 map.on('click', 'unclustered-point', (e) => {
-                    const coordinates = e.features[0].geometry.coordinates.slice();
-                    const properties = e.features[0].properties;
+                    // Use queryRenderedFeatures to get ALL features at the click point
+                    const features = map.queryRenderedFeatures(e.point, {
+                        layers: ['unclustered-point']
+                    });
 
-                    const popupContent = `
-                        <h6>${properties.title}</h6>
-                        <p class="mb-1">Theme: ${properties.theme}</p>
-                        <span class="badge bg-primary">${properties.status}</span>
-                        <hr class="my-2">
-                        <a href="/trainings/${properties.id}" class="btn btn-sm btn-outline-primary">View Details</a>
-                    `;
+                    if (!features.length) {
+                        return;
+                    }
 
-                    new mapboxgl.Popup()
+                    // All features at this point share the same coordinate
+                    const coordinates = features[0].geometry.coordinates.slice();
+                    
+                    let popupContent = '';
+
+                    // Generate HTML for each feature
+                    features.forEach((feature, index) => {
+                        const properties = feature.properties;
+
+                        // Add a separator, but not before the first item
+                        if (index > 0) {
+                            popupContent += '<hr class="my-2">';
+                        }
+
+                        popupContent += `
+                            <h6>${properties.title}</h6>
+                            <p class="mb-1">Theme: ${properties.theme}</p>
+                            <span class="badge bg-primary">${properties.status}</span>
+                            <br>
+                            <a href="/trainings/${properties.id}" class="btn btn-sm btn-outline-primary mt-2">View Details</a>
+                        `;
+                    });
+
+                    // If there's more than one feature, wrap it in a scrollable container
+                    if (features.length > 1) {
+                        popupContent = `
+                            <h5 class="mb-2" style="font-size: 1.1rem;">${features.length} Trainings at this Location</h5>
+                            <div style="max-height: 220px; overflow-y: auto; padding-right: 10px;">
+                                ${popupContent}
+                            </div>
+                        `;
+                    }
+
+                    // Create and show the popup
+                    new mapboxgl.Popup({ maxWidth: '300px' })
                         .setLngLat(coordinates)
                         .setHTML(popupContent)
                         .addTo(map);

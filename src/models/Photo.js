@@ -19,6 +19,15 @@ const Photo = {
             console.error('Error finding photos by training id:', error);
             throw error;
         }
+    },
+    async deleteByTrainingId(trainingId) {
+        const query = 'DELETE FROM training_photos WHERE training_id = $1;';
+        try {
+            await pool.query(query, [trainingId]);
+        } catch (error) {
+            console.error('Error deleting photos by training id:', error);
+            throw error;
+        }
     }
 };
 

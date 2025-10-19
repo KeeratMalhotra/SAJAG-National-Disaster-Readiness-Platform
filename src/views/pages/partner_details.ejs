@@ -89,7 +89,7 @@
                                             <th>Training Title</th>
                                             <th>Theme</th>
                                             <th>Date</th>
-                                            <th class="text-end">Score</th>
+                                           
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -98,7 +98,6 @@
                                             <td><a href="/trainings/<%= training.id %>" class="fw-bold"><%= training.title %></a></td>
                                             <td><span class="badge bg-secondary-subtle text-secondary-emphasis rounded-pill"><%= training.theme %></span></td>
                                             <td><%= new Date(training.start_date).toLocaleDateString() %></td>
-                                            <td class="text-end fw-bold"><%= training.assessment_score ? training.assessment_score.toFixed(2) + '%' : 'N/A' %></td>
                                         </tr>
                                         <% }) %>
                                     </tbody>

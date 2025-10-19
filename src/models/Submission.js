@@ -145,7 +145,16 @@ async getAverageScoreByState(state) {
         console.error('Error getting avg score by state:', error);
         throw error;
     }
-}
+},
+async deleteByTrainingId(trainingId) {
+        const query = 'DELETE FROM participant_submissions WHERE training_id = $1;';
+        try {
+            await pool.query(query, [trainingId]);
+        } catch (error) {
+            console.error('Error deleting submissions by training id:', error);
+            throw error;
+        }
+    },
 };
 
 module.exports = Submission;

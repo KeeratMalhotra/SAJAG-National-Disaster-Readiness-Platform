@@ -12,7 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Display it as an image in the modal
         qrcodeContainer.innerHTML = qr.createImgTag(5, 5);
     }
-const deleteBtn = document.getElementById('deleteTrainingBtn');
+    
+    // Your existing delete button code
+    const deleteBtn = document.getElementById('deleteTrainingBtn');
     if (deleteBtn) {
         deleteBtn.addEventListener('click', async () => {
             const trainingId = deleteBtn.dataset.id;
@@ -22,8 +24,11 @@ const deleteBtn = document.getElementById('deleteTrainingBtn');
                         method: 'DELETE'
                     });
                     const result = await response.json();
+                    
                     if (response.ok) {
-                        window.location.href = result.redirectTo;
+                        // --- THIS IS THE FIX ---
+                        alert(result.message); // Show the success message
+                        window.location.href = '/dashboard'; // Redirect to a safe page
                     } else {
                         alert(`Error: ${result.message}`);
                     }
