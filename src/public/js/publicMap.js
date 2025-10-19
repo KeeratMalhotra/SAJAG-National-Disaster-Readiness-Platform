@@ -60,19 +60,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 // Create a data source with clustering enabled
+                // Create a data source with clustering enabled
                 map.addSource('trainings', {
                     type: 'geojson',
                     data: allTrainingsData,
                     cluster: true,
                     clusterMaxZoom: 14,
                     clusterRadius: 15,
-                    // --- NEW CLUSTER PROPERTIES ---
+                    // --- FIX #1: Tell clusters to sum up every point ---
                     clusterProperties: {
-                        'sum': ['+', ['get', 'count']]
+                        'total': ['+', 1] // Add 1 for every feature in the cluster
                     }
                 });
 
-               // Layer for the clusters (circles with numbers)
+                // Layer for the clusters (circles with numbers)
                 map.addLayer({
                     id: 'clusters',
                     type: 'circle',
@@ -80,22 +81,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     filter: ['has', 'point_count'],
                     paint: {
                         'circle-color': '#FF9933', // Saffron
-                        // --- UPDATED: Use 'sum' instead of 'point_count' ---
-                        'circle-radius': ['step', ['get', 'sum'], 20, 100, 30, 750, 40],
+                        // --- FIX #1: Use the new 'total' property ---
+                        'circle-radius': ['step', ['get', 'total'], 20, 100, 30, 750, 40],
                         'circle-stroke-width': 2,
                         'circle-stroke-color': '#fff'
                     }
                 });
 
-              // Layer for the cluster count text
+                // Layer for the cluster count text
                 map.addLayer({
                     id: 'cluster-count',
                     type: 'symbol',
                     source: 'trainings',
                     filter: ['has', 'point_count'],
                     layout: {
-                         // --- UPDATED: Use 'sum' instead of 'point_count' ---
-                        'text-field': ['get', 'sum'],
+                        // --- FIX #1: Use the new 'total' property ---
+                        'text-field': ['get', 'total'],
                         'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
                         'text-size': 14
                     },
@@ -103,7 +104,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         'text-color': '#ffffff'
                     }
                 });
-
                 // Layer for the individual, unclustered points (custom icons)
                 map.addLayer({
                     id: 'unclustered-point',

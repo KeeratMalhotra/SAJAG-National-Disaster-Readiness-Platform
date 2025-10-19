@@ -114,8 +114,8 @@ async deleteById(id) {
     async findAllGeoJSON() {
     // We now select start_date and end_date
     const query = `
-        SELECT id, title, theme, location_text, longitude, latitude, start_date, end_date
-        FROM trainings
+        SELECT DISTINCT ON (t.id) t.id, t.title, t.theme, t.location_text, t.longitude, t.latitude, t.start_date, t.end_date
+        FROM trainings t
         WHERE latitude IS NOT NULL AND longitude IS NOT NULL;
     `;
     try {
@@ -170,7 +170,7 @@ async deleteById(id) {
     },async findAllGeoJSONByState(state) {
     // Also select start_date and end_date here
     const query = `
-        SELECT t.id, t.title, t.theme, t.location_text, t.longitude, t.latitude, t.start_date, t.end_date
+        SELECT DISTINCT ON (t.id) t.id, t.title, t.theme, t.location_text, t.longitude, t.latitude, t.start_date, t.end_date
         FROM trainings t
         JOIN users u ON t.creator_user_id = u.id
         WHERE u.state = $1 AND t.latitude IS NOT NULL AND t.longitude IS NOT NULL;

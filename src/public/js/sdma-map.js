@@ -130,14 +130,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!allTrainingsData.features) return;
                 
                 // --- NEW FIX: Add a "count" property to each feature ---
-                allTrainingsData.features.forEach(feature => {
-                    if (feature.properties) {
-                        feature.properties.count = 1;
-                    } else {
-                        feature.properties = { count: 1 };
-                    }
-                });
+                // allTrainingsData.features.forEach(feature => {
+                //     if (feature.properties) {
+                //         feature.properties.count = 1;
+                //     } else {
+                //         feature.properties = { count: 1 };
+                //     }
+                // });
 
+                // Create a data source with clustering enabled
                 // Create a data source with clustering enabled
                 map.addSource('trainings', {
                     type: 'geojson',
@@ -145,13 +146,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     cluster: true,
                     clusterMaxZoom: 14,
                     clusterRadius: 15,
-                    // --- NEW CLUSTER PROPERTIES ---
+                    // --- FIX #1: Tell clusters to sum up every point ---
                     clusterProperties: {
-                        'sum': ['+', ['get', 'count']]
+                        'total': ['+', 1] // Add 1 for every feature in the cluster
                     }
                 });
 
-              // Layer for the clusters (circles with numbers)
+                // Layer for the clusters (circles with numbers)
                 map.addLayer({
                     id: 'clusters',
                     type: 'circle',
@@ -159,23 +160,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     filter: ['has', 'point_count'],
                     paint: {
                         'circle-color': '#FF9933', // Saffron
-                        // --- UPDATED: Use 'sum' instead of 'point_count' ---
-                        'circle-radius': ['step', ['get', 'sum'], 20, 100, 30, 750, 40],
+                        // --- FIX #1: Use the new 'total' property ---
+                        'circle-radius': ['step', ['get', 'total'], 20, 100, 30, 750, 40],
                         'circle-stroke-width': 2,
                         'circle-stroke-color': '#fff'
                     }
                 });
 
                 // Layer for the cluster count text
-               // Layer for the cluster count text
                 map.addLayer({
                     id: 'cluster-count',
                     type: 'symbol',
                     source: 'trainings',
                     filter: ['has', 'point_count'],
                     layout: {
-                         // --- UPDATED: Use 'sum' instead of 'point_count' ---
-                        'text-field': ['get', 'sum'],
+                        // --- FIX #1: Use the new 'total' property ---
+                        'text-field': ['get', 'total'],
                         'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
                         'text-size': 14
                     },
@@ -217,8 +217,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Click event for individual points (to show popup)
                 // Click event for individual points (to show popup)
+                // Click event for individual points (to show popup)
                 map.on('click', 'unclustered-point', (e) => {
-                    // Use queryRenderedFeatures to get ALL features at the click point
+                    // --- FIX #2: Get ALL features at the clicked point ---
                     const features = map.queryRenderedFeatures(e.point, {
                         layers: ['unclustered-point']
                     });
@@ -227,16 +228,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         return;
                     }
 
-                    // All features at this point share the same coordinate
                     const coordinates = features[0].geometry.coordinates.slice();
-                    
                     let popupContent = '';
 
-                    // Generate HTML for each feature
+                    // Loop through all features and build one HTML string
                     features.forEach((feature, index) => {
                         const properties = feature.properties;
 
-                        // Add a separator, but not before the first item
                         if (index > 0) {
                             popupContent += '<hr class="my-2">';
                         }
@@ -250,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         `;
                     });
 
-                    // If there's more than one feature, wrap it in a scrollable container
+                    // If there's more than one, add a title and scrollbar
                     if (features.length > 1) {
                         popupContent = `
                             <h5 class="mb-2" style="font-size: 1.1rem;">${features.length} Trainings at this Location</h5>
@@ -260,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         `;
                     }
 
-                    // Create and show the popup
+                    // Create a single popup
                     new mapboxgl.Popup({ maxWidth: '300px' })
                         .setLngLat(coordinates)
                         .setHTML(popupContent)

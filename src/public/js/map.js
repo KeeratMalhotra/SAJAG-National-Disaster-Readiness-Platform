@@ -50,32 +50,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 allTrainingsData = data; // Store the original data
                 if (!allTrainingsData.features) return;
 
-                // --- NEW FIX: Add a "count" property to each feature ---
-                // This ensures that stacked points (multiple trainings at one coord)
-                // are summed up correctly by the cluster.
-                allTrainingsData.features.forEach(feature => {
-                    if (feature.properties) {
-                        feature.properties.count = 1;
-                    } else {
-                        feature.properties = { count: 1 };
-                    }
-                });
+              
+                // allTrainingsData.features.forEach(feature => {
+                //     if (feature.properties) {
+                //         feature.properties.count = 1;
+                //     } else {
+                //         feature.properties = { count: 1 };
+                //     }
+                // });
 
                 // Create a data source with clustering enabled
+                // Create a data source with clustering enabled
                 map.addSource('trainings', {
-                    type: 'geojson',
-                    data: allTrainingsData,
-                    cluster: true,
-                    clusterMaxZoom: 14,
-                    clusterRadius: 15,
-                    // --- NEW CLUSTER PROPERTIES ---
-                    clusterProperties: {
-                        // Sum up the 'count' property for all points in the cluster
-                        'sum': ['+', ['get', 'count']]
-                    }
-                });
+    type: 'geojson',
+    data: allTrainingsData, // This data is now clean from the server
+    cluster: true,
+    clusterMaxZoom: 14,
+    clusterRadius: 15,
+    // This simply counts every unique feature
+    clusterProperties: {
+        'total': ['+', 1] 
+    }
+});
 
-                // Layer for the clusters (circles with numbers)
                 // Layer for the clusters (circles with numbers)
                 map.addLayer({
                     id: 'clusters',
@@ -84,14 +81,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     filter: ['has', 'point_count'],
                     paint: {
                         'circle-color': '#FF9933', // Saffron
-                        // --- UPDATED: Use 'sum' instead of 'point_count' ---
-                        'circle-radius': ['step', ['get', 'sum'], 20, 100, 30, 750, 40],
+                        // --- FIX #1: Use the new 'total' property ---
+                        'circle-radius': ['step', ['get', 'total'], 20, 100, 30, 750, 40],
                         'circle-stroke-width': 2,
                         'circle-stroke-color': '#fff'
                     }
                 });
 
-                // Layer for the cluster count text
                 // Layer for the cluster count text
                 map.addLayer({
                     id: 'cluster-count',
@@ -99,8 +95,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     source: 'trainings',
                     filter: ['has', 'point_count'],
                     layout: {
-                         // --- UPDATED: Use 'sum' instead of 'point_count' ---
-                        'text-field': ['get', 'sum'],
+                        // --- FIX #1: Use the new 'total' property ---
+                        'text-field': ['get', 'total'],
                         'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
                         'text-size': 14
                     },
