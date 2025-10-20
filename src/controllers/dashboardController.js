@@ -30,7 +30,7 @@ const dashboardController = {
         
     ]);
 
-    res.render('pages/tp_dashboard', {
+    res.render('pages/tp_Dashboard', {
         pageTitle: 'Partner Dashboard',
         user: req.user,
         trainings: trainings,
