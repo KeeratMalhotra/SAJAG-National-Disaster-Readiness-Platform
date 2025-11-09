@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <p class="mb-1">Theme: ${properties.theme}</p>
                             <span class="badge bg-primary">${properties.status}</span>
                             <br>
-                            <a href="/trainings/${properties.id}" class="btn btn-sm btn-outline-primary mt-2">View Details</a>
+                            
                         `;
                     });
 

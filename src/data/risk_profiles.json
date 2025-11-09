@@ -1,11 +1,11 @@
 {
-    "Patna": {
-        "themes": ["Flood", "Heatwave"],
+    "Punjab": {
+        "themes": ["Flood"],
         "vulnerability_score": 0.9,
         "population": 100 
     },
-    "Cuttack": {
-        "themes": ["Flood", "Cyclone"],
+    "Maharashtra": {
+        "themes": ["Flood"],
         "vulnerability_score": 0.8,
         "population": 100
     },
@@ -14,8 +14,8 @@
         "vulnerability_score": 0.9,
         "population": 100
     },
-    "Dehradun": {
-        "themes": ["Earthquake", "Landslide"],
+    "Himachal Pradesh": {
+        "themes": ["Landslides"],
         "vulnerability_score": 0.7,
         "population": 100
     }

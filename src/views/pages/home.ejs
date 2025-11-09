@@ -78,7 +78,9 @@
                                 <button type="button" class="btn btn-sm" data-filter="Flood">Flood</button>
                                 <button type="button" class="btn btn-sm" data-filter="Cyclone">Cyclone</button>
                                 <button type="button" class="btn btn-sm" data-filter="Landslide">Landslide</button>
-                                <button type="button" class="btn btn-sm " data-filter="CBRN">CBRN</button>             
+                                <button type="button" class="btn btn-sm " data-filter="CBRN">CBRN</button>  
+                                
+                                
                             </div>
                             <div id="map" data-token="<%= MAPBOX_ACCESS_TOKEN %>"></div>
                         </div>
@@ -127,15 +129,18 @@
                                     your email to view results and download your certificate.</p>
                                 <%# Adjusted text style/margin %>
                                     <div class="card lookup-card" id="lookupCard">
-                                        <form id="lookupForm">
+                                       <form id="lookupForm">
                                             <div class="input-group">
-                                                <input type="email" class="form-control form-control-md" name="email"
+                                
+                <input type="email" class="form-control form-control-md" name="email"
                                                     placeholder="Enter registered email..." required>
-                                                <%# Adjusted placeholder/size %>
+                         
+                       <%# Adjusted placeholder/size %>
                                                     <button class="btn btn-register btn-md" type="submit">Get
-                                                        Link</button>
-                                                    <%# Adjusted size/text %>
-                                            </div>
+                  
+                                      Results</button> <%# Adjusted size/text %>
+       
+                                     </div>
                                         </form>
                                         <div id="lookupMessage" class="mt-2" style="font-size: 0.85rem;"></div>
                                         <%# Adjusted margin/size %>

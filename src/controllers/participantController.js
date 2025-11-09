@@ -58,6 +58,36 @@ const participantController = {
             console.error('Error verifying participant token:', error);
             return res.status(401).send('Invalid or expired access link. Please request a new one.');
         }
+    },
+    getResultsByEmail: async (req, res) => {
+        try {
+            const { email } = req.body;
+            if (!email) {
+                return res.status(400).json({ message: 'Email is required.' });
+            }
+
+            // Fetch all submissions for that email
+            // Submission.findByEmail returns: { score, submitted_at, training_title }
+            const submissions = await Submission.findByEmail(email); //
+
+            if (submissions.length === 0) {
+                // No submissions found for this email
+                return res.status(200).json({
+                    message: 'No assessment records found for this email.',
+                    submissions: []
+                });
+            }
+
+            // Send the submissions back to the client
+            res.status(200).json({
+                message: 'Results retrieved successfully.',
+                submissions: submissions
+            });
+
+        } catch (error) {
+            console.error('Error fetching participant results by email:', error);
+            res.status(500).json({ message: 'Server error while fetching results.' });
+        }
     }
     
 };
