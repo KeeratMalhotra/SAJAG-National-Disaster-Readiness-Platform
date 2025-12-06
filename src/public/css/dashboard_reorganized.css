@@ -461,3 +461,62 @@ body {
     font-size: 0.9rem;
     margin-bottom: 0;
 }
+
+/* 1. LAYOUT FIX: Forces buttons into a single row */
+.header-actions {
+    display: flex !important;       /* Forces horizontal layout */
+    align-items: center;            /* Centers them vertically */
+    justify-content: flex-end;      /* Aligns them to the right */
+    gap: 12px;                      /* Adds space between buttons */
+    flex-wrap: nowrap;              /* Prevents them from stacking/wrapping */
+}
+
+/* 2. BASE BUTTON STYLE: Makes them look "Glassy" */
+.identity-header .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;                       /* Space between icon and text */
+    padding: 8px 16px;              /* Good click area */
+    border-radius: 8px;             /* Modern rounded corners */
+    font-weight: 500;
+    font-size: 0.9rem;
+    white-space: nowrap;            /* Keeps text on one line */
+    transition: all 0.2s ease;
+}
+
+/* 3. "Bulk Import" (Glassy Outline) */
+.identity-header .btn-outline-secondary {
+    color: #fff !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.identity-header .btn-outline-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #fff !important;
+}
+
+/* 4. "New Announcement" (Solid White for Emphasis) */
+.identity-header .btn-primary {
+    background-color: #ffffff !important;
+    color: #004085 !important;      /* Dark Blue text */
+    border: 1px solid #ffffff !important;
+    font-weight: 600;
+}
+
+.identity-header .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* 5. "Download Report" (Darker Glassy) */
+.identity-header .btn-secondary {
+    background-color: rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #fff !important;
+}
+
+.identity-header .btn-secondary:hover {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+}
