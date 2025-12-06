@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<%= getLocale() %>">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAJAG - National Disaster Training Monitoring Portal</title>
+    <title><%= __('brand_name') %> - National Disaster Training Monitoring Portal</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet' />
@@ -27,7 +27,7 @@
             <a class="navbar-brand d-flex align-items-center" href="/">
                 <img src="/images/ndma.png" alt="NDMA Logo" class="brand-logo">
                 <div class="brand-text-wrapper">
-                    <span class="brand-name-en">SAJAG</span>
+                    <span class="brand-name-en"><%= __('brand_name') %></span>
                     <span class="brand-name-hi">सजग</span>
                 </div>
             </a>
@@ -37,18 +37,29 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto">
-                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#main-content">Training Map</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/learn-public">Learn</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#main-content">Check Score</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/"><%= __('nav_home') %></a></li>
+                    <li class="nav-item"><a class="nav-link" href="#main-content"><%= __('nav_map') %></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/learn-public"><%= __('nav_learn') %></a></li>
+                    <li class="nav-item"><a class="nav-link" href="#main-content"><%= __('nav_score') %></a></li>
                 </ul>
                 <div class="d-flex align-items-center mt-3 mt-lg-0">
+                    <!-- Language Switcher -->
+                    <div class="dropdown me-3">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="langDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-globe"></i> <%= getLocale() === 'en' ? 'English' : 'हिंदी' %>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="langDropdown">
+                            <li><a class="dropdown-item" href="?lang=en">English</a></li>
+                            <li><a class="dropdown-item" href="?lang=hi">हिंदी</a></li>
+                        </ul>
+                    </div>
+
                     <% if (user) { %>
-                        <a href="/dashboard" class="btn btn-register">Go to Dashboard</a>
-                        <a href="/api/auth/logout" class="nav-link ms-3">Logout</a>
+                        <a href="/dashboard" class="btn btn-register"><%= __('btn_dashboard') %></a>
+                        <a href="/api/auth/logout" class="nav-link ms-3"><%= __('btn_logout') %></a>
                         <% } else { %>
-                            <a href="/api/auth/login" class="nav-link me-3">Portal Login</a>
-                            <a href="/api/auth/register" class="btn btn-register">Register as Partner</a>
+                            <a href="/api/auth/login" class="nav-link me-3"><%= __('btn_login') %></a>
+                            <a href="/api/auth/register" class="btn btn-register"><%= __('btn_register') %></a>
                             <% } %>
                 </div>
             </div>
@@ -59,7 +70,7 @@
         <section id="main-content" class="dashboard-section">
             <div class="container">
                 <div class="ticker-bar animated">
-                    <div class="ticker-label">Live</div>
+                    <div class="ticker-label"><%= __('hero_ticker_label') %></div>
                     <div class="ticker-content">
                         <span>
                             Flood preparedness drill ongoing in Cuttack, Odisha &nbsp; • &nbsp; Earthquake safety
@@ -96,7 +107,7 @@
                                             data-target="<%= typeof totalTrainings !== 'undefined' ? totalTrainings : 0 %>">
                                             <%= typeof totalTrainings !=='undefined' ? totalTrainings : 0 %>
                                         </div>
-                                        <div class="stat-label">Trainings Conducted</div>
+                                        <div class="stat-label"><%= __('hero_stat_trainings') %></div>
                                     </div>
                                 </div>
                                 <div class="col-6">
@@ -105,7 +116,7 @@
                                             data-target="<%= typeof totalParticipants !== 'undefined' ? totalParticipants : 0 %>">
                                             <%= typeof totalParticipants !=='undefined' ? totalParticipants : 0 %>
                                         </div>
-                                        <div class="stat-label">Individuals Assessed</div>
+                                        <div class="stat-label"><%= __('hero_stat_participants') %></div>
                                     </div>
                                 </div>
                                 <div class="col-6">
@@ -114,7 +125,7 @@
                                             data-target="<%= typeof activePartners !== 'undefined' ? activePartners : 0 %>">
                                             <%= typeof activePartners !=='undefined' ? activePartners : 0 %>
                                         </div>
-                                        <div class="stat-label">Active Partners</div>
+                                        <div class="stat-label"><%= __('hero_stat_partners') %></div>
                                     </div>
                                 </div>
                             </div>
@@ -123,22 +134,18 @@
                         <div class="sidebar-widget animated" style="transition-delay: 0.3s;"
                             id="lookup-section-sidebar">
                             <%# Changed ID slightly to avoid conflict if needed %>
-                                <h5 class="widget-title"><i class="fas fa-clipboard-check"></i> Check Your Readiness
-                                    Score</h5>
-                                <p class="section-subtitle mb-3" style="font-size: 0.9rem;">Completed a training? Enter
-                                    your email to view results and download your certificate.</p>
+                                <h5 class="widget-title"><i class="fas fa-clipboard-check"></i> <%= __('lookup_title') %></h5>
+                                <p class="section-subtitle mb-3" style="font-size: 0.9rem;"><%= __('lookup_subtitle') %></p>
                                 <%# Adjusted text style/margin %>
                                     <div class="card lookup-card" id="lookupCard">
                                        <form id="lookupForm">
                                             <div class="input-group">
                                 
                 <input type="email" class="form-control form-control-md" name="email"
-                                                    placeholder="Enter registered email..." required>
+                                                    placeholder="<%= __('lookup_placeholder') %>" required>
                          
                        <%# Adjusted placeholder/size %>
-                                                    <button class="btn btn-register btn-md" type="submit">Get
-                  
-                                      Results</button> <%# Adjusted size/text %>
+                                                    <button class="btn btn-register btn-md" type="submit"><%= __('lookup_btn') %></button> <%# Adjusted size/text %>
        
                                      </div>
                                         </form>
@@ -151,9 +158,8 @@
 
         <section class="about-section">
             <div class="container">
-                <h2 class="section-title-light animated">How SAJAG Works</h2>
-                <p class="section-subtitle-light animated">A unified digital ecosystem to coordinate, monitor, and
-                    enhance the nation's disaster preparedness through a streamlined, data-driven process.</p>
+                <h2 class="section-title-light animated"><%= __('about_title') %></h2>
+                <p class="section-subtitle-light animated"><%= __('about_subtitle') %></p>
 
                 <div class="process-flow animated" style="transition-delay: 0.2s;">
                     <svg class="flow-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 10"
@@ -164,25 +170,23 @@
 
                     <div class="process-step">
                         <div class="process-icon"><i class="fas fa-handshake-angle"></i></div>
-                        <h4 class="process-title">Partner Onboarding</h4>
-                        <p class="process-text">Agencies & NGOs register to standardize and manage training programs.
-                        </p>
+                        <h4 class="process-title"><%= __('step_onboarding') %></h4>
+                        <p class="process-text"><%= __('step_onboarding_desc') %></p>
                     </div>
                     <div class="process-step">
                         <div class="process-icon"><i class="fas fa-chalkboard-user"></i></div>
-                        <h4 class="process-title">Conduct Training</h4>
-                        <p class="process-text">Partners conduct disaster preparedness training across the nation.</p>
+                        <h4 class="process-title"><%= __('step_training') %></h4>
+                        <p class="process-text"><%= __('step_training_desc') %></p>
                     </div>
                     <div class="process-step">
                         <div class="process-icon"><i class="fas fa-map-marked-alt"></i></div>
-                        <h4 class="process-title">Monitor & Analyze</h4>
-                        <p class="process-text">Real-time data is visualized on the national map to identify gaps.</p>
+                        <h4 class="process-title"><%= __('step_monitor') %></h4>
+                        <p class="process-text"><%= __('step_monitor_desc') %></p>
                     </div>
                     <div class="process-step">
                         <div class="process-icon"><i class="fas fa-clipboard-check"></i></div>
-                        <h4 class="process-title">Assess Readiness</h4>
-                        <p class="process-text">Participants are assessed to generate readiness scores and certificates.
-                        </p>
+                        <h4 class="process-title"><%= __('step_assess') %></h4>
+                        <p class="process-text"><%= __('step_assess_desc') %></p>
                     </div>
                 </div>
             </div>
@@ -191,30 +195,29 @@
         <section id="learn-section" class="py-5">
             <div class="container">
                 <div class="text-center mb-5 animated">
-                    <h2 class="section-title">Be Prepared, Be Safe</h2>
-                    <p class="section-subtitle">Knowledge is the key to resilience. Learn how to protect yourself and
-                        your community.</p>
+                    <h2 class="section-title"><%= __('learn_title') %></h2>
+                    <p class="section-subtitle"><%= __('learn_subtitle') %></p>
                 </div>
                 <div class="row g-4">
                     <div class="col-md-4 animated" style="transition-delay: 0.1s;">
                         <a href="/learn-public" class="learn-card">
                             <div class="learn-icon"><i class="fas fa-house-flood-water"></i></div>
-                            <h3 class="learn-title">Flood Safety</h3>
-                            <p class="learn-text">Essential tips for preparing for and responding to floods.</p>
+                            <h3 class="learn-title"><%= __('learn_card_flood') %></h3>
+                            <p class="learn-text"><%= __('learn_card_flood_desc') %></p>
                         </a>
                     </div>
                     <div class="col-md-4 animated" style="transition-delay: 0.2s;">
                         <a href="/learn-public" class="learn-card">
                             <div class="learn-icon"><i class="fas fa-house-crack"></i></div>
-                            <h3 class="learn-title">Earthquake Drills</h3>
-                            <p class="learn-text">Learn the "Drop, Cover, and Hold On" technique and more.</p>
+                            <h3 class="learn-title"><%= __('learn_card_quake') %></h3>
+                            <p class="learn-text"><%= __('learn_card_quake_desc') %></p>
                         </a>
                     </div>
                     <div class="col-md-4 animated" style="transition-delay: 0.3s;">
                         <a href="/learn-public" class="learn-card">
                             <div class="learn-icon"><i class="fas fa-kit-medical"></i></div>
-                            <h3 class="learn-title">First-Aid Basics</h3>
-                            <p class="learn-text">Gain crucial first-aid skills to help in any emergency.</p>
+                            <h3 class="learn-title"><%= __('learn_card_firstaid') %></h3>
+                            <p class="learn-text"><%= __('learn_card_firstaid_desc') %></p>
                         </a>
                     </div>
                 </div>

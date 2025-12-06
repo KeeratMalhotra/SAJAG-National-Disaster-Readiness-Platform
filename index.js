@@ -2,47 +2,75 @@
 require('dotenv').config(); 
 const express = require('express');
 const path = require('path');
-const fs = require('fs'); // --- ADD THIS LINE ---
+const fs = require('fs');
 const pool = require('./src/config/database');
 const cookieParser = require('cookie-parser'); 
 const { checkUser } = require('./src/middleware/checkUserMiddleware'); 
-
+const i18n = require('i18n');
 
 // --- APP INITIALIZATION ---
 const app = express();
 
-// --- ENSURE UPLOADS DIRECTORY EXISTS --- (*** NEW CODE BLOCK ***)
+// --- I18N CONFIGURATION ---
+i18n.configure({
+    locales: ['en', 'hi'],
+    directory: path.join(__dirname, 'locales'),
+    defaultLocale: 'en',
+    cookie: 'lang', 
+    queryParameter: 'lang', 
+    autoReload: true,
+    syncFiles: true,
+    objectNotation: true
+});
+
+// --- ENSURE UPLOADS/LOCALES DIRECTORY EXISTS ---
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir);
-    console.log(`Created directory: ${uploadsDir}`);
 }
-// --- END OF NEW CODE BLOCK ---
-
+// Ensure locales directory exists so i18n doesn't crash
+const localesDir = path.join(__dirname, 'locales');
+if (!fs.existsSync(localesDir)) {
+    fs.mkdirSync(localesDir);
+    console.log(`Created directory: ${localesDir}`);
+}
 
 // --- CONFIGURATION ---
 const PORT = process.env.PORT || 3000;
 
 // --- MIDDLEWARE ---
-// Serve static files (CSS, JS, images) from the 'public' directory
 app.use(express.static(path.join(__dirname, 'src', 'public')));
-
-// Enable the Express app to parse JSON formatted request bodies
 app.use(express.json());
-
-// Enable the Express app to parse URL-encoded request bodies (form data)
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+// --- INITIALIZE I18N ---
+app.use(i18n.init);
+
+// --- LANGUAGE SWITCHING DEBUGGER ---
+app.use((req, res, next) => {
+    // 1. Check if user is requesting a language switch
+    if (req.query.lang) {
+        console.log(`DEBUG: User requested language switch to: ${req.query.lang}`);
+        
+        // Force the cookie
+        res.cookie('lang', req.query.lang, { maxAge: 900000, httpOnly: true });
+        
+        // Force the locale for this request
+        req.setLocale(req.query.lang);
+    }
+
+    // 2. Log what the server thinks the current language is
+    console.log(`DEBUG: Current Locale: ${req.getLocale()} | Query: ${req.query.lang || 'none'} | Cookie: ${req.cookies.lang || 'none'}`);
+    next();
+});
+
 app.use(checkUser);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // --- VIEW ENGINE SETUP ---
-// Set the directory where the template files are located
 app.set('views', path.join(__dirname, 'src', 'views'));
-// Set EJS as the template engine
 app.set('view engine', 'ejs');
-
-
 
 // --- ROUTES ---
 const authRoutes = require('./src/routes/authRoutes');
@@ -58,25 +86,20 @@ const adminPageRoutes = require('./src/routes/adminPageRoutes');
 const announcementPageRoutes = require('./src/routes/announcementPageRoutes');
 const participantApiRoutes = require('./src/routes/participantRoutes'); 
 const participantPageRoutes = require('./src/routes/participantPageRoutes'); 
-const importRoutes = require('./src/routes/importRoutes'); // Add this
-const publicApiRoutes = require('./src/routes/publicRoutes'); // Add this if new
-// ... in index.js, in the ROUTES section ...
-const trainingApiRoutes = require('./src/routes/trainingApiRoutes'); // Add this
+const importRoutes = require('./src/routes/importRoutes'); 
+const publicApiRoutes = require('./src/routes/publicRoutes'); 
+const trainingApiRoutes = require('./src/routes/trainingApiRoutes'); 
 const reportRoutes = require('./src/routes/reportRoutes');
 
-app.use('/reports', reportRoutes); // Mount report routes under /reports path
-// ... after your other app.use() statements ...
-app.use('/api/trainings', trainingApiRoutes); // And add this
-// ... after other app.use() statements
+app.use('/reports', reportRoutes); 
+app.use('/api/trainings', trainingApiRoutes); 
 app.use('/api/public', publicApiRoutes);
-
 app.use('/api/import', importRoutes);
 app.use('/participant', participantPageRoutes);
 app.use('/api/participant', participantApiRoutes);
 app.use('/announcements', announcementPageRoutes);
 app.use('/public', publicRoutes); 
 app.use('/api/auth', authRoutes);
-
 app.use('/dashboard', dashboardRoutes);
 app.use('/trainings', trainingRoutes);
 app.use('/api/alerts', alertRoutes);
@@ -86,24 +109,18 @@ app.use('/api/predictions', predictionRoutes);
 app.use('/api/admin', adminApiRoutes); 
 app.use('/admin', adminPageRoutes); 
 app.use('/', publicRoutes);
+
 app.get('/public-map', (req, res) => {
     res.render('pages/public_map');
 });
 
-
-// A simple test route to make sure everything is working
-// app.get('/', (req, res) => {
-//     res.render('pages/home', {
-//         pageTitle: 'Welcome to SAJAG',
-        
-//     });
-// });
 app.get('/learn', (req, res) => {
     res.render('pages/learn', { pageTitle: 'Learn & Prepare' , activePage: 'learn'});
 });
 app.get('/learn-public', (req, res) => {
     res.render('pages/learn-public', { pageTitle: 'Learn & Prepare' , activePage: 'learn'});
 });
+
 // --- SERVER STARTUP ---
 app.listen(PORT, () => {
     console.log(`🚀 Server is running on http://localhost:${PORT}`);
