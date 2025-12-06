@@ -33,5 +33,12 @@
 	"learn_card_quake": "भूकंप अभ्यास",
 	"learn_card_quake_desc": "'झुकें, ढकें और पकड़ें' तकनीक और अधिक जानें।",
 	"learn_card_firstaid": "प्राथमिक चिकित्सा",
-	"learn_card_firstaid_desc": "किसी भी आपात स्थिति में मदद करने के लिए महत्वपूर्ण कौशल प्राप्त करें।"
+	"learn_card_firstaid_desc": "किसी भी आपात स्थिति में मदद करने के लिए महत्वपूर्ण कौशल प्राप्त करें।",
+	"map_filter_all": "सभी",
+	"map_filter_earthquake": "भूकंप",
+	"map_filter_flood": "बाढ़",
+	"map_filter_cyclone": "चक्रवात",
+	"map_filter_landslide": "भूस्खलन",
+	"map_filter_cbrn": "सीबीआरएन",
+	"national_impact": "राष्ट्रीय प्रभाव"
 }

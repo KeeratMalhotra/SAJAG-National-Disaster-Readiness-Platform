@@ -13,7 +13,7 @@ const app = express();
 
 // --- I18N CONFIGURATION ---
 i18n.configure({
-    locales: ['en', 'hi'],
+    locales: ['en', 'hi','bn','ta'],
     directory: path.join(__dirname, 'locales'),
     defaultLocale: 'en',
     cookie: 'lang', 

@@ -27,7 +27,7 @@
             <a class="navbar-brand d-flex align-items-center" href="/">
                 <img src="/images/ndma.png" alt="NDMA Logo" class="brand-logo">
                 <div class="brand-text-wrapper">
-                    <span class="brand-name-en"><%= __('brand_name') %></span>
+                    <span class="brand-name-en">SAJAG</span>
                     <span class="brand-name-hi">सजग</span>
                 </div>
             </a>
@@ -45,12 +45,24 @@
                 <div class="d-flex align-items-center mt-3 mt-lg-0">
                     <!-- Language Switcher -->
                     <div class="dropdown me-3">
+                        <% 
+                            // This map connects the code 'ta' to the name 'தமிழ்'
+                            const langNames = {
+                                'en': 'English',
+                                'hi': 'हिंदी',
+                                'bn': 'বাংলা',
+                                'ta': 'தமிழ்'
+                            };
+                            const currentLang = getLocale();
+                        %>
                         <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="langDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-globe"></i> <%= getLocale() === 'en' ? 'English' : 'हिंदी' %>
+                            <i class="fas fa-globe"></i> <%= langNames[currentLang] || 'English' %>
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="langDropdown">
                             <li><a class="dropdown-item" href="?lang=en">English</a></li>
                             <li><a class="dropdown-item" href="?lang=hi">हिंदी</a></li>
+                            <li><a class="dropdown-item" href="?lang=bn">বাংলা</a></li>
+                            <li><a class="dropdown-item" href="?lang=ta">தமிழ்</a></li>
                         </ul>
                     </div>
 
@@ -83,15 +95,14 @@
                 <div class="row g-4">
                     <div class="col-lg-8">
                         <div class="map-card animated" style="transition-delay: 0.1s;">
+                            <!-- UPDATED MAP FILTERS WITH TRANSLATIONS -->
                             <div class="btn-group map-filters" role="group" id="map-filter-group">
-                                <button type="button" class="btn btn-sm active" data-filter="All">All</button>
-                                <button type="button" class="btn btn-sm" data-filter="Earthquake">Earthquake</button>
-                                <button type="button" class="btn btn-sm" data-filter="Flood">Flood</button>
-                                <button type="button" class="btn btn-sm" data-filter="Cyclone">Cyclone</button>
-                                <button type="button" class="btn btn-sm" data-filter="Landslide">Landslide</button>
-                                <button type="button" class="btn btn-sm " data-filter="CBRN">CBRN</button>  
-                                
-                                
+                                <button type="button" class="btn btn-sm active" data-filter="All"><%= __('map_filter_all') %></button>
+                                <button type="button" class="btn btn-sm" data-filter="Earthquake"><%= __('map_filter_earthquake') %></button>
+                                <button type="button" class="btn btn-sm" data-filter="Flood"><%= __('map_filter_flood') %></button>
+                                <button type="button" class="btn btn-sm" data-filter="Cyclone"><%= __('map_filter_cyclone') %></button>
+                                <button type="button" class="btn btn-sm" data-filter="Landslide"><%= __('map_filter_landslide') %></button>
+                                <button type="button" class="btn btn-sm " data-filter="CBRN"><%= __('map_filter_cbrn') %></button>  
                             </div>
                             <div id="map" data-token="<%= MAPBOX_ACCESS_TOKEN %>"></div>
                         </div>
@@ -99,7 +110,7 @@
 
                     <div class="col-lg-4">
                         <div class="sidebar-widget animated" style="transition-delay: 0.2s;">
-                            <h5 class="widget-title"><i class="fas fa-chart-line"></i>National Impact</h5>
+                            <h5 class="widget-title"><i class="fas fa-chart-line"></i><%= __('national_impact') %></h5>
                             <div class="row g-3">
                                 <div class="col-12">
                                     <div class="stat-card">

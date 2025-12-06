@@ -33,5 +33,12 @@
 	"learn_card_quake": "Earthquake Drills",
 	"learn_card_quake_desc": "Learn the 'Drop, Cover, and Hold On' technique and more.",
 	"learn_card_firstaid": "First-Aid Basics",
-	"learn_card_firstaid_desc": "Gain crucial first-aid skills to help in any emergency."
+	"learn_card_firstaid_desc": "Gain crucial first-aid skills to help in any emergency.",
+	"map_filter_all": "All",
+	"map_filter_earthquake": "Earthquake",
+	"map_filter_flood": "Flood",
+	"map_filter_cyclone": "Cyclone",
+	"map_filter_landslide": "Landslide",
+	"map_filter_cbrn": "CBRN",
+	"national_impact": "National Impact"
 }
