@@ -4,18 +4,44 @@ const Training = require('../models/Training'); // ADD THIS LINE
 const Submission = require('../models/Submission'); // ADD THIS LINE
 const path = require('path'); // ADD THIS LINE
 const adminController = {
+
+    // new-------------src/views/pages/manage_partners.ejs----------linked 
+
+    
     showManagePartnersPage: async (req, res) => {
     try {
         const user = req.user;
+        const { state: filterState } = req.query; // <-- ADDED: Get filter state from query
+
         let pendingPartners, activePartners, rejectedPartners;
+        let allStates = []; // <-- ADDED: To store unique states for the filter dropdown
 
         if (user.role === 'ndma_admin') {
-            // NDMA Admin gets all partners from all states
-            [pendingPartners, activePartners, rejectedPartners] = await Promise.all([
+            // NDMA Admin gets all partners from all states, but can filter by state
+            
+            // 1. Fetch ALL partners for each status (required to compute allStates and apply local filter)
+            const [allPending, allActive, allRejected] = await Promise.all([
                 User.findAllPending(),
                 User.findAllActive(),
                 User.findAllRejected()
             ]);
+
+            // 2. Combine all partners to get unique states for the filter dropdown
+            const allPartners = [...allPending, ...allActive, ...allRejected];
+            // Collect all unique states, filter out null/empty, and sort them alphabetically
+            allStates = [...new Set(allPartners.map(p => p.state).filter(s => s && s.trim() !== ''))].sort();
+
+            // 3. Apply the state filter to the partner lists
+            if (filterState) {
+                pendingPartners = allPending.filter(p => p.state === filterState);
+                activePartners = allActive.filter(p => p.state === filterState);
+                rejectedPartners = allRejected.filter(p => p.state === filterState);
+            } else {
+                pendingPartners = allPending;
+                activePartners = allActive;
+                rejectedPartners = allRejected;
+            }
+
         } else {
             // SDMA Admin gets partners only from their state
             const adminState = user.state;
@@ -24,6 +50,8 @@ const adminController = {
                 User.findActiveByState(adminState),
                 User.findRejectedByState(adminState)
             ]);
+            // SDMA admin only sees their state
+            allStates = [adminState]; 
         }
 
         res.render('pages/manage_partners', {
@@ -31,13 +59,58 @@ const adminController = {
             user: req.user,
             pendingPartners,
             activePartners,
-            rejectedPartners
+            rejectedPartners,
+            allStates, // <-- ADDED
+            selectedState: filterState || '' // <-- ADDED
         });
     } catch (error) {
         console.error('Error loading manage partners page:', error);
         res.status(500).send('Server error');
     }
 },
+
+
+
+// end new logic
+
+
+
+
+
+//     showManagePartnersPage: async (req, res) => {
+//     try {
+//         const user = req.user;
+//         let pendingPartners, activePartners, rejectedPartners;
+
+//         if (user.role === 'ndma_admin') {
+//             // NDMA Admin gets all partners from all states
+//             [pendingPartners, activePartners, rejectedPartners] = await Promise.all([
+//                 User.findAllPending(),
+//                 User.findAllActive(),
+//                 User.findAllRejected()
+//             ]);
+//         } else {
+//             // SDMA Admin gets partners only from their state
+//             const adminState = user.state;
+//             [pendingPartners, activePartners, rejectedPartners] = await Promise.all([
+//                 User.findPendingByState(adminState),
+//                 User.findActiveByState(adminState),
+//                 User.findRejectedByState(adminState)
+//             ]);
+//         }
+
+//         res.render('pages/manage_partners', {
+//             pageTitle: 'Manage Partners',
+//             user: req.user,
+//             pendingPartners,
+//             activePartners,
+//             rejectedPartners
+//         });
+//     } catch (error) {
+//         console.error('Error loading manage partners page:', error);
+//         res.status(500).send('Server error');
+//     }
+// },
 
     updatePartnerStatus: async (req, res) => {
         try {
