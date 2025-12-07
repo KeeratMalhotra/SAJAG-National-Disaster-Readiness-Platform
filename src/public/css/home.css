@@ -297,3 +297,44 @@
             opacity: 1;
             transform: translateY(0);
         }
+        @media (max-width: 768px) {
+            .navbar-brand .brand-name-en {
+                font-size: 1.8rem;
+            }
+            .navbar-brand .brand-logo {
+                height: 40px;
+            }
+            .section-title, .section-title-light {
+                font-size: 1.8rem;
+            }
+            .stat-number {
+                font-size: 2rem;
+            }
+            .process-flow {
+                flex-direction: column;
+                align-items: center;
+            }
+            .process-step {
+                width: 100%; 
+                margin-bottom: 2.5rem;
+            }
+            .flow-arrow {
+                transform: rotate(90deg);
+                top: auto;
+                bottom: -25px;
+                left: 50%;
+                margin-left: -20px;
+            }
+            #map {
+                height: 400px;
+            }
+            .ticker-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .ticker-label {
+                margin-bottom: 10px;
+                width: 100%;
+                text-align: center;
+            }
+        }
