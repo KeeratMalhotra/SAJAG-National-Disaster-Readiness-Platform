@@ -19,6 +19,22 @@
         <main class="main-content">
             <header class="page-header">
                 <h1>Manage Partners</h1>
+
+                <!-- new filter logic linked with src/controllers/adminController.js -->
+                <% if (user.role === 'ndma_admin') { %>
+                    <div class="state-filter-container d-flex align-items-center mb-3">
+                        <label for="state-filter" class="form-label me-2 mb-0 fw-bold">Filter by State:</label>
+                        <select class="form-select w-auto" id="state-filter" aria-label="Filter partners by state">
+                            <option value="" <%= selectedState === '' ? 'selected' : '' %>>All States</option>
+                            <% allStates.forEach(state => { %>
+                                <option value="<%= state %>" <%= selectedState === state ? 'selected' : '' %>>
+                                    <%= state %>
+                                </option>
+                            <% }) %>
+                        </select>
+                    </div>
+                <% } %>
+                <!-- newend further linked with src/views/pages/manage_partners.ejs-->
             </header>
 
             <nav class="nav nav-tabs" id="partnerTabs" role="tablist">
@@ -149,6 +165,70 @@
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
         <script src="/js/admin.js"></script>
+
+
+        <!-- new linked with above code -->
+
+        <% if (user.role === 'ndma_admin') { %>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const stateFilter = document.getElementById('state-filter');
+
+                if (stateFilter) {
+                    stateFilter.addEventListener('change', function() {
+                        const selectedState = this.value;
+                        let url = window.location.pathname;
+                        const params = new URLSearchParams(window.location.search);
+                        
+                        // 1. Set/Delete the 'state' filter parameter
+                        if (selectedState) {
+                            params.set('state', selectedState);
+                        } else {
+                            params.delete('state');
+                        }
+
+                        // 2. Preserve the currently active tab in a 'tab' query parameter
+                        const activeTabEl = document.querySelector('#partnerTabs .nav-link.active');
+                        // Get the target tab pane ID (e.g., 'pending', 'approved', 'rejected')
+                        const activeTabId = activeTabEl ? activeTabEl.getAttribute('data-bs-target').substring(1) : 'pending';
+                        
+                        // Only add the 'tab' parameter if it's not the default 'pending' tab
+                        if (activeTabId && activeTabId !== 'pending') {
+                            params.set('tab', activeTabId);
+                        } else {
+                            params.delete('tab');
+                        }
+
+                        // 3. Navigate to the new URL with updated parameters
+                        window.location.href = url + '?' + params.toString();
+                    });
+                }
+                
+                // 4. On page load, re-activate the correct tab based on the 'tab' query parameter
+                const urlParams = new URLSearchParams(window.location.search);
+                // Default to 'pending' if no 'tab' parameter exists
+                const activeTabId = urlParams.get('tab') || 'pending';
+                
+                const tabEl = document.getElementById(activeTabId + '-tab');
+                const paneEl = document.getElementById(activeTabId);
+
+                if(tabEl && paneEl) {
+                    // Manually activate the selected tab link and its corresponding pane
+                    // Bootstrap 5 tabs are initialized but we need to ensure the correct one is 'active' on page load due to the full reload.
+
+                    // Deactivate all default active classes from the HTML before activating the correct one
+                    document.querySelectorAll('#partnerTabs .nav-link').forEach(link => link.classList.remove('active'));
+                    document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('show', 'active'));
+
+                    // Activate the desired tab and pane
+                    tabEl.classList.add('active');
+                    paneEl.classList.add('show', 'active');
+                }
+            });
+        </script>
+        <% } %>
+
+        <!-- new end filter logic done -->
 </body>
 
 </html>

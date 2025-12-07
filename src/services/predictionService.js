@@ -2,6 +2,76 @@ const Submission = require('../models/Submission');
 const Training = require('../models/Training');
 const riskProfiles = require('../data/risk_profiles.json');
 const pool = require('../config/database');
+/**
+ * Calculates the Relevance Score for districts to find the Top 30.
+ */
+const calculateRelevanceScore = (districtData) => {
+    // Weights (Total = 1.0)
+    const WEIGHTS = {
+        TIMING: 0.30,      // 30% - Imminent threat (Seasonality)
+        SATURATION: 0.25,  // 25% - Untrained population gap
+        IMPACT: 0.20,      // 20% - Severity of disaster
+        HISTORY: 0.15,     // 15% - Chronic frequency
+        RECENCY: 0.10      // 10% - Time since last training
+    };
+
+    // 1. Calculate Saturation Gap (Lower saturation = Higher Need)
+    // Formula: 1 - (Trained / Population)
+    // Edge case: If population is 0, handle division by zero.
+    let saturationRatio = districtData.totalPopulation > 0 
+        ? (districtData.trainedCount / districtData.totalPopulation) 
+        : 0;
+    // We cap ratio at 1 (100%). We want the GAP, so we take (1 - ratio).
+    let saturationScore = 1 - Math.min(saturationRatio, 1);
+
+    // 2. Calculate Recency Score (Older training = Higher Need)
+    // Let's say if training was > 365 days ago, score is max (1.0).
+    const daysSinceLastTraining = (new Date() - new Date(districtData.lastTrainingDate)) / (1000 * 60 * 60 * 24);
+    let recencyScore = Math.min(daysSinceLastTraining / 365, 1); 
+    // If never trained, recency is max
+    if (!districtData.lastTrainingDate) recencyScore = 1;
+
+    // 3. Timing/Seasonality (Probability Score)
+    // E.g., If it's July, and Assam has high flood probability.
+    let timingScore = districtData.currentMonthProbability || 0; // 0 to 1
+
+    // 4. Historical Frequency (Normalized)
+    // Assume maxDisastersInAnyDistrict is a constant calculated beforehand (e.g., 50)
+    const MAX_DISASTER_COUNT_REF = 50; 
+    let frequencyScore = Math.min(districtData.totalDisastersLast10Years / MAX_DISASTER_COUNT_REF, 1);
+
+    // 5. Disaster Scale (Normalized)
+    // Assume maxAffectedRef is e.g., 100,000 people
+    const MAX_AFFECTED_REF = 100000;
+    let impactScore = Math.min(districtData.avgAffectedPeople / MAX_AFFECTED_REF, 1);
+
+    // --- FINAL CALCULATION ---
+    const finalScore = 
+        (WEIGHTS.TIMING * timingScore) +
+        (WEIGHTS.SATURATION * saturationScore) +
+        (WEIGHTS.IMPACT * impactScore) +
+        (WEIGHTS.HISTORY * frequencyScore) +
+        (WEIGHTS.RECENCY * recencyScore);
+
+    return finalScore;
+};
+
+// Main function to get Top 30
+const getTopRelevantDistricts = async (allDistricts) => {
+    // 1. Calculate score for each district
+    const scoredDistricts = allDistricts.map(district => {
+        return {
+            ...district,
+            relevanceScore: calculateRelevanceScore(district)
+        };
+    });
+
+    // 2. Sort by Score Descending (Highest score first)
+    scoredDistricts.sort((a, b) => b.relevanceScore - a.relevanceScore);
+
+    // 3. Return Top 30
+    return scoredDistricts.slice(0, 30);
+};
 
 const predictionService = {
     async getScoresByTheme(state = null) {
