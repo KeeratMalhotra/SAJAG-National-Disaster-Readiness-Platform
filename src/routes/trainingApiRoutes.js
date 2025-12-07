@@ -4,28 +4,26 @@ const trainingApiController = require('../controllers/trainingApiController');
 const { protectRoute } = require('../middleware/authMiddleware');
 const multer = require('multer');
 
-// --- This multer setup was missing from your new file ---
-// --- It is required for photo uploads ---
-const imageFileFilter = (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
-        cb(null, true); // Accept the file
-    } else {
-        cb(new Error('Only image files are allowed!'), false); // Reject the file
-    }
-};
-const upload = multer({ dest: 'uploads/', fileFilter: imageFileFilter });
-// --- End of multer setup ---
-
+// --- CHANGED: Use Memory Storage instead of Disk Storage ---
+// This keeps the file in memory (RAM) so we can insert it into the DB
+const upload = multer({ 
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 5 * 1024 * 1024 } // Limit to 5MB to prevent crashing DB
+});
 
 router.use(protectRoute);
 
-// --- These routes were missing from your new file ---
 router.get('/', trainingApiController.getTrainings);
 router.post('/', trainingApiController.createTraining);
 router.get('/:id/photos', trainingApiController.getPhotosForTraining);
+
+// --- CHANGED: Route for serving the raw image from DB ---
+// We need a new route to "view" the image, e.g., <img src="/api/trainings/photos/123">
+router.get('/photos/:photoId', trainingApiController.servePhoto);
+
+// Upload route remains similar, but uses the memory uploader
 router.post('/:id/photos', upload.single('trainingPhoto'), trainingApiController.uploadPhoto);
 
-// --- This is the delete route you correctly added ---
 router.delete('/:id', trainingApiController.deleteTraining);
 
 module.exports = router;
