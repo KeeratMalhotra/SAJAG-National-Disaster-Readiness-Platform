@@ -23,6 +23,7 @@
     left: 0;
     overflow-y: auto; /* Enable scrolling for long content */
     z-index: 1000;
+    overflow-y: auto;
 }
 
 .sidebar-header {
@@ -376,4 +377,23 @@
     font-size: 0.7em;
     padding: .3em .5em;
     line-height: 1;
+}
+
+@media (max-width: 992px) {
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        max-height: 400px;
+        box-shadow: none;
+        margin-bottom: 20px;
+    }
+
+    .sidebar-header {
+        padding: 15px;
+    }
+
+    .logo-main-text {
+        font-size: 1.5rem;
+    }
 }

@@ -52,6 +52,7 @@ h1, h2, h3, h4, h5, h6 {
     width: calc(100% - 260px);
     padding: 2rem;
     overflow-y: auto;
+    transition: all 0.3s ease;
 }
 
 /* --- Sidebar Specifics --- */
@@ -381,3 +382,23 @@ body {
     background-color: var(--danger-color);
     color: white;
 } */
+
+@media (max-width: 992px) {
+    body {
+        flex-direction: column;
+    }
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 1rem;
+    }
+    #map {
+        height: 350px;
+    }
+    .card-body {
+        overflow-x: auto;
+    }
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+}
