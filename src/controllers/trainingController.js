@@ -1,41 +1,12 @@
 const Training = require('../models/Training');
 const Submission = require('../models/Submission');
 const Photo = require('../models/Photo');
-const QRCode = require('qrcode'); 
 
 const trainingController = {
     showNewTrainingForm: (req, res) => {
         res.render('pages/new_training', {
             pageTitle: 'Create New Training'
         });
-    },
-    getTrainingQR: async (req, res) => {
-        try {
-            const { id } = req.params;
-            const training = await Training.findById(id);
-
-            if (!training) return res.status(404).send('Training not found');
-
-            // 1. Generate the Secure Link
-            // This points to the "Start Assessment" controller we made earlier
-            // Use req.protocol and req.get('host') to get your actual domain (localhost or production)
-            const assessmentUrl = `${req.protocol}://${req.get('host')}/assessment/start/${id}`;
-
-            // 2. Generate QR Data URL (Base64 image)
-            const qrCodeImage = await QRCode.toDataURL(assessmentUrl);
-
-            // 3. Render a simple "Print Mode" page for the Partner
-            res.render('pages/show_qr', {
-                pageTitle: 'Session QR Code',
-                qrCodeImage,
-                training,
-                assessmentUrl
-            });
-
-        } catch (error) {
-            console.error('QR Gen Error:', error);
-            res.status(500).send('Could not generate QR');
-        }
     },
 
     // --- THIS IS THE NEW, ROBUST createTraining FUNCTION ---

@@ -4,10 +4,6 @@ const csv = require('csv-parser');
 const pool = require('../config/database');
 const User = require('../models/User');
 
-// --- NEW IMPORT for email---
-const { sendInvitationEmail } = require('../services/emailService'); 
-// ...
-
 const bulkImportTrainings = async (req, res) => {
     // 1. Check if file is uploaded
     if (!req.file) {
@@ -129,112 +125,6 @@ const bulkImportTrainings = async (req, res) => {
         });
 };
 
-
-
-
-// for email 
-
-
-
-// --- NEW FUNCTION: bulkInviteNGOs (for NDMA Admin) ---
-const bulkInviteNGOs = async (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ message: 'No CSV file was uploaded.' });
-    }
-
-    const filePath = req.file.path;
-    
-    const successRows = [];
-    const errorRows = [];
-    let rowNumber = 0;
-
-    // 2. CSV Parsing aur validation
-    const stream = fs.createReadStream(filePath)
-        .pipe(csv())
-        .on('data', (row) => {
-            rowNumber++;
-            
-            // Required fields: NGO ka naam aur Email ID
-            const requiredFields = ['organization_name', 'email'];
-            const missing = requiredFields.filter(field => !row[field] || row[field].trim() === '');
-
-            if (missing.length > 0) {
-                errorRows.push(`Row ${rowNumber}: Missing required fields - ${missing.join(', ')}`);
-                return; 
-            }
-            
-            const email = row.email.trim().toLowerCase();
-
-            // Basic Email format validation
-            if (!/^\S+@\S+\.\S+$/.test(email)) {
-                errorRows.push(`Row ${rowNumber}: Invalid email format for '${row.email}'.`);
-                return;
-            }
-
-            // Add valid row to processing queue
-            successRows.push({ 
-                organization_name: row.organization_name.trim(),
-                email: email,
-                rowNumber 
-            });
-        })
-        .on('end', async () => {
-            let sentCount = 0;
-
-            try {
-                for (const record of successRows) {
-                    try {
-                        // Optional: Check if the user already exists in the database
-                        const existingUser = await User.findByEmail(record.email);
-                        if (existingUser) {
-                            throw new Error(`User already exists with email '${record.email}' (Role: ${existingUser.role}).`);
-                        }
-                        
-                        // Email Service ko call karein (REAL EMAIL SEND HOGA YAHAN)
-                        await sendInvitationEmail(record.email, record.organization_name);
-                        sentCount++;
-
-                    } catch (rowError) {
-                        // Individual email sending error ko record karein
-                        errorRows.push(`Row ${record.rowNumber} (${record.email}): ${rowError.message}`);
-                    }
-                }
-
-                // Final Report
-                res.status(200).json({
-                    message: 'NGO Invitation process completed.',
-                    successCount: sentCount,
-                    errorCount: errorRows.length,
-                    errors: errorRows 
-                });
-
-            } catch (err) {
-                console.error('System Error during NGO bulk invitation:', err);
-                res.status(500).json({ message: 'Internal Server Error processing batch.' });
-            } finally {
-                // Cleanup: Uploaded CSV file ko delete karein
-                if (fs.existsSync(filePath)) {
-                    fs.unlinkSync(filePath);
-                }
-            }
-        })
-        .on('error', (err) => {
-            console.error('CSV Stream Error for NGO Invite:', err);
-            if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-            res.status(500).json({ message: 'Failed to read or process the CSV file.' });
-        });
-};
-
-
-// 3. Module Exports ko update karein
 module.exports = {
-    bulkImportTrainings, 
-    bulkInviteNGOs // Naya function export kiya
+    bulkImportTrainings
 };
-
-
-// old
-// module.exports = {
-//     bulkImportTrainings, 
-  
-// };
