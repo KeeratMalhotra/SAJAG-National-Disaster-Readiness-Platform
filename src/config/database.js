@@ -1,17 +1,13 @@
 // src/config/database.js
 const { Pool } = require('pg');
 
-// Use the standard DATABASE_URL from Render
-// If not available, fallback to individual variables (for local dev)
+// Use the standard DATABASE_URL if available, otherwise individual variables
 const connectionString = process.env.DATABASE_URL;
-
-// SSL is usually required for Cloud DBs (Render/Supabase)
-const useSSL = process.env.NODE_ENV === 'production' || process.env.DB_SSL === 'true';
 
 const poolConfig = connectionString 
     ? { 
-        connectionString, 
-        ssl: useSSL ? { rejectUnauthorized: false } : false 
+        connectionString,
+        // SSL configuration removed
       }
     : {
         host: process.env.DB_HOST,
@@ -19,7 +15,7 @@ const poolConfig = connectionString
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME,
         port: process.env.DB_PORT,
-        ssl: useSSL ? { rejectUnauthorized: false } : false
+        // SSL configuration removed
       };
 
 const pool = new Pool(poolConfig);
