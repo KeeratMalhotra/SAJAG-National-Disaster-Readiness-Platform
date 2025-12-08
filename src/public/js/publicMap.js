@@ -24,12 +24,40 @@ document.addEventListener('DOMContentLoaded', () => {
         padding: 20
     });
 
-    // Create a global popup instance for hover interactions
+    // --- HOVER POPUP CONFIGURATION ---
     const hoverPopup = new mapboxgl.Popup({
         closeButton: false,
         closeOnClick: false,
-        maxWidth: '300px'
+        maxWidth: '300px',
+        offset: 15 // Offset prevents cursor overlapping popup immediately, reducing flicker
     });
+
+    // --- GRACE PERIOD LOGIC ---
+    // This timer ensures the popup doesn't close immediately when moving mouse to the popup content
+    let popupLeaveTimer;
+
+    const clearPopupTimer = () => {
+        if (popupLeaveTimer) {
+            clearTimeout(popupLeaveTimer);
+            popupLeaveTimer = null;
+        }
+    };
+
+    const schedulePopupClose = () => {
+        popupLeaveTimer = setTimeout(() => {
+            hoverPopup.remove();
+        }, 300); // 300ms grace period to move mouse into popup
+    };
+
+    // Attach listeners to the POPUP DOM element itself so it stays open when hovered
+    const attachPopupHoverListeners = () => {
+        const popupElement = hoverPopup.getElement();
+        if (!popupElement) return;
+
+        popupElement.addEventListener('mouseenter', clearPopupTimer);
+        popupElement.addEventListener('mouseleave', schedulePopupClose);
+    };
+
 
     let allTrainingsData = null;
 
@@ -74,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     source: 'trainings',
                     filter: ['has', 'point_count'],
                     paint: {
-                        'circle-color': '#FF9933',
+                        'circle-color': '#FF9933', // Saffron
                         'circle-radius': ['step', ['get', 'total'], 20, 100, 30, 750, 40],
                         'circle-stroke-width': 2,
                         'circle-stroke-color': '#fff'
@@ -110,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             'Cyclone', '#4B5563',
                             'Landslide', '#6D28D9',
                             'Fire Safety', '#DC2626',
-                            '#1F2937'
+                            '#1F2937' // Default
                         ],
                         'circle-radius': 8,
                         'circle-stroke-width': 2,
@@ -118,77 +146,95 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
 
-                // Helper to build HTML for popups
+                // HTML Builder for Popup Content
                 const buildPopupHtml = (features) => {
                     const uniqueFeaturesMap = new Map();
                     features.forEach(feature => {
-                        uniqueFeaturesMap.set(feature.properties.id, feature);
+                        // Fallback if ID is missing to prevent crash
+                        const key = feature.properties.id || Math.random();
+                        uniqueFeaturesMap.set(key, feature);
                     });
                     const uniqueFeatures = Array.from(uniqueFeaturesMap.values());
 
-                    let popupContent = '';
+                    let listContent = '';
                     uniqueFeatures.forEach((feature, index) => {
-                        const properties = feature.properties;
-                        if (index > 0) popupContent += '<hr class="my-2">';
-                        popupContent += `
-                            <h6>${properties.title}</h6>
-                            <p class="mb-1">Theme: ${properties.theme}</p>
-                            <span class="badge bg-primary">${properties.status}</span>
-                            <br>
+                        const props = feature.properties;
+                        if (index > 0) listContent += '<hr class="my-2" style="opacity:0.3">';
+                        listContent += `
+                            <div class="mb-2">
+                                <h6 class="mb-1" style="font-size:0.95rem; font-weight:600;">${props.title || 'Untitled Training'}</h6>
+                                <p class="mb-1" style="font-size:0.85rem; color:#555;">Theme: ${props.theme || 'N/A'}</p>
+                                <span class="badge bg-primary" style="font-size:0.7rem;">${props.status || 'Scheduled'}</span>
+                            </div>
                         `;
                     });
 
-                    if (uniqueFeatures.length > 1) {
-                        return `
-                            <h5 class="mb-2" style="font-size: 1.1rem;">${uniqueFeatures.length} Trainings</h5>
-                            <div style="max-height: 220px; overflow-y: auto; padding-right: 10px;">
-                                ${popupContent}
+                    // Add a container with max-height for scrolling if multiple items
+                    const containerStyle = uniqueFeatures.length > 1 ?
+                        'max-height: 200px; overflow-y: auto; padding-right: 5px;' :
+                        '';
+
+                    return `
+                        <div style="font-family: 'Inter', sans-serif;">
+                            ${uniqueFeatures.length > 1 ? `<h5 class="mb-2 pb-1 border-bottom" style="font-size: 1rem; color:#333;">${uniqueFeatures.length} Trainings</h5>` : ''}
+                            <div style="${containerStyle}">
+                                ${listContent}
                             </div>
-                        `;
-                    }
-                    return popupContent;
+                        </div>
+                    `;
                 };
 
-                // --- CHANGED: Hover interaction for CLUSTERS ---
+                // --- CLUSTER HOVER HANDLERS ---
                 map.on('mouseenter', 'clusters', (e) => {
                     map.getCanvas().style.cursor = 'pointer';
-                    
+                    clearPopupTimer(); // Stop any pending close action
+
                     const clusterId = e.features[0].properties.cluster_id;
                     const pointCount = e.features[0].properties.point_count;
                     const coordinates = e.features[0].geometry.coordinates.slice();
 
-                    // Fetch all points in this cluster
+                    // Fix for map wrapping (prevents popup appearing on wrong side of world)
+                    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                    }
+
+                    // Fetch the individual points inside the cluster
                     map.getSource('trainings').getClusterLeaves(clusterId, pointCount, 0, (err, features) => {
                         if (err) return;
 
-                        // Ensure we account for map wrapping
-                        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-                            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-                        }
-
                         const html = buildPopupHtml(features);
                         hoverPopup.setLngLat(coordinates).setHTML(html).addTo(map);
+                        
+                        // IMPORTANT: Add listeners to the new popup DOM element
+                        attachPopupHoverListeners();
                     });
                 });
 
                 map.on('mouseleave', 'clusters', () => {
                     map.getCanvas().style.cursor = '';
-                    hoverPopup.remove();
+                    schedulePopupClose(); // Don't close immediately, schedule it
                 });
 
-                // Keep click on clusters to zoom in (optional but recommended UX)
+                // Click on cluster still zooms in
                 map.on('click', 'clusters', (e) => {
-                    const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+                    const features = map.queryRenderedFeatures(e.point, {
+                        layers: ['clusters']
+                    });
                     const clusterId = features[0].properties.cluster_id;
                     map.getSource('trainings').getClusterExpansionZoom(clusterId, (err, zoom) => {
                         if (err) return;
-                        map.easeTo({ center: features[0].geometry.coordinates, zoom: zoom });
+                        map.easeTo({
+                            center: features[0].geometry.coordinates,
+                            zoom: zoom
+                        });
                     });
                 });
 
-                // --- CHANGED: Hover interaction for UNCLUSTERED POINTS ---
+
+                // --- UNCLUSTERED POINT HOVER HANDLERS ---
                 map.on('mouseenter', 'unclustered-point', (e) => {
                     map.getCanvas().style.cursor = 'pointer';
+                    clearPopupTimer();
 
                     const coordinates = e.features[0].geometry.coordinates.slice();
                     const allFeatures = map.queryRenderedFeatures(e.point, {
@@ -203,20 +249,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     const html = buildPopupHtml(allFeatures);
                     hoverPopup.setLngLat(coordinates).setHTML(html).addTo(map);
+                    attachPopupHoverListeners();
                 });
 
                 map.on('mouseleave', 'unclustered-point', () => {
                     map.getCanvas().style.cursor = '';
-                    hoverPopup.remove();
+                    schedulePopupClose();
                 });
             });
     });
 
+    // --- FILTERS ---
     const filterGroup = document.getElementById('map-filter-group');
     if (filterGroup) {
         filterGroup.addEventListener('click', (e) => {
             if (e.target.tagName !== 'BUTTON') return;
-
             const filter = e.target.dataset.filter;
 
             if (filter === 'All') {
@@ -233,7 +280,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.classList.remove('active', 'btn-primary');
                 btn.classList.add('btn-outline-secondary');
             });
-
             e.target.classList.remove('btn-outline-secondary');
             e.target.classList.add('active', 'btn-primary');
         });

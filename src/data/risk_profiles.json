@@ -18,5 +18,20 @@
         "themes": ["Landslides"],
         "vulnerability_score": 0.7,
         "population": 100
+    },
+    "Delhi": { 
+        "themes": ["Smog", "Fire"], 
+        "vulnerability_score": 0.8,
+        "population": 100
+    },
+    "Uttarakhand": { 
+        "themes": ["Landslide"], 
+        "vulnerability_score": 0.9, 
+        "population": 100
+    },
+    "West Bengal": { 
+        "themes": ["Cyclone"], 
+        "vulnerability_score": 0.85, 
+        "population": 100
     }
 }
