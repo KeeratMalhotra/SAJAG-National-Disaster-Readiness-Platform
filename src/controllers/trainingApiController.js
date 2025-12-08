@@ -54,21 +54,76 @@ const trainingController = {
 
     uploadPhoto: async (req, res) => {
         try {
-            const { id } = req.params;
-            if (!req.file) {
-                return res.status(400).json({ message: 'No file uploaded.' });
+            const { id } = req.params; // Training ID
+            const file = req.file;
+
+            if (!file) {
+                return res.status(400).json({ error: 'No image file provided' });
             }
+
+            // INSERT raw buffer (file.buffer) into the BYTEA column
+            const query = `
+                INSERT INTO training_photos (training_id, image_data, mime_type, image_url)
+                VALUES ($1, $2, $3, $4)
+                RETURNING id
+            `;
             
-            const imageUrl = `/uploads/${req.file.filename}`;
-            const newPhoto = await Photo.create(id, imageUrl);
-            
-            res.status(201).json({ 
-                message: 'Photo uploaded successfully!', 
-                photo: newPhoto 
-            });
+            // We save the original name in 'image_url' just for reference
+            await pool.query(query, [id, file.buffer, file.mimetype, file.originalname]);
+
+            res.status(201).json({ message: 'Photo uploaded successfully' });
         } catch (error) {
-            console.error('Error uploading photo (API):', error);
-            res.status(500).json({ message: 'Server Error' });
+            console.error('Error uploading photo:', error);
+            res.status(500).json({ error: 'Server error uploading photo' });
+        }
+    },
+
+    // 2. GET PHOTOS LIST (Modified)
+    // Returns a list of URLs that point to our new "servePhoto" route
+    getPhotosForTraining: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const result = await pool.query(
+                'SELECT id FROM training_photos WHERE training_id = $1',
+                [id]
+            );
+
+            // Generate URLs that the frontend can put in <img src="...">
+            // Example: /api/trainings/photos/uuid-of-photo
+            const photos = result.rows.map(row => ({
+                id: row.id,
+                url: `/api/trainings/photos/${row.id}` 
+            }));
+
+            res.json(photos);
+        } catch (error) {
+            console.error('Error fetching photos:', error);
+            res.status(500).json({ error: 'Server error' });
+        }
+    },
+
+    // 3. NEW: SERVE PHOTO (The "Viewer")
+    // This looks up the binary data and sends it back as an image
+    servePhoto: async (req, res) => {
+        try {
+            const { photoId } = req.params;
+            const result = await pool.query(
+                'SELECT image_data, mime_type FROM training_photos WHERE id = $1',
+                [photoId]
+            );
+
+            if (result.rows.length === 0) {
+                return res.status(404).send('Photo not found');
+            }
+
+            const photo = result.rows[0];
+
+            // Tell the browser "This is an image"
+            res.setHeader('Content-Type', photo.mime_type);
+            res.send(photo.image_data); // Send the raw buffer
+        } catch (error) {
+            console.error('Error serving photo:', error);
+            res.status(500).send('Error serving photo');
         }
     },
 
