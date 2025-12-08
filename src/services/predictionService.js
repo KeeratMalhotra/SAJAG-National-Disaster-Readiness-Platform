@@ -76,6 +76,15 @@ const predictionService = {
                 seasonalityScore = 0.5; 
             }
 
+<<<<<<< Updated upstream
+            // Sort by Urgency (Highest Score First)
+            return gaps.sort((a, b) => b.priorityScore - a.priorityScore);
+
+        } catch (error) {
+            console.error('Gap Calculation Error:', error);
+            return []; // Return empty on error to prevent crash
+        }
+=======
             // --- FACTOR B: SATURATION GAP (The "Need" Score) ---
             // We use logarithmic scaling for population. 
             // 100 untrained people in a tiny village is as critical as 1000 in a city.
@@ -166,6 +175,7 @@ const predictionService = {
         
         // ... (Gemini Implementation similar to your code) ...
         // Use this to nudge the 'history_severity_index' up or down.
+>>>>>>> Stashed changes
     }
 };
 
