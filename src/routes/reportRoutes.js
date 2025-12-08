@@ -1,28 +1,18 @@
 const express = require('express');
-const reportController = require('../controllers/reportController');
-const { protectRoute: isAuthenticated } = require('../middleware/authMiddleware');
-// --- CORRECT IMPORT ---
-// Since roleMiddleware.js exports the function directly,
-// we import it directly and assign it to the 'hasRole' variable here.
-const { requireRole: hasRole } = require('../middleware/roleMiddleware');
-
 const router = express.Router();
+const reportController = require('../controllers/reportController');
+const { checkUser } = require('../middleware/checkUserMiddleware');
 
-// NDMA Report Route
-router.get('/ndma',
-    isAuthenticated,
-    // Use the imported function correctly by calling it with the roles array.
-    // This returns the actual middleware Express needs.
-    hasRole(['ndma_admin']), //
-    reportController.generateNdmaReport
-);
+// --- DEBUGGING LOGS (Check your terminal for these) ---
+console.log('--- DEBUGGING REPORT ROUTE ---');
+console.log('checkUser is:', typeof checkUser); // Should say 'function'
+console.log('reportController is:', reportController); // Should be an object
+console.log('getTrainingAnalysis is:', typeof reportController?.getTrainingAnalysis); // Should say 'function'
+console.log('------------------------------');
 
-// SDMA Report Route
-router.get('/sdma',
-    isAuthenticated,
-    // Use the imported function correctly by calling it with the roles array.
-    hasRole(['sdma_admin']), //
-    reportController.generateSdmaReport
-);
+// If either is 'undefined', the app will crash below.
+
+// The Route for the Report Page
+router.get('/analysis/:trainingId', checkUser, reportController.getTrainingAnalysis);
 
 module.exports = router;
