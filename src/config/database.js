@@ -1,31 +1,39 @@
-// Import the Pool class from the 'pg' module
+// src/config/database.js
 const { Pool } = require('pg');
 
-// Create a new Pool instance for managing connections to the database
-const pool = new Pool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT,
-    // --- NEW: REQUIRED FOR SUPABASE ---
-    ssl: {
-        rejectUnauthorized: false // Allows connection to Supabase/Render secure DBs
-    }
-});
+// Use the standard DATABASE_URL from Render
+// If not available, fallback to individual variables (for local dev)
+const connectionString = process.env.DATABASE_URL;
 
-// A simple function to test the database connection
+// SSL is usually required for Cloud DBs (Render/Supabase)
+const useSSL = process.env.DB_SSL === 'true';
+
+const poolConfig = connectionString 
+    ? { 
+        connectionString, 
+        ssl: useSSL ? { rejectUnauthorized: false } : false 
+      }
+    : {
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_NAME,
+        port: process.env.DB_PORT,
+        ssl: useSSL ? { rejectUnauthorized: false } : false
+      };
+
+const pool = new Pool(poolConfig);
+
+// Test the connection
 const testConnection = async () => {
     try {
-        await pool.query('SELECT NOW()'); // Simple query to check connection
+        await pool.query('SELECT NOW()');
         console.log('🐘 Database connected successfully!');
     } catch (error) {
-        console.error('❌ Error connecting to the database:', error);
+        console.error('❌ Error connecting to the database:', error.message);
     }
 };
 
-// Test the connection when the module is loaded
 testConnection();
 
-// Export the pool so it can be used by other parts of our application
 module.exports = pool;
