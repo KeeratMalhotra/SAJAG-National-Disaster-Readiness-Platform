@@ -172,7 +172,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalBtnText;
                 importMessage.innerHTML = `<div class="alert alert-danger shadow-sm">
-                    <i class="bi bi-wifi-off"></i> Network Error. Didn't Connect with server. Please try again.
                 </div>`;
             }
         });
