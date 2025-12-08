@@ -95,7 +95,19 @@
 
     <script>
         // --- 1. THE GPS TRAP ---
-        document.addEventListener('DOMContentLoaded', () => {
+        doocument.addEventListener('DOMContentLoaded', () => {
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const mainContent = document.getElementById('main-content');
+        const latInput = document.getElementById('userLat');
+        const lngInput = document.getElementById('userLng');
+        function unlockAssessment(lat, lng) {
+            latInput.value = lat;
+            lngInput.value = lng;
+            loadingOverlay.classList.add('hidden');
+            mainContent.style.opacity = '1';
+            // Optional: Alert to confirm it worked
+            console.log("Assessment Unlocked for Testing"); 
+        }
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
