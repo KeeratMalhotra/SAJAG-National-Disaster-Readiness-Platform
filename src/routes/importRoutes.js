@@ -34,4 +34,24 @@ router.post(
     importController.bulkImportTrainings
 );
 
+// for email
+
+// ... (Existing Training Import Route - UNCHANGED)
+router.post(
+    '/trainings',
+    protectRoute,
+    requireRole(['sdma_admin', 'ndma_admin']),
+    upload.single('trainingsCsv'),
+    importController.bulkImportTrainings
+);
+
+// --- NEW ROUTE: NGO Invitation Import (For NDMA Admin Only) ---
+router.post(
+    '/ngo-invitations', // Naya API Endpoint: /api/import/ngo-invitations
+    protectRoute,
+    requireRole(['ndma_admin']), // Access sirf NDMA Admin ko
+    upload.single('ngoCsv'), // Frontend form mein is input ka naam 'ngoCsv' hona chahiye
+    importController.bulkInviteNGOs // Naya controller function
+);
+
 module.exports = router;

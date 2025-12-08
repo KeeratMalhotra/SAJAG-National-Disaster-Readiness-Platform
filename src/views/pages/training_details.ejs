@@ -5,117 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= pageTitle %></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/css/sidebar.css" />
     <link rel="stylesheet" href="/css/training-details.css" />
 
-    <!-- Custom CSS for the new Photo Gallery -->
     <style>
-        /* Main container for the photo gallery grid */
         .photo-gallery-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
             gap: 1rem;
             margin-bottom: 1.5rem;
         }
-
-        /* Styling for each individual thumbnail item */
         .gallery-thumbnail {
-            aspect-ratio: 1 / 1; /* Creates perfect squares */
+            aspect-ratio: 1 / 1;
             border-radius: 0.5rem;
             overflow: hidden;
             cursor: pointer;
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
             position: relative;
         }
-
         .gallery-thumbnail:hover {
             transform: scale(1.05);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
-
-        /* Image within the thumbnail */
         .gallery-thumbnail img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Ensures image covers the square without distortion */
+            object-fit: cover;
             transition: opacity 0.2s ease-in-out;
         }
-
         .gallery-thumbnail:hover img {
             opacity: 0.85;
         }
-
-        /* Lightbox Modal Styles */
         .lightbox-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            display: none; /* Hidden by default */
-            justify-content: center;
-            align-items: center;
-            z-index: 1055; /* Higher than Bootstrap's modal z-index */
-            padding: 15px;
-            box-sizing: border-box;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.85); display: none;
+            justify-content: center; align-items: center; z-index: 1055;
+            padding: 15px; box-sizing: border-box;
         }
-        
-        .lightbox-modal.show {
-            display: flex;
-        }
-
-        /* The actual image displayed in the lightbox */
+        .lightbox-modal.show { display: flex; }
         .lightbox-content {
-            max-width: 90vw;
-            max-height: 90vh;
-            object-fit: contain;
-            border-radius: 0.5rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            max-width: 90vw; max-height: 90vh; object-fit: contain;
+            border-radius: 0.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-
-        /* Navigation Arrows */
         .lightbox-nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: rgba(0, 0, 0, 0.4);
-            color: white;
-            border: none;
-            font-size: 2rem;
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-            border-radius: 0.5rem;
-            transition: background-color 0.2s ease;
-            user-select: none;
-            z-index: 1056;
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.4); color: white; border: none;
+            font-size: 2rem; padding: 0.5rem 1rem; cursor: pointer;
+            border-radius: 0.5rem; transition: background-color 0.2s ease;
+            user-select: none; z-index: 1056;
         }
-
-        .lightbox-nav:hover {
-            background-color: rgba(0, 0, 0, 0.7);
-        }
-
-        .lightbox-prev {
-            left: 2rem;
-        }
-
-        .lightbox-next {
-            right: 2rem;
-        }
-
-        /* Close button for the lightbox */
+        .lightbox-nav:hover { background-color: rgba(0, 0, 0, 0.7); }
+        .lightbox-prev { left: 2rem; }
+        .lightbox-next { right: 2rem; }
         .lightbox-close {
-            position: absolute;
-            top: 1.5rem;
-            right: 2rem;
-            font-size: 2.5rem;
-            color: white;
-            cursor: pointer;
-            background: none;
-            border: none;
-            line-height: 1;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
-            z-index: 1057;
+            position: absolute; top: 1.5rem; right: 2rem; font-size: 2.5rem;
+            color: white; cursor: pointer; background: none; border: none;
+            line-height: 1; text-shadow: 0 2px 5px rgba(0,0,0,0.5); z-index: 1057;
         }
     </style>
 </head>
@@ -126,24 +72,24 @@
         <div class="container-fluid">
 
             <header class="page-header mb-4">
-    <div class="header-content">
-        <h1 class="training-title"><%= training.title %></h1>
-        <div class="training-meta">
-            <!-- This new span displays the creator's name and organization -->
-            <span><i class="bi bi-person-fill"></i> Conducted by: <%= training.creator_name %> (<%= training.organization_name %>)</span>
-            <span><i class="bi bi-tag-fill"></i> <%= training.theme %></span>
-            <span><i class="bi bi-calendar-range"></i> <%= new Date(training.start_date).toLocaleDateString() %> - <%= new Date(training.end_date).toLocaleDateString() %></span>
-            <span><i class="bi bi-geo-alt-fill"></i> <%= training.location_text %></span>
-        </div>
-    </div>
-    <a href="/dashboard" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
-    </a>
-</header>
+                <div class="header-content">
+                    <h1 class="training-title"><%= training.title %></h1>
+                    <div class="training-meta">
+                        <span><i class="bi bi-person-fill"></i> Conducted by: <%= training.creator_name %> (<%= training.organization_name %>)</span>
+                        <span><i class="bi bi-tag-fill"></i> <%= training.theme %></span>
+                        <span><i class="bi bi-calendar-range"></i> <%= new Date(training.start_date).toLocaleDateString() %> - <%= new Date(training.end_date).toLocaleDateString() %></span>
+                        <span><i class="bi bi-geo-alt-fill"></i> <%= training.location_text %></span>
+                    </div>
+                </div>
+                <a href="/dashboard" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </header>
 
             <div class="row g-4">
                 <div class="col-lg-5 col-xl-4">
                     <div class="d-flex flex-column" style="gap: 1.5rem;">
+                        
                         <div class="card">
                             <div class="card-header"><i class="bi bi-bar-chart-line-fill"></i> Statistics</div>
                             <div class="card-body">
@@ -156,25 +102,41 @@
                                     <div class="stat-value"><%= submissions.length %></div>
                                     <div class="stat-label">Total Participants Assessed</div>
                                 </div>
+                                <div class="d-grid mt-3">
+                                    <a href="/reports/analysis/<%= training.id %>" class="btn btn-info text-white">
+                                        <i class="bi bi-graph-up-arrow me-2"></i> View Impact Analysis
+                                    </a>
+                                </div>
                             </div>
                         </div>
 
                         <div class="card">
                             <div class="card-header"><i class="bi bi-link-45deg"></i> Assessment Actions</div>
                             <div class="card-body d-grid gap-2">
-                                <a href="/public/assessment/take/<%= training.id %>" target="_blank" class="btn btn-primary"><i class="bi bi-box-arrow-up-right me-2"></i>Get Public Link</a>
-                                <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#qrModal"><i class="bi bi-qr-code me-2"></i>Show QR Code</button>
+                                
+                                <a href="/assessment/start/<%= training.id %>" target="_blank" class="btn btn-primary">
+                                    <i class="bi bi-box-arrow-up-right me-2"></i> Get Secure Link
+                                </a>
+                                
+                                <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#qrModal">
+                                    <i class="bi bi-qr-code me-2"></i> Show Quick QR
+                                </button>
+
+                                <a href="/trainings/<%= training.id %>/qr" class="btn btn-warning">
+                                    <i class="bi bi-printer-fill me-2"></i> Print Session QR
+                                </a>
+
                                 <% 
-        let canDelete = false;
-        if (user.role === 'ndma_admin') canDelete = true;
-        if (user.role === 'sdma_admin' && training.creator_state === user.state) canDelete = true;
-        if (training.creator_user_id === user.id) canDelete = true;
-    %>
-    <% if (canDelete) { %>
-        <button class="btn btn-outline-danger" id="deleteTrainingBtn" data-id="<%= training.id %>">
-            <i class="bi bi-trash-fill me-2"></i>Delete Training
-        </button>
-    <% } %>
+                                    let canDelete = false;
+                                    if (user.role === 'ndma_admin') canDelete = true;
+                                    if (user.role === 'sdma_admin' && training.creator_state === user.state) canDelete = true;
+                                    if (training.creator_user_id === user.id) canDelete = true;
+                                %>
+                                <% if (canDelete) { %>
+                                    <button class="btn btn-outline-danger" id="deleteTrainingBtn" data-id="<%= training.id %>">
+                                        <i class="bi bi-trash-fill me-2"></i> Delete Training
+                                    </button>
+                                <% } %>
                             </div>
                         </div>
                     </div>
@@ -182,6 +144,7 @@
 
                 <div class="col-lg-7 col-xl-8">
                     <div class="d-flex flex-column" style="gap: 1.5rem;">
+                        
                         <div class="card">
                             <div class="card-header"><i class="bi bi-people-fill"></i> Participant Submissions</div>
                             <div class="card-body p-0">
@@ -190,8 +153,9 @@
                                         <table class="table table-hover mb-0">
                                             <thead>
                                                 <tr>
-                                                    <th>Participant Email</th>
+                                                    <th>Participant Name / Email</th>
                                                     <th class="text-end">Score</th>
+                                                    <th class="text-end">Status</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -199,6 +163,13 @@
                                                     <tr>
                                                         <td><%= sub.participant_email %></td>
                                                         <td class="text-end fw-bold"><%= parseFloat(sub.score).toFixed(2) %>%</td>
+                                                        <td class="text-end">
+                                                            <% if(sub.risk_flag && sub.risk_flag !== 'SAFE') { %>
+                                                                <span class="badge bg-danger" title="<%= sub.risk_flag %>">RISK</span>
+                                                            <% } else { %>
+                                                                <span class="badge bg-success">SAFE</span>
+                                                            <% } %>
+                                                        </td>
                                                     </tr>
                                                 <% }) %>
                                             </tbody>
@@ -240,114 +211,82 @@
         </div>
     </main>
 
-    
-    <!-- Lightbox Modal for Photo Gallery (New) -->
     <div class="lightbox-modal" id="photoLightbox">
         <button class="lightbox-close">&times;</button>
         <button class="lightbox-nav lightbox-prev">&#10094;</button>
         <img src="" class="lightbox-content" alt="Full size training photo">
         <button class="lightbox-nav lightbox-next">&#10095;</button>
     </div>
-     <div class="modal fade" id="qrModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Assessment QR Code for: <%= training.title %></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body text-center">
-                <div id="qrcode"></div>
-                <p class="mt-2"><small class="text-muted"><%= `http://sajag-portal.onrender.com/public/assessment/take/${training.id}` %></small></p>
+
+    <div class="modal fade" id="qrModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Quick Scan: <%= training.title %></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div id="qrcode"></div>
+                    <p class="mt-2 text-break">
+                        <small class="text-muted" id="assessment-link">
+                            <%= "https://sajag-portal.onrender.com/assessment/start/" + training.id %>
+                        </small>
+                    </p>
+                    <div class="alert alert-warning py-1 mt-2">
+                        <small><i class="bi bi-exclamation-triangle"></i> Geo-Lock Active: Must be within 200m</small>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator/qrcode.js"></script>
     <script src="/js/training_details.js"></script>
 
-    <!-- Custom JavaScript for the new Photo Gallery -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Store all photo URLs in a JavaScript array from the EJS data
             const photos = <%- JSON.stringify(photos.map(p => p.image_url)) %>;
-            
-            if (photos.length === 0) return; // Don't run script if no photos
+            if (photos.length === 0) return;
 
-            // Get all the necessary DOM elements
             const thumbnails = document.querySelectorAll('.gallery-thumbnail');
             const lightbox = document.getElementById('photoLightbox');
             const lightboxImg = lightbox.querySelector('.lightbox-content');
             const closeBtn = lightbox.querySelector('.lightbox-close');
             const prevBtn = lightbox.querySelector('.lightbox-prev');
             const nextBtn = lightbox.querySelector('.lightbox-next');
-
             let currentIndex = 0;
 
-            // Function to open the lightbox and show the selected image
             const openLightbox = (index) => {
                 currentIndex = index;
                 updateImage();
                 lightbox.classList.add('show');
-                // Add event listeners for keyboard navigation when lightbox is open
                 document.addEventListener('keydown', handleKeyPress);
             };
 
-            // Function to close the lightbox
             const closeLightbox = () => {
                 lightbox.classList.remove('show');
-                // Remove keyboard navigation listener when lightbox is closed
                 document.removeEventListener('keydown', handleKeyPress);
             };
 
-            // Function to update the image source in the lightbox
-            const updateImage = () => {
-                lightboxImg.src = photos[currentIndex];
-            };
+            const updateImage = () => { lightboxImg.src = photos[currentIndex]; };
+            const showNextImage = () => { currentIndex = (currentIndex + 1) % photos.length; updateImage(); };
+            const showPrevImage = () => { currentIndex = (currentIndex - 1 + photos.length) % photos.length; updateImage(); };
 
-            // Function to show the next image
-            const showNextImage = () => {
-                currentIndex = (currentIndex + 1) % photos.length;
-                updateImage();
-            };
-            
-            // Function to show the previous image
-            const showPrevImage = () => {
-                currentIndex = (currentIndex - 1 + photos.length) % photos.length;
-                updateImage();
-            };
-
-            // Handle keyboard navigation (Arrow keys)
             const handleKeyPress = (e) => {
-                if (e.key === 'ArrowRight') {
-                    showNextImage();
-                } else if (e.key === 'ArrowLeft') {
-                    showPrevImage();
-                } else if (e.key === 'Escape') {
-                    closeLightbox();
-                }
+                if (e.key === 'ArrowRight') showNextImage();
+                else if (e.key === 'ArrowLeft') showPrevImage();
+                else if (e.key === 'Escape') closeLightbox();
             };
 
-            // Add click event listeners to each thumbnail
             thumbnails.forEach(thumb => {
-                thumb.addEventListener('click', () => {
-                    openLightbox(parseInt(thumb.dataset.index));
-                });
+                thumb.addEventListener('click', () => openLightbox(parseInt(thumb.dataset.index)));
             });
 
-            // Add click event listeners for lightbox controls
             closeBtn.addEventListener('click', closeLightbox);
             nextBtn.addEventListener('click', showNextImage);
             prevBtn.addEventListener('click', showPrevImage);
-            
-            // Close lightbox if the dark background area is clicked
-            lightbox.addEventListener('click', (e) => {
-                if (e.target === lightbox) {
-                    closeLightbox();
-                }
-            });
+            lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
         });
     </script>
 </body>
