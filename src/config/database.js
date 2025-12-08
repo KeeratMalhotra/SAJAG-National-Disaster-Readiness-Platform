@@ -17,9 +17,9 @@ const pool = new Pool(poolConfig);
 const testConnection = async () => {
     try {
         await pool.query('SELECT NOW()');
-        console.log(' Database connected successfully!');
+        console.log('🐘 Database connected successfully!');
     } catch (error) {
-        console.error(' Error connecting to the database:', error.message);
+        console.error('❌ Error connecting to the database:', error.message);
     }
 };
 
