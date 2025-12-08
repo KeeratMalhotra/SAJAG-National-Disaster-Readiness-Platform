@@ -7,8 +7,8 @@ const transporter = nodemailer.createTransport({
     // Using 'service' is common, but specific host/port can be used if needed.
     service: process.env.EMAIL_SERVICE || 'Gmail', 
     auth: {
-        user: process.env.satyamsharmaxyz01, 
-        pass: process.env.htcejyvsigtmolnd
+       user: process.env.EMAIL_USER, 
+        pass: process.env.EMAIL_PASS
     }
 });
 
