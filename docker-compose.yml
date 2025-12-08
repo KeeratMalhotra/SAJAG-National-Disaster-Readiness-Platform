@@ -73,6 +73,8 @@ services:
     restart: always
     # Niche wali line maine hata di hai taaki logs terminal par dikhein
     # command: sh -c "npm start > /usr/src/app/output.log 2>&1" 
+    # ADD THIS COMMAND ATTRIBUTE
+    command: npm start
     depends_on:
       db:
         condition: service_healthy
