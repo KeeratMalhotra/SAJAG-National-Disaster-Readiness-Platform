@@ -1,333 +1,86 @@
-const Submission = require('../models/Submission');
-const Training = require('../models/Training');
-const riskProfiles = require('../data/risk_profiles.json');
 const pool = require('../config/database');
-/**
- * Calculates the Relevance Score for districts to find the Top 30.
- */
-const calculateRelevanceScore = (districtData) => {
-    // Weights (Total = 1.0)
-    const WEIGHTS = {
-        TIMING: 0.30,      // 30% - Imminent threat (Seasonality)
-        SATURATION: 0.25,  // 25% - Untrained population gap
-        IMPACT: 0.20,      // 20% - Severity of disaster
-        HISTORY: 0.15,     // 15% - Chronic frequency
-        RECENCY: 0.10      // 10% - Time since last training
-    };
-
-    // 1. Calculate Saturation Gap (Lower saturation = Higher Need)
-    // Formula: 1 - (Trained / Population)
-    // Edge case: If population is 0, handle division by zero.
-    let saturationRatio = districtData.totalPopulation > 0 
-        ? (districtData.trainedCount / districtData.totalPopulation) 
-        : 0;
-    // We cap ratio at 1 (100%). We want the GAP, so we take (1 - ratio).
-    let saturationScore = 1 - Math.min(saturationRatio, 1);
-
-    // 2. Calculate Recency Score (Older training = Higher Need)
-    // Let's say if training was > 365 days ago, score is max (1.0).
-    const daysSinceLastTraining = (new Date() - new Date(districtData.lastTrainingDate)) / (1000 * 60 * 60 * 24);
-    let recencyScore = Math.min(daysSinceLastTraining / 365, 1); 
-    // If never trained, recency is max
-    if (!districtData.lastTrainingDate) recencyScore = 1;
-
-    // 3. Timing/Seasonality (Probability Score)
-    // E.g., If it's July, and Assam has high flood probability.
-    let timingScore = districtData.currentMonthProbability || 0; // 0 to 1
-
-    // 4. Historical Frequency (Normalized)
-    // Assume maxDisastersInAnyDistrict is a constant calculated beforehand (e.g., 50)
-    const MAX_DISASTER_COUNT_REF = 50; 
-    let frequencyScore = Math.min(districtData.totalDisastersLast10Years / MAX_DISASTER_COUNT_REF, 1);
-
-    // 5. Disaster Scale (Normalized)
-    // Assume maxAffectedRef is e.g., 100,000 people
-    const MAX_AFFECTED_REF = 100000;
-    let impactScore = Math.min(districtData.avgAffectedPeople / MAX_AFFECTED_REF, 1);
-
-    // --- FINAL CALCULATION ---
-    const finalScore = 
-        (WEIGHTS.TIMING * timingScore) +
-        (WEIGHTS.SATURATION * saturationScore) +
-        (WEIGHTS.IMPACT * impactScore) +
-        (WEIGHTS.HISTORY * frequencyScore) +
-        (WEIGHTS.RECENCY * recencyScore);
-
-    return finalScore;
-};
-
-// Main function to get Top 30
-const getTopRelevantDistricts = async (allDistricts) => {
-    // 1. Calculate score for each district
-    const scoredDistricts = allDistricts.map(district => {
-        return {
-            ...district,
-            relevanceScore: calculateRelevanceScore(district)
-        };
-    });
-
-    // 2. Sort by Score Descending (Highest score first)
-    scoredDistricts.sort((a, b) => b.relevanceScore - a.relevanceScore);
-
-    // 3. Return Top 30
-    return scoredDistricts.slice(0, 30);
-};
+const riskProfiles = require('../data/risk_profiles.json'); // Ensure this file exists
 
 const predictionService = {
-    async getScoresByTheme(state = null) {
-        try {
-            let query = `
-                SELECT 
-                    t.theme, 
-                    AVG(ps.score) as average_score
-                FROM 
-                    participant_submissions ps
-                JOIN 
-                    trainings t ON ps.training_id = t.id
-            `;
-            
-            const params = [];
-            
-            if (state) {
-                // Join with users table to filter by state
-                query += `
-                    JOIN 
-                        users u ON t.creator_user_id = u.id
-                    WHERE 
-                        u.state = $1
-                `;
-                params.push(state);
-            }
-            
-            query += `
-                GROUP BY 
-                    t.theme
-                ORDER BY 
-                    average_score DESC
-            `;
-
-            const { rows } = await pool.query(query, params);
-            return rows;
-        } catch (error) {
-            console.error('Error getting scores by theme:', error);
-            return [];
-        }
-    },
+    
+    // The Core 5-Factor Algorithm
     async calculateGaps() {
-        const gaps = [];
-        const today = new Date();
+        try {
+            // 1. Fetch Training Stats per District (Real DB Data)
+            // We group submissions by District (extracted from User/Training location)
+            // Note: Since we don't have a standardized 'district' column in trainings yet, 
+            // we will simulate it by matching string locations or using State.
+            // FOR HACKATHON: We will use the 'risk_profiles.json' keys as our list of districts
+            // and check how many trainings happened there.
 
-        // Loop through each district in our NEW risk profile
-        for (const district in riskProfiles) {
-            const profile = riskProfiles[district];
-            
-            // For each theme (e.g., "Flood") in that district's profile
-            for (const theme of profile.themes) {
-                
-                // --- 1. GET DYNAMIC DATA ---
-                // Get the total number of unique people trained for this theme/location
-                const participantCount = await Submission.getParticipantCountByLocation(theme, district);
-                
-                // Get the last time a training was held here
-                const mostRecentDate = await Training.findMostRecentTrainingDate(theme, district);
+            const districtsToCheck = Object.keys(riskProfiles);
+            const gaps = [];
 
-                // --- 2. CALCULATE HEURISTICS ---
+            for (const district of districtsToCheck) {
+                const profile = riskProfiles[district];
                 
-                // Saturation: (Trained / Population). Capped at 1 (100%)
-                const saturation = Math.min(participantCount / profile.population, 1);
+                // A. Check Saturation (How many people trained?)
+                // We search for trainings where location_text contains the district name
+                const trainingQuery = `
+                    SELECT COUNT(*) as count 
+                    FROM participant_submissions ps
+                    JOIN trainings t ON ps.training_id = t.id
+                    WHERE t.location_text ILIKE $1
+                `;
+                const trainingRes = await pool.query(trainingQuery, [`%${district}%`]);
+                const trainedCount = parseInt(trainingRes.rows[0].count) || 0;
+
+                // B. Check Recency (When was the last one?)
+                const dateQuery = `
+                    SELECT MAX(start_date) as last_date
+                    FROM trainings
+                    WHERE location_text ILIKE $1
+                `;
+                const dateRes = await pool.query(dateQuery, [`%${district}%`]);
+                const lastDate = dateRes.rows[0].last_date ? new Date(dateRes.rows[0].last_date) : null;
+
+                // --- THE ALGORITHM ---
                 
-                // Recency: How long ago was the last training?
-                let daysSinceLastTraining = 365 * 3; // Default to a high number (3 years) if no training
-                if (mostRecentDate) {
-                    const diffTime = Math.abs(today - new Date(mostRecentDate));
-                    daysSinceLastTraining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                // 1. Vulnerability (From JSON) - Weight: 40%
+                const scoreVulnerability = profile.vulnerability_score || 0.5;
+
+                // 2. Saturation (Trained / Population) - Weight: 30%
+                // Assume target is 1000 people per district for the demo
+                const targetPopulation = 1000;
+                const saturationRatio = Math.min(trainedCount / targetPopulation, 1);
+                const scoreGap = 1 - saturationRatio; // High gap if low saturation
+
+                // 3. Recency (Days since last training) - Weight: 30%
+                let scoreRecency = 1; // Default to Bad (1.0) if never trained
+                if (lastDate) {
+                    const daysAgo = (new Date() - lastDate) / (1000 * 60 * 60 * 24);
+                    // If trained > 180 days ago, score increases
+                    scoreRecency = Math.min(daysAgo / 180, 1); 
                 }
-                
-                // Recency Factor: A score from 0 to 3. 
-                // A training today (0 days) gives a 0 factor. A training >3 years ago (1095 days) gives a max factor of 3.
-                const recencyFactor = Math.min(daysSinceLastTraining / 365, 3).toFixed(2);
 
+                // Final Priority Score (0 to 1)
+                const finalScore = (scoreVulnerability * 0.4) + (scoreGap * 0.3) + (scoreRecency * 0.3);
 
-                // --- 3. CALCULATE FINAL PRIORITY SCORE ---
-                // Priority = Vulnerability * (1 - Saturation) * Recency
-                // (1 - Saturation) = "Untrained Ratio".
-                const vulnerability = profile.vulnerability_score;
-                const untrainedRatio = (1 - saturation);
-                
-                // We use (1 + recencyFactor) so a recent training (factor 0) still counts (x1)
-                // and an old training (factor 3) is weighted heavily (x4)
-                const priorityScore = vulnerability * untrainedRatio * (1 + parseFloat(recencyFactor));
-
-                // --- 4. ADD TO LIST ---
-                if (priorityScore > 0.1) { // Only show meaningful gaps
+                // Only add to list if it's a gap (Score > 0.4)
+                if (finalScore > 0.4) {
                     gaps.push({
                         district: district,
-                        theme: theme,
-                        priorityScore: priorityScore.toFixed(3),
-                        reason: `Saturation: ${(saturation * 100).toFixed(1)}% (${participantCount} / ${profile.population}). Last training: ${daysSinceLastTraining} days ago.`
+                        theme: profile.themes[0] || 'General',
+                        priorityScore: finalScore.toFixed(2),
+                        trainedCount: trainedCount,
+                        reason: `High Risk (${scoreVulnerability}) & Low Saturation (${trainedCount}/${targetPopulation})`
                     });
                 }
             }
+
+            // Sort by Urgency (Highest Score First)
+            return gaps.sort((a, b) => b.priorityScore - a.priorityScore);
+
+        } catch (error) {
+            console.error('Gap Calculation Error:', error);
+            return []; // Return empty on error to prevent crash
         }
-        
-        // Sort by the highest priority score first
-        return gaps.sort((a, b) => b.priorityScore - a.priorityScore);
     }
 };
 
 module.exports = predictionService;
-
-// const { GoogleGenerativeAI } = require("@google/generative-ai");
-// const Submission = require('../models/Submission');
-// const Training = require('../models/Training');
-// const pool = require('../config/database');
-
-// // We still keep the list of districts, but we IGNORE the hardcoded scores.
-// // We only use this to know WHICH districts to scan.
-// const baseLocations = require('../data/risk_profiles.json');
-
-// // Initialize Gemini
-// const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-// const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Flash is faster for this
-
-// const predictionService = {
-
-//     /**
-//      * EXISTING: Gets simple average scores for charts
-//      */
-//     async getScoresByTheme(state = null) {
-//         try {
-//             let query = `
-//                 SELECT t.theme, AVG(ps.score) as average_score
-//                 FROM participant_submissions ps
-//                 JOIN trainings t ON ps.training_id = t.id
-//             `;
-//             const params = [];
-//             if (state) {
-//                 query += ` JOIN users u ON t.creator_user_id = u.id WHERE u.state = $1`;
-//                 params.push(state);
-//             }
-//             query += ` GROUP BY t.theme ORDER BY average_score DESC`;
-//             const { rows } = await pool.query(query, params);
-//             return rows;
-//         } catch (error) {
-//             console.error('Error getting scores by theme:', error);
-//             return [];
-//         }
-//     },
-
-//     /**
-//      * NEW: HELPER FUNCTION
-//      * Asks Gemini to rate the risk of specific districts based on geography/season
-//      */
-//     async fetchDynamicRiskFactors(districts) {
-//         console.log("Consulting Gemini for real-time risk assessment...");
-        
-//         const districtNames = districts.join(", ");
-//         const currentMonth = new Date().toLocaleString('default', { month: 'long' });
-
-//         // STRICT PROMPT ENGINEERING
-//         // We force Gemini to return JSON only. No chatting.
-//         const prompt = `
-//             Act as a Senior Disaster Risk Analyst for the National Disaster Management Authority of India.
-//             Current Month: ${currentMonth}.
-            
-//             Analyze the following districts: [${districtNames}].
-            
-//             For each district, provide a JSON object containing:
-//             1. "riskScore": A float between 0.1 (Safe) and 1.0 (Critical Danger) based on historical weather patterns, geography, and current seasonal risks (e.g., Monsoon = Floods).
-//             2. "primaryTheme": The single most likely disaster type right now (e.g., "Flood", "Cyclone", "Landslide", "Fire").
-//             3. "reason": A short 10-word explanation.
-
-//             Return ONLY a valid JSON array.
-//             Format: [{"district": "Name", "riskScore": 0.8, "primaryTheme": "Flood", "reason": "..."}]
-//         `;
-
-//         try {
-//             const result = await model.generateContent(prompt);
-//             const response = result.response;
-//             const text = response.text();
-            
-//             // Clean the output (sometimes AI adds markdown backticks)
-//             const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim();
-//             return JSON.parse(cleanText);
-//         } catch (error) {
-//             console.error("Gemini AI Risk Assessment Failed:", error);
-//             return null; // Fallback will be handled in main function
-//         }
-//     },
-
-//     /**
-//      * MAIN FUNCTION: Calculates Gaps using AI + DB
-//      */
-//     async calculateGaps() {
-//         const gaps = [];
-//         const today = new Date();
-
-//         // 1. Get list of districts to analyze (from our base file keys)
-//         const districtsToAnalyze = Object.keys(baseLocations);
-
-//         // 2. Fetch AI Risk Data (The Dynamic Part)
-//         // We do this in one batch request to save time/API calls
-//         const aiRiskData = await this.fetchDynamicRiskFactors(districtsToAnalyze);
-
-//         // 3. Iterate and Merge Data
-//         for (const district of districtsToAnalyze) {
-            
-//             // Default values in case AI fails
-//             let externalRiskScore = 0.5;
-//             let currentTheme = baseLocations[district].themes[0]; // Fallback to first static theme
-//             let riskReason = "Standard Assessment";
-
-//             // If AI worked, use its "Brain"
-//             if (aiRiskData) {
-//                 const aiAnalysis = aiRiskData.find(d => d.district === district);
-//                 if (aiAnalysis) {
-//                     externalRiskScore = aiAnalysis.riskScore;
-//                     currentTheme = aiAnalysis.primaryTheme;
-//                     riskReason = aiAnalysis.reason;
-//                 }
-//             }
-
-//             // --- DATABASE METRICS (Internal Readiness) ---
-            
-//             // Get training saturation for this SPECIFIC predicted theme
-//             const participantCount = await Submission.getParticipantCountByLocation(currentTheme, district);
-//             const mostRecentDate = await Training.findMostRecentTrainingDate(currentTheme, district);
-
-//             const population = baseLocations[district].population || 100000; // Safe fallback
-//             const saturation = Math.min(participantCount / population, 1);
-
-//             // Recency Score (Higher = Worse)
-//             let daysSinceLastTraining = 1000; // Default: Long time ago
-//             if (mostRecentDate) {
-//                 const diffTime = Math.abs(today - new Date(mostRecentDate));
-//                 daysSinceLastTraining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-//             }
-//             // If training was > 1 year ago, recency factor maxes out at 1.0
-//             const recencyFactor = Math.min(daysSinceLastTraining / 365, 1);
-
-//             // --- THE FORMULA ---
-//             // Priority = (External Risk) * (Internal Unreadiness)
-//             // If Risk is High (0.9) and we are Untrained (0.1 saturation -> 0.9 unreadiness), Priority is MASSIVE.
-            
-//             const untrainedFactor = (1 - saturation);
-//             const priorityScore = (externalRiskScore * 0.6) + (untrainedFactor * 0.2) + (recencyFactor * 0.2);
-
-//             // --- FILTER & PUSH ---
-//             if (priorityScore > 0.3) { 
-//                 gaps.push({
-//                     district: district,
-//                     theme: currentTheme, // Dynamically chosen by AI
-//                     priorityScore: priorityScore.toFixed(3),
-//                     reason: `AI Risk Assessment: ${riskReason} | Readiness: ${(saturation * 100).toFixed(1)}% trained.`
-//                 });
-//             }
-//         }
-        
-//         // Return sorted by highest priority
-//         return gaps.sort((a, b) => b.priorityScore - a.priorityScore);
-//     }
-// };
-
-// module.exports = predictionService;
