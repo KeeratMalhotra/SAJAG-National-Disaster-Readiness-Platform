@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const trainingController = require('../controllers/trainingController');
 const { protectRoute } = require('../middleware/authMiddleware');
-const { checkUser } = require('../middleware/checkUserMiddleware');
 const multer = require('multer');
 const imageFileFilter = (req, file, cb) => {
     // Check if the file's mimetype starts with 'image/'
@@ -22,6 +21,5 @@ router.get('/geojson/state', trainingController.getTrainingsAsGeoJSONByState);
 router.get('/:id', trainingController.showTrainingDetails);
 router.post('/', trainingController.createTraining);    
 router.post('/:id/photos', upload.single('trainingPhoto'), trainingController.uploadPhoto);
-router.get('/:id/qr', checkUser, trainingController.getTrainingQR);
 
 module.exports = router;
