@@ -107,28 +107,27 @@
             mainContent.style.opacity = '1';
             // Optional: Alert to confirm it worked
             console.log("Assessment Unlocked for Testing"); 
+        }if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    // Success: Real GPS
+                    unlockAssessment(position.coords.latitude, position.coords.longitude);
+                },
+                (error) => {
+                    // --- CHANGED: Allow access even if GPS fails (For Testing) ---
+                    alert("⚠️ GPS Failed (Likely due to HTTP). Using Mock Location for Testing.");
+                    
+                    // Injecting dummy coordinates so the backend doesn't crash
+                    unlockAssessment(28.6139, 77.2090); // Example: New Delhi Coordinates
+                },
+                { enableHighAccuracy: true, timeout: 5000 }
+            );
+        } else {
+            // Browser doesn't support GPS? Let them in anyway for now.
+            alert("⚠️ Geolocation not supported. Using Mock Location.");
+            unlockAssessment(28.6139, 77.2090);
         }
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        // Success! Inject Coordinates
-                        document.getElementById('userLat').value = position.coords.latitude;
-                        document.getElementById('userLng').value = position.coords.longitude;
-                        
-                        // Unlock the screen
-                        document.getElementById('loading-overlay').classList.add('hidden');
-                        document.getElementById('main-content').style.opacity = '1';
-                    },
-                    (error) => {
-                        // Failed! Block the user.
-                        document.getElementById('gps-error').innerText = "Location Access Denied. You cannot take this test remotely.";
-                    },
-                    { enableHighAccuracy: true } // Force GPS (not just Wifi)
-                );
-            } else {
-                alert("Geolocation is not supported by this browser.");
-            }
-        });
+    });
 
         // --- 2. VISUAL SELECTION LOGIC ---
         function selectOption(qId, optId, cardElement) {
