@@ -225,3 +225,29 @@ font-weight: 500;
     }
 }
 
+
+
+
+
+
+/* new for remove underline under sajag */
+
+/* Styling for the 'SAJAG' link inside the branding panel */
+.branding-panel a {
+    /* Removes the underline from the link */
+    text-decoration: none; 
+    /* Inherits the text color from its parent element (which is white from .branding-panel) */
+    color: inherit; 
+}
+
+/* Targets the link during interaction states (hover, focus, active) */
+.branding-panel a:hover,
+.branding-panel a:focus,
+.branding-panel a:active {
+    /* Ensures no underline appears during interaction */
+    text-decoration: none;
+    /* Ensures the color does not change on hover or click */
+    color: inherit; 
+    /* Removes the default browser focus outline (use with caution for accessibility) */
+    outline: none; 
+}
