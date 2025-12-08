@@ -2,17 +2,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const mapContainer = document.getElementById('map');
     if (!mapContainer) return;
 
-    // --- 1. State-Specific View Settings ---
+    // --- START OF CHANGES ---
+
+    // 1. Add a lookup object for state-specific map views.
     const stateViews = {
-    'Delhi':       { center: [77.1025, 28.7041], zoom: 9 }, // City-state, higher zoom
-    'Assam':       { center: [92.9376, 26.2006], zoom: 6 }, // Wide state
-    'Odisha':      { center: [85.0985, 20.9517], zoom: 6 }, // Large state
-    'Gujarat':     { center: [71.1924, 22.2587], zoom: 6 }, // Large state
-    'Uttarakhand': { center: [79.0193, 30.0668], zoom: 7 }, // Medium state
-    'default':     { center: [78.9629, 20.5937], zoom: 4 }
-};
+        'Delhi':       { center: [77.1025, 28.7041], zoom: 9 },
+        'Maharashtra': { center: [75.7139, 19.7515], zoom: 6 },
+        'Punjab':      { center: [75.3412, 31.1471], zoom: 7 },
+        'Kerala':      { center: [76.2711, 10.8505], zoom: 7 },
+        // Add other states here...
+        'default':     { center: [78.9629, 20.5937], zoom: 4 } // Fallback view for India
+    };
 
     const accessToken = mapContainer.dataset.token;
+    // 2. Get the state name from the map container's data attribute.
     const stateName = mapContainer.dataset.state;
 
     if (!accessToken) {
@@ -20,9 +23,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    // 3. Select the correct view settings for the current state.
     const view = stateViews[stateName] || stateViews['default'];
+
     mapboxgl.accessToken = accessToken;
 
+    // 4. Initialize the map using the state-specific center and zoom.
     const map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/mapbox/satellite-streets-v12',
@@ -30,149 +36,167 @@ document.addEventListener('DOMContentLoaded', () => {
         zoom: view.zoom
     });
 
-    // --- 2. HOVER POPUP CONFIGURATION (The Magic Part) ---
-    const hoverPopup = new mapboxgl.Popup({
-        closeButton: false,
-        closeOnClick: false,
-        maxWidth: '300px',
-        offset: 10 // Keep it close to the mouse
-    });
-
-    // --- 3. GRACE PERIOD LOGIC ---
-    let popupLeaveTimer;
-
-    const clearPopupTimer = () => {
-        if (popupLeaveTimer) {
-            clearTimeout(popupLeaveTimer);
-            popupLeaveTimer = null;
-        }
-    };
-
-    const schedulePopupClose = () => {
-        // 500ms delay: Gives you time to move mouse from dot to popup
-        popupLeaveTimer = setTimeout(() => {
-            hoverPopup.remove();
-        }, 500); 
-    };
-
-    // Keep popup open if the user hovers INSIDE the popup itself
-    const attachPopupHoverListeners = () => {
-        const popupElement = hoverPopup.getElement();
-        if (!popupElement) return;
-
-        popupElement.addEventListener('mouseenter', clearPopupTimer);
-        popupElement.addEventListener('mouseleave', schedulePopupClose);
-    };
+    // NOTE: The original `map.fitBounds` call for India has been removed.
 
     let allTrainingsData = null;
 
-    // Helper to filter the GeoJSON boundary
     function filterByState(geoData, stateName) {
         const filteredFeatures = geoData.features.filter(
             feature => feature.properties.NAME_1.toLowerCase() === stateName.toLowerCase()
         );
         return { ...geoData, features: filteredFeatures };
     }
-
     map.on('load', () => {
-        // --- Load Boundaries & Mask ---
        fetch('/data/india_district.geojson')
         .then(response => response.json())
         .then(geoData => {
+            // Filter the GeoJSON by stateName (same as before)
             const filteredGeoData = filterByState(geoData, stateName);
 
-            // 1. Create Mask (Darken outside area)
-            // Ensure Turf.js is loaded in your layout file for this to work
-            if (typeof turf !== 'undefined') {
-                try {
-                    const maskPolygon = turf.mask(filteredGeoData);
-                    map.addSource('state-mask-source', {
-                        'type': 'geojson',
-                        'data': maskPolygon
-                    });
-                    map.addLayer({
-                        'id': 'state-mask-layer',
-                        'type': 'fill',
-                        'source': 'state-mask-source',
-                        'layout': {},
-                        'paint': {
-                            'fill-color': '#000000',
-                            'fill-opacity': 0.5
-                        }
-                    });
-                } catch (e) {
-                    console.warn("Turf.js masking failed or not loaded:", e);
-                }
-            }
+            // <<< CHANGE START: Create and add the mask layer >>>
 
-            // 2. Add State Boundary Lines
+            // 1. Use Turf.js to create the inverse polygon (the mask)
+            // This creates a shape of the whole world with a hole for your state
+            const maskPolygon = turf.mask(filteredGeoData);
+
+            // 2. Add a new source for this mask data
+            map.addSource('state-mask-source', {
+                'type': 'geojson',
+                'data': maskPolygon
+            });
+
+            // 3. Add the fill layer to darken the outside area
+            // This layer MUST be added before your boundary lines
+            map.addLayer({
+                'id': 'state-mask-layer',
+                'type': 'fill',
+                'source': 'state-mask-source',
+                'layout': {},
+                'paint': {
+                    'fill-color': '#000000', // Black color
+                    'fill-opacity': 0.5      // 50% transparency
+                }
+            });
+
+            // <<< CHANGE END >>>
+
+
+            // --- The boundary line code remains the same ---
+
+            // Add the main data source for the boundary line
             map.addSource('india-boundary', {
                 'type': 'geojson',
                 'data': filteredGeoData
             });
 
+            // Layer 1: The Casing (Wider, darker line underneath)
             map.addLayer({
                 'id': 'state-boundary-casing',
                 'type': 'line',
                 'source': 'india-boundary',
-                'layout': { 'line-join': 'round', 'line-cap': 'round' },
-                'paint': { 'line-color': '#000000', 'line-width': 5 }
+                'layout': {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                },
+                'paint': {
+                    'line-color': '#000000',
+                    'line-width': 5
+                }
             });
 
+            // Layer 2: The Main Line (Thinner, white line on top)
             map.addLayer({
                 'id': 'state-boundary-main',
                 'type': 'line',
                 'source': 'india-boundary',
-                'layout': { 'line-join': 'round', 'line-cap': 'round' },
-                'paint': { 'line-color': '#FFFFFF', 'line-width': 2.5 }
+                'layout': {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                },
+                'paint': {
+                    'line-color': '#FFFFFF',
+                    'line-width': 2.5
+                }
             });
         });
 
-        // --- Load Training Data ---
+       // 5. Update fetch URL to get data for the specific state.
         fetch(`/trainings/geojson?state=${encodeURIComponent(stateName)}`)
             .then(res => res.json())
             .then(data => {
                 allTrainingsData = data;
                 if (!allTrainingsData.features) return;
+                console.log('--- sdma-map.js: Data received from fetch ---');
+        console.log(`Received ${data.features?.length || 0} features.`);
+        if (data.features) {
+            console.log('Received Feature IDs:', data.features.slice(0, 10).map(f => f.properties.id));
+             // Check specifically for duplicates
+             const ids = data.features.map(f => f.properties.id);
+             const uniqueIds = new Set(ids);
+             if (ids.length !== uniqueIds.size) {
+                 console.warn('DUPLICATES DETECTED IN RECEIVED DATA!');
+             } else {
+                  console.log('No duplicates detected in received data.');
+             }
+        }
+        console.log('---------------------------------------------');
+                
+                // --- NEW FIX: Add a "count" property to each feature ---
+                // allTrainingsData.features.forEach(feature => {
+                //     if (feature.properties) {
+                //         feature.properties.count = 1;
+                //     } else {
+                //         feature.properties = { count: 1 };
+                //     }
+                // });
 
+                // Create a data source with clustering enabled
+                // Create a data source with clustering enabled
                 map.addSource('trainings', {
                     type: 'geojson',
                     data: allTrainingsData,
                     cluster: true,
                     clusterMaxZoom: 14,
                     clusterRadius: 15,
-                    clusterProperties: { 'total': ['+', 1] }
+                    // --- FIX #1: Tell clusters to sum up every point ---
+                    clusterProperties: {
+                        'total': ['+', 1] // Add 1 for every feature in the cluster
+                    }
                 });
 
-                // Clusters Layer (Orange Circles)
+                // Layer for the clusters (circles with numbers)
                 map.addLayer({
                     id: 'clusters',
                     type: 'circle',
                     source: 'trainings',
                     filter: ['has', 'point_count'],
                     paint: {
-                        'circle-color': '#FF9933',
+                        'circle-color': '#FF9933', // Saffron
+                        // --- FIX #1: Use the new 'total' property ---
                         'circle-radius': ['step', ['get', 'total'], 20, 100, 30, 750, 40],
                         'circle-stroke-width': 2,
                         'circle-stroke-color': '#fff'
                     }
                 });
 
-                // Cluster Count Text
+                // Layer for the cluster count text
                 map.addLayer({
                     id: 'cluster-count',
                     type: 'symbol',
                     source: 'trainings',
                     filter: ['has', 'point_count'],
                     layout: {
+                        // --- FIX #1: Use the new 'total' property ---
                         'text-field': ['get', 'total'],
                         'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
                         'text-size': 14
                     },
-                    paint: { 'text-color': '#ffffff' }
+                    paint: {
+                        'text-color': '#ffffff'
+                    }
                 });
 
-                // Unclustered Points Layer (Colored Dots)
+                // Layer for the individual, unclustered points (custom icons)
                 map.addLayer({
                     id: 'unclustered-point',
                     type: 'circle',
@@ -182,10 +206,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     'circle-color': [
                         'match',
                         ['get', 'theme'],
-                        'Earthquake', '#D97706',
-                        'Flood', '#2563EB',
-                        'Cyclone', '#4B5563',
-                        'Landslide', '#6D28D9',
+                        'Earthquake', '#D97706',  // Amber
+                        'Flood', '#2563EB',       // Blue
+                        'Cyclone', '#4B5563',      // Gray
+                        'Landslide', '#6D28D9',    // Purple (as it was)
                         'Fire Safety', '#DC2626',
                         '#1F2937' 
                     ],
@@ -195,72 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 });
                 
-                // --- HTML Builder for Popups ---
-                const buildPopupHtml = (features) => {
-                    const uniqueFeaturesMap = new Map();
-                    features.forEach(feature => {
-                        const key = feature.properties.id || Math.random();
-                        uniqueFeaturesMap.set(key, feature);
-                    });
-                    const uniqueFeatures = Array.from(uniqueFeaturesMap.values());
-
-                    let listContent = '';
-                    uniqueFeatures.forEach((feature, index) => {
-                        const props = feature.properties;
-                        if (index > 0) listContent += '<hr class="my-2" style="opacity:0.3">';
-                        listContent += `
-                            <div class="mb-2">
-                                <h6 class="mb-1" style="font-size:0.95rem; font-weight:600;">${props.title || 'Untitled'}</h6>
-                                <p class="mb-1" style="font-size:0.85rem; color:#555;">Theme: ${props.theme}</p>
-                                <span class="badge bg-primary" style="font-size:0.7rem;">${props.status}</span>
-                                <div class="mt-2">
-                                    <a href="/trainings/${props.id}" class="btn btn-sm btn-outline-primary py-0" style="font-size: 0.8rem;">View Details</a>
-                                </div>
-                            </div>
-                        `;
-                    });
-
-                    const containerStyle = uniqueFeatures.length > 1 ?
-                        'max-height: 220px; overflow-y: auto; padding-right: 5px;' : '';
-
-                    return `
-                        <div style="font-family: 'Inter', sans-serif;">
-                            ${uniqueFeatures.length > 1 ? `<h5 class="mb-2 pb-1 border-bottom" style="font-size: 1rem;">${uniqueFeatures.length} Trainings</h5>` : ''}
-                            <div style="${containerStyle}">
-                                ${listContent}
-                            </div>
-                        </div>
-                    `;
-                };
-
-                // --- 4. CLUSTER HOVER HANDLERS ---
-                map.on('mouseenter', 'clusters', (e) => {
-                    map.getCanvas().style.cursor = 'pointer';
-                    clearPopupTimer(); // Don't close if we just arrived
-
-                    const clusterId = e.features[0].properties.cluster_id;
-                    const pointCount = e.features[0].properties.point_count;
-                    const coordinates = e.features[0].geometry.coordinates.slice();
-
-                    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-                        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-                    }
-
-                    // Get underlying data
-                    map.getSource('trainings').getClusterLeaves(clusterId, pointCount, 0, (err, features) => {
-                        if (err) return;
-                        const html = buildPopupHtml(features);
-                        hoverPopup.setLngLat(coordinates).setHTML(html).addTo(map);
-                        attachPopupHoverListeners(); // Add logic to keep popup open
-                    });
-                });
-
-                map.on('mouseleave', 'clusters', () => {
-                    map.getCanvas().style.cursor = '';
-                    schedulePopupClose(); // Start the countdown
-                });
-
-                // Click still zooms in
+                // Click event for clusters (to zoom in)
                 map.on('click', 'clusters', (e) => {
                     const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
                     const clusterId = features[0].properties.cluster_id;
@@ -270,39 +229,85 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 });
 
-                // --- 5. UNCLUSTERED POINT HOVER HANDLERS ---
-                map.on('mouseenter', 'unclustered-point', (e) => {
-                    map.getCanvas().style.cursor = 'pointer';
-                    clearPopupTimer();
-
-                    const coordinates = e.features[0].geometry.coordinates.slice();
+                // Click event for individual points (to show popup)
+                // Click event for individual points (to show popup)
+                // Click event for individual points (to show popup)
+                // Click event for individual points (to show popup)
+                map.on('click', 'unclustered-point', (e) => {
+                    // Get ALL features at the clicked point
                     const allFeatures = map.queryRenderedFeatures(e.point, {
                         layers: ['unclustered-point']
                     });
 
-                    if (!allFeatures.length) return;
-                    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-                        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                    if (!allFeatures.length) {
+                        return;
                     }
 
-                    const html = buildPopupHtml(allFeatures);
-                    hoverPopup.setLngLat(coordinates).setHTML(html).addTo(map);
-                    attachPopupHoverListeners();
-                });
+                    // --- START: DEDUPLICATION FIX ---
+                    // Even with clean data, queryRenderedFeatures can return
+                    // multiple features. We MUST deduplicate them manually.
+                    const uniqueFeaturesMap = new Map();
+                    allFeatures.forEach(feature => {
+                        // Use the training 'id' as the unique key
+                        uniqueFeaturesMap.set(feature.properties.id, feature);
+                    });
+                    const uniqueFeatures = Array.from(uniqueFeaturesMap.values());
+                    // --- END: DEDUPLICATION FIX ---
 
-                map.on('mouseleave', 'unclustered-point', () => {
-                    map.getCanvas().style.cursor = '';
-                    schedulePopupClose();
+
+                    // Use the coordinates from the first unique feature
+                    const coordinates = uniqueFeatures[0].geometry.coordinates.slice();
+                    let popupContent = '';
+
+                    // Loop through the CLEAN, UNIQUE features
+                    uniqueFeatures.forEach((feature, index) => {
+                        const properties = feature.properties;
+
+                        if (index > 0) {
+                            popupContent += '<hr class="my-2">';
+                        }
+
+                        popupContent += `
+                            <h6>${properties.title}</h6>
+                            <p class="mb-1">Theme: ${properties.theme}</p>
+                            <span class="badge bg-primary">${properties.status}</span>
+                            <br>
+                            <a href="/trainings/${properties.id}" class="btn btn-sm btn-outline-primary mt-2">View Details</a>
+                        `;
+                    });
+
+                    // Use the UNIQUE length for the title
+                    if (uniqueFeatures.length > 1) {
+                        popupContent = `
+                            <h5 class="mb-2" style="font-size: 1.1rem;">${uniqueFeatures.length} Trainings at this Location</h5>
+                            <div style="max-height: 220px; overflow-y: auto; padding-right: 10px;">
+                                ${popupContent}
+                            </div>
+                        `;
+                    }
+
+                    // Create a single popup
+                    new mapboxgl.Popup({ maxWidth: '300px' })
+                        .setLngLat(coordinates)
+                        .setHTML(popupContent)
+                        .addTo(map);
                 });
+                // Change cursor to pointer on hover
+                map.on('mouseenter', 'clusters', () => { map.getCanvas().style.cursor = 'pointer'; });
+                map.on('mouseleave', 'clusters', () => { map.getCanvas().style.cursor = ''; });
+                map.on('mouseenter', 'unclustered-point', () => { map.getCanvas().style.cursor = 'pointer'; });
+                map.on('mouseleave', 'unclustered-point', () => { map.getCanvas().style.cursor = ''; });
             });
     });
 
-    // --- Filter Logic ---
+    // --- INTERACTIVE FILTER LOGIC (UNCHANGED) ---
     const filterGroup = document.getElementById('map-filter-group');
-    if (filterGroup) {
+    if(filterGroup){
         filterGroup.addEventListener('click', (e) => {
             if (e.target.tagName !== 'BUTTON') return;
+            
             const filter = e.target.dataset.filter;
+
             if (filter === 'All') {
                 map.getSource('trainings').setData(allTrainingsData);
             } else {
@@ -312,10 +317,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
                 map.getSource('trainings').setData(filteredData);
             }
+            
             document.querySelectorAll('#map-filter-group button').forEach(btn => {
                 btn.classList.remove('active', 'btn-primary');
                 btn.classList.add('btn-outline-secondary');
             });
+
             e.target.classList.remove('btn-outline-secondary');
             e.target.classList.add('active', 'btn-primary');
         });
