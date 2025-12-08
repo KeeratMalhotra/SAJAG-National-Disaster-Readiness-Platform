@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -256,4 +256,324 @@
     <script src="/js/announcement.js"></script>
 </body>
 
-</html>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+</html>                     
+
+-->
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= pageTitle %> | Dashboard
+    </title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet' />
+    
+    <link rel="stylesheet" href="/css/sidebar.css" />
+    <link rel="stylesheet" href="/css/dashboard_reorganized.css" />
+    <link rel="stylesheet" href="/css/map.css" />
+</head>
+
+<body>
+    <%- include('../partials/_sidebar') %>
+
+    <main class="main-content">
+        <header class="page-header">
+            <div class="identity-header">
+                <img src="/images/ndma.png" alt="NDMA Logo" class="logo">
+                <div class="org-details text-center">
+                    <h1 class="org-name">National Defence Management Authority</h1>
+                    <p class="org-state">National Dashboard</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#importModal">
+                        <i class="bi bi-upload"></i> Bulk Import
+                    </button>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#announcementModal">
+                        <i class="bi bi-plus-circle"></i> New Announcement
+                    </button>
+                    <a href="/reports/ndma" id="downloadReportBtn" class="btn btn-secondary" target="_blank">
+                        <i class="bi bi-download"></i> Download Report
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <div id="report-content">
+
+            <% if (locals.announcements && announcements.length > 0) { %>
+            <div class="alert announcement-bar alert-dismissible fade show" role="alert">
+                <strong><i class="bi bi-megaphone-fill"></i>
+                    <%= announcements[0].title %>:
+                </strong>
+                <%= announcements[0].content %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <% } %>
+
+            <div class="row g-4">
+                <div class="col-lg-7">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <i class="bi bi-geo-alt-fill"></i> National Training Map
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <div class="btn-group mb-3" role="group" id="map-filter-group">
+                                <button type="button" class="btn btn-sm btn-primary active" data-filter="All">All</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" data-filter="Earthquake">Earthquake</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" data-filter="Flood">Flood</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" data-filter="Cyclone">Cyclone</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" data-filter="Landslide">Landslide</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" data-filter="CBRN">CBRN</button>
+                            </div>
+                            <div id="map" data-token="<%= MAPBOX_ACCESS_TOKEN %>" style="flex-grow: 1; border-radius: 8px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="d-flex flex-column" style="gap: 1.5rem;">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="kpi-card-small">
+                                    <div class="kpi-icon-small icon-primary"><i class="bi bi-kanban"></i></div>
+                                    <div>
+                                        <div class="kpi-label-small">Trainings Conducted</div>
+                                        <div class="kpi-value-small">
+                                            <%= totalTrainings %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="kpi-card-small">
+                                    <div class="kpi-icon-small icon-success"><i class="bi bi-people"></i></div>
+                                    <div>
+                                        <div class="kpi-label-small">Active Partners</div>
+                                        <div class="kpi-value-small">
+                                            <%= uniquePartners %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="kpi-card-small">
+                                    <div class="kpi-icon-small icon-danger"><i class="bi bi-bullseye"></i></div>
+                                    <div>
+                                        <div class="kpi-label-small">Readiness Score</div>
+                                        <div class="kpi-value-small">
+                                            <%= averageScore %>%
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="kpi-card-small">
+                                    <div class="kpi-icon-small icon-danger"><i class="bi bi-pass"></i></i></div>
+                                    <div>
+                                        <div class="kpi-label-small">Individuals Assessed</div>
+                                        <div class="kpi-value-small">
+                                            <%= totalParticipants %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card gaps-card">
+                            <div class="card-header">
+                                <i class="bi bi-bullseye"></i> Prioritized Training Gaps
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="gaps-table-wrapper">
+                                    <table class="table gaps-table table-hover mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th class="rank-cell">Priority</th>
+                                                <th>District</th>
+                                                <th>Theme</th>
+                                                <th>Justification</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% if (gaps && gaps.length > 0) { %>
+                                                <% gaps.forEach((gap, index) => { %>
+                                                <tr>
+                                                    <td class="rank-cell">
+                                                        <strong><%= index + 1 %></strong>
+                                                    </td>
+                                                    <td>
+                                                        <div class="district-name"><%= gap.district %></div>
+                                                    </td>
+                                                    <td>
+                                                        <span class="theme-badge theme-<%= gap.theme.toLowerCase().split(' ')[0] %>">
+                                                            <%= gap.theme %>
+                                                        </span>
+                                                    </td>
+                                                    <td class="justification-cell">
+                                                        <%= gap.reason %>
+                                                    </td>
+                                                </tr>
+                                                <% }) %>
+                                            <% } else { %>
+                                                <tr>
+                                                    <td colspan="5">
+                                                        <div class="empty-state-gaps">
+                                                            <i class="bi bi-check2-circle"></i>
+                                                            <h5>All Clear!</h5>
+                                                            <p>No significant training gaps identified.</p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="bi bi-pie-chart-fill"></i> Readiness Score by Theme
+                            </div>
+                            <div class="card-body d-flex align-items-center justify-content-center">
+                                <canvas id="scoresByThemeChart"></canvas>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-card assessment-section" style="margin-top: 30px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <h3 style="border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">
+                    📊 National Assessment Analytics
+                </h3>
+
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="form-group mb-3">
+                            <label><strong>Select Disaster Theme:</strong></label>
+                            <select id="assessmentTheme" class="form-control">
+                                <option value="Floods">Floods</option>
+                                <option value="Earthquake">Earthquake</option>
+                                <option value="Cyclone">Cyclone</option>
+                                <option value="Landslide">Landslide</option>
+                                <option value="Tsunami">Tsunami</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label><strong>Google Form Edit/View Link:</strong></label>
+                            <input type="text" id="assessmentLink" class="form-control" placeholder="Paste Google Form URL here...">
+                            <small class="text-muted">Ensure 'Make this a quiz' is ON in Google Form settings.</small>
+                        </div>
+
+                        <button onclick="saveAssessmentLink()" class="btn btn-success mb-2">
+                            Save Link
+                        </button>
+                        <button onclick="fetchAnalytics()" class="btn btn-primary mb-2">
+                            Generate 'Top Wrong' Report
+                        </button>
+                    </div>
+
+                    <div class="col-md-7">
+                        <div id="analyticsResult" style="display: none;">
+                            <h5 class="text-danger">⚠️ Top Areas of Confusion (Most Wrong Answers)</h5>
+                            <table class="table table-bordered table-hover mt-3">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Question</th>
+                                        <th style="width: 100px;">Wrong Count</th>
+                                        <th style="width: 80px;">% Fail</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="analyticsTableBody">
+                                    </tbody>
+                            </table>
+                        </div>
+                        <div id="analyticsLoading" style="display: none; text-align: center; padding: 20px;">
+                            <p>Fetching data from Google... Please wait...</p>
+                        </div>
+                        <div id="analyticsEmpty" style="display: none; text-align: center; padding: 20px; color: #666;">
+                            <p>No data available yet or link not set.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+    </main>
+
+    <div class="modal fade" id="announcementModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create New Announcement</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="announcementForm">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="content" class="form-label">Content</label>
+                            <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+                        </div>
+                        <div id="announcement-message" class="mt-3"></div>
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Post Announcement</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="importModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bulk Import Training Data</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Upload a CSV file with historical training data. The file must match the template format.</p>
+                    <a href="/trainings_template.csv" class="btn btn-sm btn-outline-secondary mb-3" download>
+                        <i class="bi bi-filetype-csv"></i> Download CSV Template
+                    </a>
+                    <hr>
+                    <form id="importForm" enctype="multipart/form-data">
+                        <div class="input-group">
+                            <input type="file" class="form-control" name="trainingsCsv" accept=".csv" required>
+                            <button class="btn btn-primary" type="submit">Upload</button>
+                        </div>
+                    </form>
+                    <div id="import-message" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script id="chart-data" data-scores="<%= JSON.stringify(scoresByTheme) %>"></script>
+
+    <script src="/js/import.js"></script>
+    <script src="/js/map.js"></script>
+    <script src="/js/ndma_dashboard.js"></script>
+    <script src="/js/announcement.js"></script>
+</body>
+
+</html>
