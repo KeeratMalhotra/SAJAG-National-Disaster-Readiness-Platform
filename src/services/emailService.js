@@ -1,36 +1,16 @@
 // File: src/services/emailService.js
 
-// const nodemailer = require('nodemailer');
-
-// // Configure the transporter using environment variables for real email sending.
-// const transporter = nodemailer.createTransport({
-//     // Using 'service' is common, but specific host/port can be used if needed.
-//     service: process.env.EMAIL_SERVICE || 'Gmail', 
-//     auth: {
-//        user: process.env.EMAIL_USER, 
-//         pass: process.env.EMAIL_PASS
-//     }
-// });
-
-
-
-
-// new
-
-
 const nodemailer = require('nodemailer');
 
+// Configure the transporter using environment variables for real email sending.
 const transporter = nodemailer.createTransport({
-    // Use host and port for better reliability in Docker
-    host: process.env.EMAIL_HOST || 'smtp.gmail.com', 
-    port: process.env.EMAIL_PORT || 465,         // Use 465 for secure connection (most reliable)
-    secure: process.env.EMAIL_SECURE === 'true', // true for port 465, false for other ports (like 587)
+    // Using 'service' is common, but specific host/port can be used if needed.
+    service: process.env.EMAIL_SERVICE || 'Gmail', 
     auth: {
        user: process.env.EMAIL_USER, 
-       pass: process.env.EMAIL_PASS
+        pass: process.env.EMAIL_PASS
     }
 });
-
 
 /**
  * Sends a registration invitation email to an NGO.
