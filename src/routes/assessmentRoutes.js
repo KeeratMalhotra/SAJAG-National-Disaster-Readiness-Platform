@@ -13,21 +13,24 @@
 
 const express = require('express');
 const router = express.Router();
+
+// Imports
 const assessmentController = require('../controllers/assessmentController');
 const { protectRoute } = require('../middleware/authMiddleware'); 
 
-// --- DEBUGGING LOGS (Ye hume batayenge ki kya missing hai) ---
-console.log('--- DEBUG START ---');
-console.log('1. protectRoute type:', typeof protectRoute); 
-console.log('2. assessmentController type:', typeof assessmentController);
-if (assessmentController) {
-    console.log('3. assessmentController.saveLink type:', typeof assessmentController.saveLink);
-    console.log('4. assessmentController.getAnalytics type:', typeof assessmentController.getAnalytics);
+// --- CRITICAL DEBUGGING CHECK ---
+if (!assessmentController.saveLink) {
+    console.error(" FATAL ERROR: assessmentController.saveLink is UNDEFINED. Check src/controllers/assessmentController.js");
 }
-console.log('--- DEBUG END ---');
-// -------------------------------------------------------------
+if (!assessmentController.getAnalytics) {
+    console.error(" FATAL ERROR: assessmentController.getAnalytics is UNDEFINED.");
+}
+if (!protectRoute) {
+    console.error(" FATAL ERROR: protectRoute is UNDEFINED. Check src/middleware/authMiddleware.js");
+}
+// --------------------------------
 
-// Agar upar wale logs mein koi 'undefined' aaya, toh server yahan crash karega
+// Routes define karne se pehle ensure karein ki functions exist karte hain
 router.post('/save-link', protectRoute, assessmentController.saveLink);
 router.get('/analytics/:theme', protectRoute, assessmentController.getAnalytics);
 

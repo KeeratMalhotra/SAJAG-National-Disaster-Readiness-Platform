@@ -91,22 +91,26 @@
 
 // module.exports = assessmentController;
 
-
 const Assessment = require('../models/Assessment');
 const googleFormService = require('../services/googleFormService');
 
 const assessmentController = {
+    // 1. Save Link Function
     saveLink: async (req, res) => {
         try {
+            console.log('Save Link Request Recieved:', req.body); // Debug Log
             const { theme, link } = req.body;
-            // Extract Form ID
-            const formId = googleFormService.extractFormId(link);
-            if (!formId) {
-                return res.status(400).json({ success: false, message: 'Invalid Google Form Link.' });
+
+            // Basic Validation
+            if (!link || !link.includes('forms')) {
+                 return res.status(400).json({ success: false, message: 'Invalid Google Form Link' });
             }
-            // Save to Database
+
+            const formId = googleFormService.extractFormId(link);
             const title = `${theme} Safety Assessment`;
+            
             await Assessment.upsert(title, theme, link, formId);
+
             res.status(200).json({ success: true, message: 'Assessment Link saved successfully!' });
         } catch (error) {
             console.error('Error in saveLink:', error);
@@ -114,18 +118,21 @@ const assessmentController = {
         }
     },
 
+    // 2. Get Analytics Function
     getAnalytics: async (req, res) => {
         try {
             const { theme } = req.params;
             const assessment = await Assessment.findByTheme(theme);
+            
             if (!assessment || !assessment.google_form_id) {
-                return res.status(404).json({ success: false, message: 'No assessment link found for this theme.' });
+                return res.status(404).json({ success: false, message: 'No assessment link found.' });
             }
+
             const analytics = await googleFormService.getTopWrongQuestions(assessment.google_form_id);
             res.status(200).json({ success: true, data: analytics });
         } catch (error) {
             console.error('Error in getAnalytics:', error);
-            res.status(500).json({ success: false, message: 'Failed to fetch report from Google.' });
+            res.status(500).json({ success: false, message: 'Failed to fetch report.' });
         }
     }
 };

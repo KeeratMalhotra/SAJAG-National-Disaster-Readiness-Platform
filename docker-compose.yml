@@ -71,9 +71,7 @@ services:
     build: .
     container_name: sajag_app
     restart: always
-    # Niche wali line maine hata di hai taaki logs terminal par dikhein
-    # command: sh -c "npm start > /usr/src/app/output.log 2>&1" 
-    # ADD THIS COMMAND ATTRIBUTE
+    # Ye command ensure karega ki logs terminal par dikhein
     command: npm start
     depends_on:
       db:
