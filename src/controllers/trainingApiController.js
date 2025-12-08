@@ -1,65 +1,23 @@
 const Training = require('../models/Training');
-const Submission = require('../models/Submission');
 const Photo = require('../models/Photo');
-const QRCode = require('qrcode');
-const pool = require('../config/database'); // Added this because your new functions use raw SQL
+const Submission = require('../models/Submission'); // <-- ADDED for deleting
 
 const trainingController = {
-
-    // --- 1. VIEW: CREATE TRAINING FORM ---
-    showNewTrainingForm: (req, res) => {
-        res.render('pages/new_training', {
-            pageTitle: 'Create New Training'
-        });
-    },
-
-    // --- 2. API: GET ALL TRAININGS (Fixed Missing Function) ---
+    
+    // --- THIS IS THE MISSING FUNCTION THAT CAUSED THE CRASH ---
     getTrainings: async (req, res) => {
         try {
-            const trainings = await Training.findAll();
+            // Fetches all trainings. This is needed by your API.
+            const trainings = await Training.findAll(); 
             res.status(200).json(trainings);
         } catch (error) {
             console.error('Error fetching all trainings:', error);
             res.status(500).json({ message: 'Server error' });
         }
     },
+    // --- END OF MISSING FUNCTION ---
 
-    // --- 3. QR GENERATOR (FIXED FOR MOBILE SCANNING) ---
-    getTrainingQR: async (req, res) => {
-        try {
-            const { id } = req.params;
-            const training = await Training.findById(id);
 
-            if (!training) return res.status(404).send('Training not found');
-
-            // --- [FIX START] USE YOUR COMPUTER'S IP ADDRESS HERE ---
-            // 'localhost' will NOT work on your phone.
-            // Replace '192.168.1.5' with your actual IPv4 address.
-            // You can find this by running 'ipconfig' (Windows) or 'ifconfig' (Mac/Linux) in your terminal.
-            const myIpAddress = '192.168.1.5'; 
-            const port = process.env.PORT || 3000;
-            
-            // We construct the URL using the IP so the phone can reach the laptop
-            const assessmentUrl = `http://${myIpAddress}:${port}/assessment/start/${id}`;
-            // --- [FIX END] ---
-
-            // Generate QR Data URL
-            const qrCodeImage = await QRCode.toDataURL(assessmentUrl);
-
-            res.render('pages/show_qr', {
-                pageTitle: 'Session QR Code',
-                qrCodeImage,
-                training,
-                assessmentUrl // Passing this so you can see the text link too
-            });
-
-        } catch (error) {
-            console.error('QR Gen Error:', error);
-            res.status(500).send('Could not generate QR');
-        }
-    },
-
-    // --- 4. API: CREATE TRAINING ---
     createTraining: async (req, res) => {
         try {
             const { title, theme, startDate, endDate, location, latitude, longitude } = req.body;
@@ -72,69 +30,45 @@ const trainingController = {
             const trainingData = { title, theme, startDate, endDate, location, latitude, longitude };
             const newTraining = await Training.create(trainingData, userId);
 
-            res.status(201).json({
-                message: 'Training created successfully!',
-                training: newTraining
+            res.status(201).json({ 
+                message: 'Training created successfully!', 
+                training: newTraining 
             });
 
         } catch (error) {
-            console.error('Error creating training:', error);
+            console.error('Error in createTraining (API):', error);
             res.status(500).json({ message: 'Server error while creating training.' });
         }
     },
 
-    // --- 5. VIEW: SHOW DETAILS ---
-    showTrainingDetails: async (req, res) => {
+    getPhotosForTraining: async (req, res) => {
         try {
             const { id } = req.params;
-            const training = await Training.findById(id);
-            if (!training) return res.status(404).send('Training not found');
-
-            const submissions = await Submission.findByTrainingId(id);
-            
-            // Calculate Average Score
-            let averageScore = 0;
-            if (submissions.length > 0) {
-                const totalScore = submissions.reduce((sum, sub) => sum + parseFloat(sub.score), 0);
-                averageScore = totalScore / submissions.length;
-            }
-
-            // For photos, we can just pass an empty array or fetch them if needed
-            // But since you have a dedicated API for photos now, we might rely on client-side fetching
-            // or we can just fetch them here simply to avoid breaking the view.
-            const photos = []; 
-
-            res.render('pages/training_details', {
-                pageTitle: training.title,
-                user: req.user,
-                training: training,
-                submissions: submissions,
-                averageScore: parseFloat(averageScore) || 0,
-                photos: photos
-            });
+            const photos = await Photo.findByTrainingId(id);
+            res.status(200).json(photos);
         } catch (error) {
-            console.error('Error in showTrainingDetails:', error);
-            res.status(500).send('Server Error');
+            console.error('Error getting photos:', error);
+            res.status(500).json({ message: 'Server error' });
         }
     },
 
-    // --- 6. PHOTO: UPLOAD (Direct SQL) ---
     uploadPhoto: async (req, res) => {
         try {
-            const { id } = req.params; 
+            const { id } = req.params; // Training ID
             const file = req.file;
 
             if (!file) {
                 return res.status(400).json({ error: 'No image file provided' });
             }
 
+            // INSERT raw buffer (file.buffer) into the BYTEA column
             const query = `
                 INSERT INTO training_photos (training_id, image_data, mime_type, image_url)
                 VALUES ($1, $2, $3, $4)
                 RETURNING id
             `;
             
-            // Using pool here required the import at the top
+            // We save the original name in 'image_url' just for reference
             await pool.query(query, [id, file.buffer, file.mimetype, file.originalname]);
 
             res.status(201).json({ message: 'Photo uploaded successfully' });
@@ -144,7 +78,8 @@ const trainingController = {
         }
     },
 
-    // --- 7. PHOTO: GET LIST (Modified to return URLs) ---
+    // 2. GET PHOTOS LIST (Modified)
+    // Returns a list of URLs that point to our new "servePhoto" route
     getPhotosForTraining: async (req, res) => {
         try {
             const { id } = req.params;
@@ -153,9 +88,11 @@ const trainingController = {
                 [id]
             );
 
+            // Generate URLs that the frontend can put in <img src="...">
+            // Example: /api/trainings/photos/uuid-of-photo
             const photos = result.rows.map(row => ({
                 id: row.id,
-                url: `/api/trainings/photos/${row.id}`
+                url: `/api/trainings/photos/${row.id}` 
             }));
 
             res.json(photos);
@@ -165,7 +102,8 @@ const trainingController = {
         }
     },
 
-    // --- 8. PHOTO: SERVE IMAGE (Viewer) ---
+    // 3. NEW: SERVE PHOTO (The "Viewer")
+    // This looks up the binary data and sends it back as an image
     servePhoto: async (req, res) => {
         try {
             const { photoId } = req.params;
@@ -179,63 +117,48 @@ const trainingController = {
             }
 
             const photo = result.rows[0];
+
+            // Tell the browser "This is an image"
             res.setHeader('Content-Type', photo.mime_type);
-            res.send(photo.image_data);
+            res.send(photo.image_data); // Send the raw buffer
         } catch (error) {
             console.error('Error serving photo:', error);
             res.status(500).send('Error serving photo');
         }
     },
 
-    // --- 9. API: DELETE TRAINING ---
+    // --- THIS IS THE DELETE FUNCTION YOU NEEDED ---
     deleteTraining: async (req, res) => {
         const { id } = req.params;
 
         try {
+            // 1. Check for the training and user permissions
             const training = await Training.findById(id);
             if (!training) {
                 return res.status(404).json({ message: 'Training not found.' });
             }
 
             const user = req.user;
+            // Check if user is an admin OR the original creator
             if (user.role !== 'ndma_admin' && user.role !== 'sdma_admin' && training.creator_user_id !== user.id) {
                 return res.status(403).json({ message: 'Forbidden: You do not have permission to delete this training.' });
             }
 
-            // Ensure these methods exist in your models!
-            // If they don't, you'll need to add them to Submission.js and Photo.js
-            if (Submission.deleteByTrainingId) await Submission.deleteByTrainingId(id);
-            if (Photo.deleteByTrainingId) await Photo.deleteByTrainingId(id);
+            // 2. Delete dependencies FIRST
+            await Submission.deleteByTrainingId(id);
+            await Photo.deleteByTrainingId(id);
             
+            // 3. Now, safely delete the training
             await Training.deleteById(id);
 
-            res.status(200).json({ message: 'Training deleted successfully.' });
+            res.status(200).json({ message: 'Training and all associated data deleted successfully.' });
 
         } catch (error) {
             console.error('Error deleting training:', error);
             res.status(500).json({ message: 'Server error while deleting training.' });
         }
-    },
-
-    // --- 10. MAPS: GEOJSON HELPERS ---
-    getTrainingsAsGeoJSON: async (req, res) => {
-        try {
-            const geojsonData = await Training.findAllGeoJSON();
-            res.status(200).json(geojsonData);
-        } catch (error) {
-            res.status(500).json({ message: 'Server error while fetching GeoJSON data.' });
-        }
-    },
-
-    getTrainingsAsGeoJSONByState: async (req, res) => {
-        try {
-            const adminState = req.user.state;
-            const geojsonData = await Training.findAllGeoJSONByState(adminState);
-            res.status(200).json(geojsonData);
-        } catch (error) {
-            res.status(500).json({ message: 'Server error while fetching state GeoJSON data.' });
-        }
     }
+    // --- END OF DELETE FUNCTION ---
 };
 
 module.exports = trainingController;
