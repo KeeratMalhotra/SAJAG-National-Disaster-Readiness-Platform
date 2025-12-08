@@ -6,7 +6,7 @@ const { Pool } = require('pg');
 const connectionString = process.env.DATABASE_URL;
 
 // SSL is usually required for Cloud DBs (Render/Supabase)
-const useSSL = process.env.DB_SSL === 'true';
+const useSSL = process.env.NODE_ENV === 'production' || process.env.DB_SSL === 'true';
 
 const poolConfig = connectionString 
     ? { 

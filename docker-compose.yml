@@ -28,7 +28,7 @@ services:
     container_name: sajag_app
     restart: always
     # ADD THIS COMMAND ATTRIBUTE
-    command: sh -c "npm start > /usr/src/app/output.log 2>&1"
+    command: npm start
     depends_on:
       db:
         condition: service_healthy
