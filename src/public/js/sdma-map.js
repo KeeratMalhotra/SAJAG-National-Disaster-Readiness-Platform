@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
         center: view.center,
         zoom: view.zoom
     });
-    window.map = map;
 
     // --- 2. HOVER POPUP CONFIGURATION (The Magic Part) ---
     const hoverPopup = new mapboxgl.Popup({
