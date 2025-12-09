@@ -32,16 +32,13 @@ const trainingController = {
 
             if (!training) return res.status(404).send('Training not found');
 
-            // --- [FIX START] USE YOUR COMPUTER'S IP ADDRESS HERE ---
-            // 'localhost' will NOT work on your phone.
-            // Replace '192.168.1.5' with your actual IPv4 address.
-            // You can find this by running 'ipconfig' (Windows) or 'ifconfig' (Mac/Linux) in your terminal.
+            
             const myIpAddress = '192.168.1.5'; 
             const port = process.env.PORT || 3000;
             
             // We construct the URL using the IP so the phone can reach the laptop
             const assessmentUrl = `http://${myIpAddress}:${port}/assessment/start/${id}`;
-            // --- [FIX END] ---
+           
 
             // Generate QR Data URL
             const qrCodeImage = await QRCode.toDataURL(assessmentUrl);
@@ -50,7 +47,7 @@ const trainingController = {
                 pageTitle: 'Session QR Code',
                 qrCodeImage,
                 training,
-                assessmentUrl // Passing this so you can see the text link too
+                assessmentUrl 
             });
 
         } catch (error) {
@@ -99,9 +96,7 @@ const trainingController = {
                 averageScore = totalScore / submissions.length;
             }
 
-            // For photos, we can just pass an empty array or fetch them if needed
-            // But since you have a dedicated API for photos now, we might rely on client-side fetching
-            // or we can just fetch them here simply to avoid breaking the view.
+           
             const photos = []; 
 
             res.render('pages/training_details', {

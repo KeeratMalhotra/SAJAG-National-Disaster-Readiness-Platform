@@ -42,7 +42,6 @@ const authController = {
         try {
             const { email, password } = req.body;
 
-            // **1. Find the user by email**
             const user = await User.findByEmail(email);
             if (!user) {
                 return res.status(401).json({ message: 'Invalid credentials. Please try again.' });
@@ -51,13 +50,11 @@ const authController = {
                 return res.status(401).json({ message: 'Your account is not active. Please wait for an admin to approve it.' });
             }           
 
-            // **2. Compare the provided password with the stored hash**
             const isMatch = await bcrypt.compare(password, user.password_hash);
             if (!isMatch) {
                 return res.status(401).json({ message: 'Invalid credentials. Please try again.' });
             }
 
-            // **3. User is authenticated, now create a JWT**
             const payload = {
                 id: user.id,
                 role: user.role,
@@ -67,18 +64,17 @@ const authController = {
 
             const token = jwt.sign(
                 payload,
-                process.env.JWT_SECRET, // We'll add this secret to our .env file
-                { expiresIn: '1d' } // Token expires in 1 day
+                process.env.JWT_SECRET, 
+                { expiresIn: '1d' } 
             );
 
-            // **4. Send the token back in an HTTP-Only cookie**
             res.cookie('token', token, {
-                httpOnly: true, // Prevents client-side JS from accessing the cookie
-                secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-                maxAge: 24 * 60 * 60 * 1000 // 1 day
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production', 
+                maxAge: 24 * 60 * 60 * 1000 
             });
 
-            res.status(200).json({ message: 'Logged in successfully! ✅', user: { id: user.id, name: user.name, role: user.role } });
+            res.status(200).json({ message: 'Logged in successfully! ', user: { id: user.id, name: user.name, role: user.role } });
 
         } catch (error) {
             console.error('Login Error:', error);
@@ -86,10 +82,10 @@ const authController = {
         }
     },
     logoutUser: (req, res) => {
-    res.clearCookie('token'); // Clear the JWT cookie
+    res.clearCookie('token'); 
     res.redirect('/api/auth/login');
 }
-    // We'll add the login controller function here later
+    
 };
 
 module.exports = authController;

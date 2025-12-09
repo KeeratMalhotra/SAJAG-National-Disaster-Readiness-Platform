@@ -47,7 +47,6 @@
 version: '3.8'
 
 services:
-  # Our PostgreSQL Database Service
   db:
     image: postgres:15-alpine
     container_name: sajag_db
@@ -66,12 +65,10 @@ services:
       timeout: 5s
       retries: 5
 
-  # Our Node.js Application Service
   app:
     build: .
     container_name: sajag_app
     restart: always
-    # Ye command ensure karega ki logs terminal par dikhein
     command: npm start
     depends_on:
       db:

@@ -1,11 +1,8 @@
-﻿--
--- PostgreSQL database dump
---
+﻿
 
 \restrict mudm9l7JCiedHwRDEcQdPfTzQ6Rvc5HBSKNfGo6abOkUUObQ9BObhuLG2Bh2Get
 
--- Dumped from database version 15.14
--- Dumped by pg_dump version 15.14
+
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -18,37 +15,26 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
---
--- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
---
+
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
 
 
---
--- Name: EXTENSION pgcrypto; Type: COMMENT; Schema: -; Owner: 
---
+
 
 COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
 
 
---
--- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: -
---
+
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
 
 
---
--- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner: 
---
+
 
 COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
 
 
---
--- Name: announcement_scope; Type: TYPE; Schema: public; Owner: sajagadmin
---
 
 CREATE TYPE public.announcement_scope AS ENUM (
     'national',
@@ -58,9 +44,7 @@ CREATE TYPE public.announcement_scope AS ENUM (
 
 ALTER TYPE public.announcement_scope OWNER TO sajagadmin;
 
---
--- Name: user_role; Type: TYPE; Schema: public; Owner: sajagadmin
---
+
 
 CREATE TYPE public.user_role AS ENUM (
     'training_partner',
@@ -73,9 +57,7 @@ CREATE TYPE public.user_role AS ENUM (
 
 ALTER TYPE public.user_role OWNER TO sajagadmin;
 
---
--- Name: user_status; Type: TYPE; Schema: public; Owner: sajagadmin
---
+
 
 CREATE TYPE public.user_status AS ENUM (
     'pending',
@@ -90,9 +72,7 @@ SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
---
--- Name: announcements; Type: TABLE; Schema: public; Owner: sajagadmin
---
+
 
 CREATE TABLE public.announcements (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
@@ -107,9 +87,7 @@ CREATE TABLE public.announcements (
 
 ALTER TABLE public.announcements OWNER TO sajagadmin;
 
---
--- Name: assessments; Type: TABLE; Schema: public; Owner: sajagadmin
---
+
 
 CREATE TABLE public.assessments (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
@@ -121,9 +99,7 @@ CREATE TABLE public.assessments (
 
 ALTER TABLE public.assessments OWNER TO sajagadmin;
 
---
--- Name: districts; Type: TABLE; Schema: public; Owner: sajagadmin
---
+
 
 CREATE TABLE public.districts (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
@@ -138,9 +114,7 @@ CREATE TABLE public.districts (
 
 ALTER TABLE public.districts OWNER TO sajagadmin;
 
---
--- Name: options; Type: TABLE; Schema: public; Owner: sajagadmin
---
+
 
 CREATE TABLE public.options (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
@@ -152,9 +126,6 @@ CREATE TABLE public.options (
 
 ALTER TABLE public.options OWNER TO sajagadmin;
 
---
--- Name: participant_submissions; Type: TABLE; Schema: public; Owner: sajagadmin
---
 
 CREATE TABLE public.participant_submissions (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
@@ -168,9 +139,6 @@ CREATE TABLE public.participant_submissions (
 
 ALTER TABLE public.participant_submissions OWNER TO sajagadmin;
 
---
--- Name: questions; Type: TABLE; Schema: public; Owner: sajagadmin
---
 
 CREATE TABLE public.questions (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
@@ -182,9 +150,6 @@ CREATE TABLE public.questions (
 
 ALTER TABLE public.questions OWNER TO sajagadmin;
 
---
--- Name: system_settings; Type: TABLE; Schema: public; Owner: sajagadmin
---
 
 CREATE TABLE public.system_settings (
     key character varying(50) NOT NULL,
@@ -194,9 +159,7 @@ CREATE TABLE public.system_settings (
 
 ALTER TABLE public.system_settings OWNER TO sajagadmin;
 
---
--- Name: training_photos; Type: TABLE; Schema: public; Owner: sajagadmin
---
+
 
 CREATE TABLE public.training_photos (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
@@ -210,9 +173,7 @@ CREATE TABLE public.training_photos (
 
 ALTER TABLE public.training_photos OWNER TO sajagadmin;
 
---
--- Name: trainings; Type: TABLE; Schema: public; Owner: sajagadmin
---
+
 
 CREATE TABLE public.trainings (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
@@ -230,9 +191,7 @@ CREATE TABLE public.trainings (
 
 ALTER TABLE public.trainings OWNER TO sajagadmin;
 
---
--- Name: user_announcement_views; Type: TABLE; Schema: public; Owner: sajagadmin
---
+
 
 CREATE TABLE public.user_announcement_views (
     user_id uuid NOT NULL,
@@ -243,9 +202,7 @@ CREATE TABLE public.user_announcement_views (
 
 ALTER TABLE public.user_announcement_views OWNER TO sajagadmin;
 
---
--- Name: users; Type: TABLE; Schema: public; Owner: sajagadmin
---
+
 
 CREATE TABLE public.users (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
@@ -264,9 +221,7 @@ CREATE TABLE public.users (
 
 ALTER TABLE public.users OWNER TO sajagadmin;
 
---
--- Data for Name: announcements; Type: TABLE DATA; Schema: public; Owner: sajagadmin
---
+
 
 COPY public.announcements (id, title, content, scope, state, creator_user_id, created_at) FROM stdin;
 ce02c557-ea10-4516-8821-eacd3822907a	hi guys	boom	national	\N	5f617852-1ba6-4ac1-8086-ef5222eae408	2025-10-15 18:24:15.296825+00
@@ -275,9 +230,7 @@ f8cb8e64-b1e6-4cac-985c-5e51ed8e1eef	cxvxv	xcvxv	state	Delhi	67b9e61e-1f73-452c-
 \.
 
 
---
--- Data for Name: assessments; Type: TABLE DATA; Schema: public; Owner: sajagadmin
---
+
 
 COPY public.assessments (id, title, training_theme, created_at) FROM stdin;
 236e2247-a2a1-4dba-9c6b-805bbb931dc5	Earthquake Safety Essentials	Earthquake	2025-10-14 21:10:47.141198+00
@@ -289,9 +242,7 @@ c5b001a1-8a8b-4b1f-9a9b-7b0a8b0a8b0a	Flood Safety Quiz	Flood	2025-10-18 14:14:09
 \.
 
 
---
--- Data for Name: districts; Type: TABLE DATA; Schema: public; Owner: sajagadmin
---
+
 
 COPY public.districts (id, name, state, baseline_vulnerability, current_ai_risk, risk_reason, last_ai_update) FROM stdin;
 df869839-7ced-4b24-bff6-29ee33a18374	Mumbai City	Maharashtra	7.5	0.0	\N	\N

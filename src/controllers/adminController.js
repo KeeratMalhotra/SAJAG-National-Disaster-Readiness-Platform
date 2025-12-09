@@ -1,37 +1,32 @@
 const User = require('../models/User');
 const Announcement = require('../models/Announcement');
-const Training = require('../models/Training'); // ADD THIS LINE
-const Submission = require('../models/Submission'); // ADD THIS LINE
-const path = require('path'); // ADD THIS LINE
+const Training = require('../models/Training'); 
+const Submission = require('../models/Submission'); 
+const path = require('path'); 
 const adminController = {
 
-    // new-------------src/views/pages/manage_partners.ejs----------linked 
 
     
     showManagePartnersPage: async (req, res) => {
     try {
         const user = req.user;
-        const { state: filterState } = req.query; // <-- ADDED: Get filter state from query
+        const { state: filterState } = req.query; 
 
         let pendingPartners, activePartners, rejectedPartners;
-        let allStates = []; // <-- ADDED: To store unique states for the filter dropdown
+        let allStates = [];
 
         if (user.role === 'ndma_admin') {
-            // NDMA Admin gets all partners from all states, but can filter by state
+           
             
-            // 1. Fetch ALL partners for each status (required to compute allStates and apply local filter)
             const [allPending, allActive, allRejected] = await Promise.all([
                 User.findAllPending(),
                 User.findAllActive(),
                 User.findAllRejected()
             ]);
 
-            // 2. Combine all partners to get unique states for the filter dropdown
             const allPartners = [...allPending, ...allActive, ...allRejected];
-            // Collect all unique states, filter out null/empty, and sort them alphabetically
             allStates = [...new Set(allPartners.map(p => p.state).filter(s => s && s.trim() !== ''))].sort();
 
-            // 3. Apply the state filter to the partner lists
             if (filterState) {
                 pendingPartners = allPending.filter(p => p.state === filterState);
                 activePartners = allActive.filter(p => p.state === filterState);
@@ -43,14 +38,12 @@ const adminController = {
             }
 
         } else {
-            // SDMA Admin gets partners only from their state
             const adminState = user.state;
             [pendingPartners, activePartners, rejectedPartners] = await Promise.all([
                 User.findPendingByState(adminState),
                 User.findActiveByState(adminState),
                 User.findRejectedByState(adminState)
             ]);
-            // SDMA admin only sees their state
             allStates = [adminState]; 
         }
 
@@ -60,8 +53,8 @@ const adminController = {
             pendingPartners,
             activePartners,
             rejectedPartners,
-            allStates, // <-- ADDED
-            selectedState: filterState || '' // <-- ADDED
+            allStates, 
+            selectedState: filterState || '' 
         });
     } catch (error) {
         console.error('Error loading manage partners page:', error);
@@ -164,7 +157,7 @@ const adminController = {
             return res.status(404).json({ message: 'Announcement not found.' });
         }
 
-        // --- THIS IS THE NEW, CORRECT SECURITY LOGIC ---
+     
         let canDelete = false;
 
         // Rule 1: An NDMA admin can delete ANY announcement.
@@ -175,7 +168,7 @@ const adminController = {
         else if (announcement.scope === 'state' && announcement.creator_user_id === user.id) {
             canDelete = true;
         }
-        // --- END OF NEW LOGIC ---
+        
 
         if (canDelete) {
             await Announcement.deleteById(announcementId);
@@ -215,10 +208,8 @@ showPartnerDetailsPage: async (req, res) => {
         try {
             const { filename } = req.params;
             
-            // This creates a secure path to the file and prevents users from accessing other parts of the server
             const filePath = path.join(__dirname, '..', '..', 'uploads', filename);
 
-            // Use res.download() to send the file with a proper name and type
             res.download(filePath, 'registration-document.pdf', (err) => {
                 if (err) {
                     console.error("Error downloading file:", err);
