@@ -222,7 +222,40 @@ async deleteById(id) {
     } catch (error) {
         console.error('Error finding recent activity:', error);
         throw error;
-    }}
+    }},
+    async findUpcomingAndActive() {
+        const query = `
+            SELECT id, title, theme, location_text, start_date, end_date, latitude, longitude
+            FROM trainings
+            WHERE end_date >= CURRENT_DATE
+            ORDER BY start_date ASC;
+        `;
+        try {
+            const result = await pool.query(query);
+            const today = new Date();
+            
+            return result.rows.map(t => {
+                const startDate = new Date(t.start_date);
+                const endDate = new Date(t.end_date);
+                let status = 'Upcoming';
+                
+                // logic to determine if it is Active (Ongoing) or Upcoming
+                if (today >= startDate && today <= endDate) {
+                    status = 'Active';
+                }
+                
+                return { 
+                    ...t, 
+                    status,
+                    // Format date for display
+                    startDateFormatted: startDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
+                };
+            });
+        } catch (error) {
+            console.error('Error finding upcoming/active trainings:', error);
+            throw error;
+        }
+    },
 
     
 };
