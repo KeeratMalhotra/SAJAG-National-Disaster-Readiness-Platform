@@ -3,8 +3,35 @@ const riskProfiles = require('../data/risk_profiles.json');
 
 const predictionService = {
     
-    // The Core Algorithm to find Training Gaps
-    async calculateGaps() {
+    // 1. Get Average Scores Grouped by Theme (MISSING FUNCTION ADDED HERE)
+    async getScoresByTheme(state) {
+        try {
+            let query = `
+                SELECT t.theme, AVG(ps.score) as average_score
+                FROM participant_submissions ps
+                JOIN trainings t ON ps.training_id = t.id
+            `;
+            const params = [];
+
+            // If a state is provided (SDMA View), filter by that state
+            if (state) {
+                query += ` JOIN users u ON t.creator_user_id = u.id WHERE u.state = $1`;
+                params.push(state);
+            }
+
+            query += ` GROUP BY t.theme ORDER BY average_score DESC`;
+
+            const result = await pool.query(query, params);
+            return result.rows;
+
+        } catch (error) {
+            console.error("Error in predictionService.getScoresByTheme:", error);
+            return [];
+        }
+    },
+
+    // 2. The Core Algorithm to find Training Gaps
+    async calculateGaps(state) {
         try {
             // Get the list of places we want to check (from our JSON file)
             const districtsToCheck = Object.keys(riskProfiles);
@@ -14,21 +41,30 @@ const predictionService = {
                 const profile = riskProfiles[district];
                 
                 // 1. Check Saturation (How many people trained in this location?)
-                const trainingQuery = `
+                let trainingQuery = `
                     SELECT COUNT(*) as count 
                     FROM participant_submissions ps
                     JOIN trainings t ON ps.training_id = t.id
                     WHERE t.location_text ILIKE $1
                 `;
-                const trainingRes = await pool.query(trainingQuery, [`%${district}%`]);
+                const params = [`%${district}%`];
+
+                if (state) {
+                     trainingQuery += ` AND t.creator_user_id IN (SELECT id FROM users WHERE state = $2)`;
+                     params.push(state);
+                }
+
+                const trainingRes = await pool.query(trainingQuery, params);
                 const trainedCount = parseInt(trainingRes.rows[0].count) || 0;
 
                 // 2. Check Recency (When was the last training here?)
-                const dateQuery = `
+                let dateQuery = `
                     SELECT MAX(start_date) as last_date
                     FROM trainings
                     WHERE location_text ILIKE $1
                 `;
+                // reuse params as index 1 is strictly district string match
+                
                 const dateRes = await pool.query(dateQuery, [`%${district}%`]);
                 const lastDate = dateRes.rows[0].last_date ? new Date(dateRes.rows[0].last_date) : null;
 

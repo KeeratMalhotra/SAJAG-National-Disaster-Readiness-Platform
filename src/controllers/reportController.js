@@ -7,7 +7,7 @@ const pool = require('../config/database');
 
 // --- Initialize Gemini ---
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 // --- GOVERNMENT THEME CONSTANTS ---
 const theme = {
@@ -200,6 +200,45 @@ const reportController = {
         reportController.generateGenericReport(req, res, 'SDMA');
     },
 
+    // --- FIX: ADDED MISSING FUNCTION ---
+    getTrainingAnalysis: async (req, res) => {
+        try {
+            const { trainingId } = req.params;
+
+            // 1. Fetch Training Data
+            const trainingQuery = `SELECT * FROM trainings WHERE id = $1`;
+            const trainingRes = await pool.query(trainingQuery, [trainingId]);
+
+            if (trainingRes.rows.length === 0) {
+                return res.status(404).send("Training not found");
+            }
+            const training = trainingRes.rows[0];
+
+            // 2. Initialize PDF
+            const doc = new PDFDocument({ margin: 50, size: 'A4', bufferPages: true });
+            
+            res.setHeader('Content-disposition', `attachment; filename="Training_Analysis_${trainingId}.pdf"`);
+            res.setHeader('Content-type', 'application/pdf');
+            doc.pipe(res);
+
+            // 3. Draw Content
+            drawHeader(doc, "TRAINING ANALYSIS", `ID: ${trainingId}`);
+            
+            doc.fontSize(12).text(`Training: ${training.title}`, 50, 150);
+            doc.text(`Location: ${training.location_text}`);
+            doc.text(`Date: ${new Date(training.start_date).toLocaleDateString()}`);
+            
+            doc.end();
+
+        } catch (error) {
+            console.error("Error in getTrainingAnalysis:", error);
+            if (!res.headersSent) {
+                res.status(500).send("Server Error generating analysis");
+            }
+        }
+    },
+    // ------------------------------------
+
     // Unified Logic
     generateGenericReport: async (req, res, type) => {
         try {
@@ -243,7 +282,7 @@ const reportController = {
                 ? await predictionService.calculateGaps(userState) 
                 : await predictionService.calculateGaps();
 
-            // 2. AI OVERVIEW (Modified)
+            // 2. AI OVERVIEW
             let summary = "AI Overview unavailable.";
             try {
                 const prompt = `Write a strictly formal executive summary (max 35 words) for the ${isState ? userState : 'National'} Disaster Readiness Report. Stats: ${stats.trainings} trainings, ${stats.score}% avg score.`;
@@ -262,7 +301,7 @@ const reportController = {
             // -- RENDER PAGE --
             drawHeader(doc, title, "OFFICIAL DISASTER MANAGEMENT REPORT");
 
-            // Section: AI Overview (Renamed)
+            // Section: AI Overview
             drawSectionHeader(doc, "AI Overview");
             doc.rect(50, doc.y, 500, 40).fill(theme.lightBg); 
             doc.rect(50, doc.y, 3, 40).fill(theme.primary);  
@@ -283,18 +322,16 @@ const reportController = {
             const chartData = scoresByTheme.map(s => ({ label: s.theme, value: s.average_score }));
             drawDashboardCharts(doc, stats.score, chartData);
 
-            // Section: Priority Areas (Updated with Justification)
+            // Section: Priority Areas
             drawSectionHeader(doc, "Priority Attention Areas");
             if (gaps.length > 0) {
-                // Including the reason for prioritization
                 const rows = gaps.slice(0, 10).map((g, i) => [
                     (i + 1).toString(),
                     g.theme,
                     g.district || 'All Districts',
                     parseFloat(g.priorityScore).toFixed(1),
-                    g.reason || 'N/A' // Added Justification
+                    g.reason || 'N/A'
                 ]);
-                // Adjusted widths: #, Theme, District, Score, Justification
                 drawTable(doc, ['#', 'THEME', 'DISTRICT', 'SCORE', 'JUSTIFICATION'], rows, [25, 75, 80, 40, 280]);
             } else {
                 doc.fontSize(10).text("No critical gaps identified at this time.");

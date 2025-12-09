@@ -451,62 +451,6 @@
                 </div>
             </div>
 
-            <div class="dashboard-card assessment-section" style="margin-top: 30px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                <h3 style="border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">
-                    📊 National Assessment Analytics
-                </h3>
-
-                <div class="row">
-                    <div class="col-md-5">
-                        <div class="form-group mb-3">
-                            <label><strong>Select Disaster Theme:</strong></label>
-                            <select id="assessmentTheme" class="form-control">
-                                <option value="Floods">Floods</option>
-                                <option value="Earthquake">Earthquake</option>
-                                <option value="Cyclone">Cyclone</option>
-                                <option value="Landslide">Landslide</option>
-                                <option value="Tsunami">Tsunami</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group mb-3">
-                            <label><strong>Google Form Edit/View Link:</strong></label>
-                            <input type="text" id="assessmentLink" class="form-control" placeholder="Paste Google Form URL here...">
-                            <small class="text-muted">Ensure 'Make this a quiz' is ON in Google Form settings.</small>
-                        </div>
-
-                        <button onclick="saveAssessmentLink()" class="btn btn-success mb-2">
-                            Save Link
-                        </button>
-                        <button onclick="fetchAnalytics()" class="btn btn-primary mb-2">
-                            Generate 'Top Wrong' Report
-                        </button>
-                    </div>
-
-                    <div class="col-md-7">
-                        <div id="analyticsResult" style="display: none;">
-                            <h5 class="text-danger">⚠️ Top Areas of Confusion (Most Wrong Answers)</h5>
-                            <table class="table table-bordered table-hover mt-3">
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th>Question</th>
-                                        <th style="width: 100px;">Wrong Count</th>
-                                        <th style="width: 80px;">% Fail</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="analyticsTableBody">
-                                    </tbody>
-                            </table>
-                        </div>
-                        <div id="analyticsLoading" style="display: none; text-align: center; padding: 20px;">
-                            <p>Fetching data from Google... Please wait...</p>
-                        </div>
-                        <div id="analyticsEmpty" style="display: none; text-align: center; padding: 20px; color: #666;">
-                            <p>No data available yet or link not set.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
             </div>
     </main>
 
