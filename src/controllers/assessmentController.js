@@ -3,6 +3,7 @@ const Training = require('../models/Training');
 const Submission = require('../models/Submission');
 const pool = require('../config/database');
 const cryptoUtils = require('../utils/crypto'); 
+const PDFDocument = require('pdfkit');
 
 // Helper: Calculate Distance
 const getDistanceFromLatLonInKm = (lat1, lon1, lat2, lon2) => {
@@ -181,14 +182,32 @@ const assessmentController = {
         try {
             await client.query('BEGIN');
 
-            const { trainingId, participantName, aadharId, answers, userLat, userLng } = req.body;
+            const { trainingId, participantName, participantEmail, aadharId, answers, userLat, userLng } = req.body;
             
-            // 2. Fraud Checks
+            // --- 1. GET TRAINING DETAILS ---
             const training = await Training.findById(trainingId);
+            if (!training) throw new Error("Training not found");
+
+            // --- 2. GET ASSESSMENT ID (FIX FOR NULL ERROR) ---
+            const assessmentRes = await client.query('SELECT id FROM assessments WHERE training_theme = $1', [training.theme]);
+            
+            if (assessmentRes.rows.length === 0) {
+                // If using fallback/hardcoded mode, we might not have an ID.
+                // However, the DB constraint requires it. 
+                // Ensure your 'assessments' table has entries for 'Earthquake', 'Flood', etc.
+                throw new Error(`Configuration Error: No Assessment found in database for theme '${training.theme}'`);
+            }
+            const assessmentId = assessmentRes.rows[0].id;
+
+            // --- 3. FRAUD CHECKS ---
             let fraudScore = 0;
             let riskFlag = 'SAFE';
 
-            const distance = getDistanceFromLatLonInKm(userLat, userLng, training.latitude, training.longitude);
+            // Handle missing geo data gracefully
+            const safeLat = userLat || training.latitude;
+            const safeLng = userLng || training.longitude;
+
+            const distance = getDistanceFromLatLonInKm(safeLat, safeLng, training.latitude, training.longitude);
             if (distance > 200) {
                 fraudScore += 40;
                 riskFlag = 'LOCATION_MISMATCH';
@@ -206,39 +225,51 @@ const assessmentController = {
                 riskFlag = 'IDENTITY_FRAUD';
             }
 
-            // 3. CALCULATE SCORE (Hybrid)
-            let correctCount = 0;
-            const questionIds = Object.keys(answers);
-            
+            // --- 4. INSERT SUBMISSION ---
             // Secure Storage
             const aadharEncrypted = cryptoUtils.encrypt(aadharId);
             const aadharMasked = cryptoUtils.maskAadhar(aadharId);
 
+            // FIX: Added assessment_id to the INSERT columns and values
             const submissionResult = await client.query(`
                 INSERT INTO participant_submissions 
-                (training_id, participant_email, aadhar_id, aadhar_hash, aadhar_encrypted, aadhar_masked, score, gps_lat, gps_lng, fraud_score, risk_flag, device_id)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+                (training_id, participant_email, assessment_id, aadhar_id, aadhar_hash, aadhar_encrypted, aadhar_masked, score, gps_lat, gps_lng, fraud_score, risk_flag, device_id)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
                 RETURNING id
-            `, [trainingId, participantName, aadharId, aadharHash, aadharEncrypted, aadharMasked, 0, userLat, userLng, fraudScore, riskFlag, req.ip]);
+            `, [trainingId, participantEmail, assessmentId, aadharId, aadharHash, aadharEncrypted, aadharMasked, 0, safeLat, safeLng, fraudScore, riskFlag, req.ip]);
             
             const submissionId = submissionResult.rows[0].id;
 
+            // --- 5. CALCULATE SCORE & SAVE ANSWERS ---
+            let correctCount = 0;
+            const questionIds = Object.keys(answers);
+            
             for (const qId of questionIds) {
                 const selectedOptionId = answers[qId];
                 let isCorrect = false;
+                let isHardcoded = false;
 
+                // Check Hardcoded Logic
                 if (HARDCODED_ANSWERS.hasOwnProperty(selectedOptionId)) {
                     isCorrect = true;
-                } else if (selectedOptionId.startsWith('opt_')) {
+                    isHardcoded = true;
+                } else if (selectedOptionId.toString().startsWith('opt_')) {
                     isCorrect = false;
+                    isHardcoded = true;
                 } else {
-                    const optionCheck = await client.query('SELECT is_correct FROM options WHERE id = $1', [selectedOptionId]);
-                    isCorrect = optionCheck.rows[0]?.is_correct || false;
+                    // Check Database Logic
+                    try {
+                        const optionCheck = await client.query('SELECT is_correct FROM options WHERE id = $1', [selectedOptionId]);
+                        isCorrect = optionCheck.rows[0]?.is_correct || false;
+                    } catch(err) {
+                        console.warn(`Skipping DB check for non-UUID option: ${selectedOptionId}`);
+                    }
                 }
 
                 if (isCorrect) correctCount++;
 
-                if (!selectedOptionId.startsWith('opt_')) {
+                // Prevent crash by only inserting if ID is valid or we relaxed the constraint
+                if (qId && selectedOptionId) {
                     await client.query(`
                         INSERT INTO submission_answers (submission_id, question_id, selected_option_id, is_correct)
                         VALUES ($1, $2, $3, $4)
@@ -246,7 +277,7 @@ const assessmentController = {
                 }
             }
 
-            const finalScore = (correctCount / questionIds.length) * 100;
+            const finalScore = questionIds.length > 0 ? (correctCount / questionIds.length) * 100 : 0;
             await client.query('UPDATE participant_submissions SET score = $1 WHERE id = $2', [finalScore, submissionId]);
 
             await client.query('COMMIT');
@@ -261,9 +292,86 @@ const assessmentController = {
         } catch (error) {
             await client.query('ROLLBACK');
             console.error('Submission Error:', error);
-            res.status(500).json({ success: false, message: 'Submission Failed' });
+            res.status(500).json({ success: false, message: 'Submission Failed: ' + error.message });
         } finally {
             client.release();
+        }
+    },
+
+    // 3. CERTIFICATE GENERATION
+    downloadCertificate: async (req, res) => {
+        try {
+            const { submissionId } = req.params;
+
+            // Fetch submission details
+            const query = `
+                SELECT s.score, s.participant_email, s.created_at, 
+                       t.title as training_title, u.organization_name
+                FROM participant_submissions s
+                JOIN trainings t ON s.training_id = t.id
+                JOIN users u ON t.creator_user_id = u.id
+                WHERE s.id = $1
+            `;
+            
+            const result = await pool.query(query, [submissionId]);
+            
+            if (result.rows.length === 0) {
+                return res.status(404).send("Submission not found");
+            }
+
+            const data = result.rows[0];
+
+            // Enforce the 60% Rule
+            if (data.score < 60) {
+                return res.status(403).send("Score must be above 60% to download certificate.");
+            }
+
+            // Generate PDF
+            const doc = new PDFDocument({ layout: 'landscape', size: 'A4' });
+
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename="Certificate-${submissionId}.pdf"`);
+
+            doc.pipe(res);
+
+            // --- Certificate Design ---
+            // Border
+            doc.rect(20, 20, doc.page.width - 40, doc.page.height - 40).stroke('#2c3e50').lineWidth(5);
+            doc.rect(25, 25, doc.page.width - 50, doc.page.height - 50).stroke('#e67e22').lineWidth(2);
+
+            // Content
+            doc.moveDown(2);
+            doc.font('Helvetica-Bold').fontSize(30).fillColor('#2c3e50').text('CERTIFICATE OF COMPLETION', { align: 'center' });
+            
+            doc.moveDown();
+            doc.font('Helvetica').fontSize(15).fillColor('#7f8c8d').text('This is to certify that', { align: 'center' });
+            
+            doc.moveDown();
+            doc.font('Helvetica-Bold').fontSize(25).fillColor('#e67e22').text(data.participant_email || 'Participant', { align: 'center' });
+
+            doc.moveDown();
+            doc.font('Helvetica').fontSize(15).fillColor('#7f8c8d').text('Has successfully completed the training module:', { align: 'center' });
+            
+            doc.moveDown(0.5);
+            doc.font('Helvetica-Bold').fontSize(20).fillColor('#2c3e50').text(data.training_title, { align: 'center' });
+
+            doc.moveDown();
+            doc.font('Helvetica').fontSize(15).text(`Score Achieved: ${parseFloat(data.score).toFixed(1)}%`, { align: 'center' });
+
+            doc.moveDown(3);
+            
+            // Footer
+            const date = new Date(data.created_at || Date.now()).toLocaleDateString();
+            
+            doc.fontSize(12).fillColor('#333');
+            doc.text(`Training Partner: ${data.organization_name}`, 100, doc.y);
+            doc.text(`Date: ${date}`, 100, doc.y, { align: 'right' });
+
+            doc.end();
+
+        } catch (error) {
+            console.error('Certificate Error:', error);
+            res.status(500).send("Error generating certificate");
         }
     }
 };
