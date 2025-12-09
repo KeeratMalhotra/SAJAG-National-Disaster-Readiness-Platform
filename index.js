@@ -205,6 +205,10 @@ const publicApiRoutes = require('./src/routes/publicRoutes');
 const trainingApiRoutes = require('./src/routes/trainingApiRoutes'); 
 const reportRoutes = require('./src/routes/reportRoutes');
 
+// --- NEW: CHATBOT CONTROLLER IMPORT ---
+const chatController = require('./src/controllers/chatController');
+
+// --- ROUTE USE ---
 app.use('/reports', reportRoutes); 
 app.use('/api/trainings', trainingApiRoutes); 
 app.use('/api/public', publicApiRoutes);
@@ -218,6 +222,10 @@ app.use('/dashboard', dashboardRoutes);
 app.use('/trainings', trainingRoutes);
 app.use('/api/alerts', alertRoutes);
 
+// --- NEW: CHATBOT ROUTE ---
+app.post('/api/chat-public', chatController.handleChat);
+
+// --- UPDATED ROUTE FOR ASSESSMENT ---
 app.use('/assessment', assessmentApiRoutes); 
 
 app.use('/assessments', assessmentPageRoutes);

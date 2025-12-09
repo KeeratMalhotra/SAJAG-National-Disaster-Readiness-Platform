@@ -17,10 +17,163 @@
         rel="stylesheet">
     <link rel="stylesheet" href="/css/home.css">
 
+    <style>
+        /* Chatbot Floating Widget */
+        #sajag-chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            font-family: 'Inter', sans-serif;
+        }
+
+        #chatbot-toggle-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #f5a623; /* Sajag Theme Color */
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: transform 0.3s, background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #chatbot-toggle-btn:hover {
+            transform: scale(1.1);
+            background-color: #e09210;
+        }
+
+        #chatbot-window {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 350px;
+            height: 480px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px);
+        }
+
+        #chatbot-window.visible {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateY(0);
+        }
+
+        .chat-header {
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .chat-header i { margin-right: 8px; }
+
+        .close-chat {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        
+        .close-chat:hover { opacity: 1; }
+
+        .chat-body {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .bot-message {
+            background: #e9ecef;
+            color: #333;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+
+        .user-message {
+            background: #f5a623;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+
+        .chat-footer {
+            padding: 12px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+            background: white;
+            align-items: center;
+        }
+
+        .chat-footer input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            outline: none;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
+        .chat-footer input:focus {
+            border-color: #f5a623;
+        }
+
+        .chat-footer button {
+            background: #2c3e50;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .chat-footer button:hover {
+            background: #1a252f;
+        }
+    </style>
 </head>
 
 <body>
-
 
     <nav id="sajagNavbar" class="navbar navbar-expand-lg sticky-top">
         <div class="container">
@@ -43,7 +196,6 @@
                     <li class="nav-item"><a class="nav-link" href="#main-content"><%= __('nav_score') %></a></li>
                 </ul>
                 <div class="d-flex align-items-center mt-3 mt-lg-0">
-                    <!-- Language Switcher -->
                     <div class="dropdown me-3">
                         <% 
                             // This map connects the code 'ta' to the name 'தமிழ்'
@@ -95,7 +247,6 @@
                 <div class="row g-4">
                     <div class="col-lg-8">
                         <div class="map-card animated" style="transition-delay: 0.1s;">
-                            <!-- UPDATED MAP FILTERS WITH TRANSLATIONS -->
                             <div class="btn-group map-filters" role="group" id="map-filter-group">
                                 <button type="button" class="btn btn-sm active" data-filter="All"><%= __('map_filter_all') %></button>
                                 <button type="button" class="btn btn-sm" data-filter="Earthquake"><%= __('map_filter_earthquake') %></button>
@@ -154,7 +305,7 @@
                                 
                 <input type="email" class="form-control form-control-md" name="email"
                                                     placeholder="<%= __('lookup_placeholder') %>" required>
-                         
+                          
                        <%# Adjusted placeholder/size %>
                                                     <button class="btn btn-register btn-md" type="submit"><%= __('lookup_btn') %></button> <%# Adjusted size/text %>
        
@@ -237,6 +388,28 @@
 
     </main>
 
+    <div id="sajag-chatbot-container">
+        <button id="chatbot-toggle-btn" onclick="toggleChat()">
+            <i class="fas fa-robot"></i>
+        </button>
+    
+        <div id="chatbot-window">
+            <div class="chat-header">
+                <span><i class="fas fa-shield-alt"></i> SAJAG Sahayak</span>
+                <button onclick="toggleChat()" class="close-chat"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="chat-body" id="chat-messages">
+                <div class="message bot-message">
+                    नमस्ते! मैं सजग सहायक हूँ। आपदा प्रबंधन (Disaster Management) या सुरक्षा से जुड़ा कोई भी सवाल पूछें।
+                </div>
+            </div>
+            <div class="chat-footer">
+                <input type="text" id="user-input" placeholder="Ask about floods, earthquake safety..." onkeypress="handleEnter(event)">
+                <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
     <footer class="footer">
         <div class="container">
             <img src="/images/ndma.png" alt="NDMA Logo" class="footer-logo">
@@ -280,6 +453,81 @@
                 });
             });
         });
+
+        // --- CHATBOT JS LOGIC (STEP 5 Included Here) ---
+        function toggleChat() {
+            const chatWindow = document.getElementById('chatbot-window');
+            chatWindow.classList.toggle('visible');
+        }
+
+        function handleEnter(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        async function sendMessage() {
+            const inputField = document.getElementById('user-input');
+            const message = inputField.value.trim();
+            const chatBody = document.getElementById('chat-messages');
+
+            if (!message) return;
+
+            // 1. User Message Display
+            appendMessage(message, 'user-message');
+            inputField.value = '';
+
+            // 2. Show Loading
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'message bot-message';
+            loadingDiv.textContent = 'Typing...';
+            loadingDiv.id = 'loading-msg';
+            chatBody.appendChild(loadingDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+
+            try {
+                // 3. Backend API Call
+                const response = await fetch('/api/chat-public', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: message })
+                });
+
+                const data = await response.json();
+                
+                // 4. Remove Loading & Show Response
+                if(document.getElementById('loading-msg')) {
+                    document.getElementById('loading-msg').remove();
+                }
+                
+                if (data.error) {
+                     appendMessage("Error: " + data.error, 'bot-message');
+                } else {
+                     appendMessage(data.reply, 'bot-message');
+                }
+
+            } catch (error) {
+                if(document.getElementById('loading-msg')) {
+                    document.getElementById('loading-msg').remove();
+                }
+                appendMessage("माफ़ कीजिये, अभी संपर्क नहीं हो पा रहा है।", 'bot-message');
+                console.error(error);
+            }
+        }
+
+        function appendMessage(text, className) {
+            const chatBody = document.getElementById('chat-messages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${className}`;
+            
+            // Allow basic bold formatting if needed, but for security usually innerText is better.
+            // Converting **text** to <b>text</b> for basic markdown support if Gemini sends it.
+            const formattedText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+            msgDiv.innerHTML = formattedText; 
+            
+            chatBody.appendChild(msgDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
     </script>
 </body>
 
