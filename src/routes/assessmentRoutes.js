@@ -6,5 +6,6 @@ router.get('/start/:trainingId', assessmentController.startAssessment);
 
 
 router.post('/submit', assessmentController.submitAssessment);
+router.get('/certificate/:submissionId', assessmentController.downloadCertificate);
 
 module.exports = router;
