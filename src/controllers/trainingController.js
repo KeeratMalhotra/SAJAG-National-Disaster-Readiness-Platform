@@ -49,6 +49,13 @@ const trainingController = {
             if (new Date(endDate) < new Date(startDate)) {
                 return res.status(400).json({ message: 'End date cannot be before the start date.' });
             }
+            const start = new Date(startDate);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Reset time to midnight for accurate date comparison
+
+            if (start < today) {
+                return res.status(400).json({ message: 'Start date cannot be in the past.' });
+            }
 
             // 3. Construct the perfect data object to send to the model
             const trainingData = {

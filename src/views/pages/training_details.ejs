@@ -159,20 +159,38 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <% submissions.forEach(sub => { %>
-                                                    <tr>
-                                                        <td><%= sub.participant_email %></td>
-                                                        <td class="text-end fw-bold"><%= parseFloat(sub.score).toFixed(2) %>%</td>
-                                                        <td class="text-end">
-                                                            <% if(sub.risk_flag && sub.risk_flag !== 'SAFE') { %>
-                                                                <span class="badge bg-danger" title="<%= sub.risk_flag %>">RISK</span>
-                                                            <% } else { %>
-                                                                <span class="badge bg-success">SAFE</span>
-                                                            <% } %>
-                                                        </td>
-                                                    </tr>
-                                                <% }) %>
-                                            </tbody>
+    <% submissions.forEach(sub => { %>
+        <tr>
+            <td><%= sub.participant_email %></td>
+            <td class="text-end fw-bold"><%= parseFloat(sub.score).toFixed(2) %>%</td>
+            <td class="text-end">
+                
+                <% 
+                    const score = parseFloat(sub.score);
+                    let badgeClass = 'bg-danger';
+                    let statusText = 'Not Ready'; // Default for < 50%
+
+                    if (score >= 80) {
+                        badgeClass = 'bg-success';
+                        statusText = 'Highly Ready';
+                    } else if (score >= 50) {
+                        badgeClass = 'bg-warning text-dark';
+                        statusText = 'Partially Ready';
+                    }
+                %>
+
+                <span class="badge <%= badgeClass %>"><%= statusText %></span>
+
+                <% if(sub.risk_flag && sub.risk_flag !== 'SAFE') { %>
+                    <span class="badge bg-danger ms-1" title="Fraud Risk: <%= sub.risk_flag %>">
+                        <i class="bi bi-exclamation-triangle-fill"></i> Risk
+                    </span>
+                <% } %>
+                
+            </td>
+        </tr>
+    <% }) %>
+</tbody>
                                         </table>
                                     </div>
                                 <% } else { %>

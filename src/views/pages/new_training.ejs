@@ -97,6 +97,28 @@
             </div>
         </div>
         </div>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
+            
+            // Get today's date in YYYY-MM-DD format
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            const minDate = `${year}-${month}-${day}`;
+            
+            // Set minimum date to today
+            startDateInput.setAttribute('min', minDate);
+            endDateInput.setAttribute('min', minDate);
+
+            // Optional: When start date changes, ensure end date is not before it
+            startDateInput.addEventListener('change', function() {
+                endDateInput.setAttribute('min', this.value);
+            });
+        });
+    </script>
 
     <script src="/js/training.js"></script>
  

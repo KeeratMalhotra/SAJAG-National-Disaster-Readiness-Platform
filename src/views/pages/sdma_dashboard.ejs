@@ -222,7 +222,7 @@
                                 <th>Participant</th>
                                 <th>Aadhar ID</th>
                                 <th>Training Program</th>
-                                <th>Organization</th>
+                                <th>Partner ID</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -239,7 +239,9 @@
                                         </td>
                                         <td><%= sub.participant_email %></td> <td><strong><%= sub.aadhar_id || 'N/A' %></strong></td>
                                         <td><%= sub.training_title %></td>
-                                        <td><%= sub.organization_name %></td>
+                                        <td><span class="badge bg-light text-dark border">
+                    <%= sub.partner_id ? sub.partner_id.slice(-12) : 'N/A' %>
+                </span></td>
                                         <td>
                                             <button class="btn btn-sm btn-outline-dark">Review</button>
                                         </td>

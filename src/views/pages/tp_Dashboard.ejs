@@ -18,8 +18,12 @@
 <!-- This is the new, dynamic Identity Header -->
 <div class="identity-header">
     <img src="/images/ndma.png" alt="NDMA Logo" class="logo">
-    <div class="org-details text-center">
+   <div class="org-details text-center">
         <h1 class="org-name"><%= user.name %></h1>
+        
+        <p class="mb-1" style="color: rgba(255,255,255,0.9); font-size: 0.9rem;">
+            <strong>Partner ID:</strong> <%= user.id.slice(-12) %>
+        </p>
         <p class="org-state"><%= user.organization_name %> &bull; <%= user.state %></p>
     </div>
     <img src="/images/<%= user.state.toLowerCase().replace(/ & /g, '-').replace(/\s+/g, '-') %>-logo.png" alt="<%= user.state %> SDMA Logo" class="logo state-emblem" onerror="this.style.display='none'">
