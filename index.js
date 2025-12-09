@@ -133,7 +133,7 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-const pool = require('./src/config/database');
+// const pool = require('./src/config/database'); // DB connection if needed directly
 const cookieParser = require('cookie-parser'); 
 const { checkUser } = require('./src/middleware/checkUserMiddleware'); 
 const i18n = require('i18n');
@@ -158,7 +158,6 @@ const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir);
 }
-// Ensure locales directory exists so i18n doesn't crash
 const localesDir = path.join(__dirname, 'locales');
 if (!fs.existsSync(localesDir)) {
     fs.mkdirSync(localesDir);
@@ -179,18 +178,11 @@ app.use(i18n.init);
 
 // --- LANGUAGE SWITCHING DEBUGGER ---
 app.use((req, res, next) => {
-    // 1. Check if user is requesting a language switch
     if (req.query.lang) {
         console.log(`DEBUG: User requested language switch to: ${req.query.lang}`);
-        
-        // Force the cookie
         res.cookie('lang', req.query.lang, { maxAge: 900000, httpOnly: true });
-        
-        // Force the locale for this request
         req.setLocale(req.query.lang);
     }
-
-    // 2. Log what the server thinks the current language is
     console.log(`DEBUG: Current Locale: ${req.getLocale()} | Query: ${req.query.lang || 'none'} | Cookie: ${req.cookies.lang || 'none'}`);
     next();
 });
@@ -234,9 +226,9 @@ app.use('/dashboard', dashboardRoutes);
 app.use('/trainings', trainingRoutes);
 app.use('/api/alerts', alertRoutes);
 
-// --- UPDATED ROUTE FOR ASSESSMENT (Fix: Removed '/api' to match frontend) ---
+// --- UPDATED ROUTE FOR ASSESSMENT ---
 app.use('/assessment', assessmentApiRoutes); 
-// --------------------------------------------------------------------------
+// ------------------------------------
 
 app.use('/assessments', assessmentPageRoutes);
 app.use('/api/predictions', predictionRoutes);

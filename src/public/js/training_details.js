@@ -1,15 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
     const qrcodeContainer = document.getElementById('qrcode');
-    if (qrcodeContainer) {
-        // Get the URL from the <p> tag in the modal
-        const url = document.querySelector('.modal-body small').textContent;
+    const linkElement = document.getElementById('assessment-link');
 
-        // Generate the QR code
+    if (qrcodeContainer && linkElement) {
+        // 1. Construct the Dynamic URL (Works for Localhost & Production)
+        const relativePath = linkElement.getAttribute('data-path');
+        const fullUrl = window.location.origin + relativePath;
+
+        // 2. Display the text link
+        linkElement.textContent = fullUrl;
+
+        // 3. Generate the QR code
         const qr = qrcode(0, 'M');
-        qr.addData(url);
+        qr.addData(fullUrl);
         qr.make();
         
-        // Display it as an image in the modal
+        // Display it as an image
         qrcodeContainer.innerHTML = qr.createImgTag(5, 5);
     }
     

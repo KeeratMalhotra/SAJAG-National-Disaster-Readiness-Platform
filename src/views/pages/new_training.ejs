@@ -76,14 +76,16 @@
                 <h4 class="mb-0">Bulk Import Trainings (CSV)</h4>
             </div>
             <div class="card-body">
+     
                 <div id="import-message"></div>
                 
                 <form id="importForm" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label for="csvFile" class="form-label">Upload CSV File</label>
+     
                         <input class="form-control" type="file" id="csvFile" name="trainingsCsv" accept=".csv" required>
                         <div class="form-text">
-                            Required columns: <strong>title, theme, start_date, end_date, location_text, creator_email</strong>.
+                            Required columns: <strong>title, theme, startDate, endDate, location, creator_email</strong>.
                             <br>
                             <a href="/trainings_template.csv" download class="text-primary">Download Sample Template</a>
                         </div>
@@ -97,5 +99,6 @@
         </div>
 
     <script src="/js/training.js"></script>
+ 
     <script src="/js/import.js"></script> </body>
 </html>

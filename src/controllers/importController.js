@@ -11,7 +11,7 @@ const bulkImportTrainings = async (req, res) => {
     }
 
     const filePath = req.file.path;
-    const adminUser = req.user; // Retrieved from protectRoute middleware
+    const adminUser = req.user; 
     
     // Arrays to track results
     const successRows = [];
@@ -24,8 +24,9 @@ const bulkImportTrainings = async (req, res) => {
         .on('data', (row) => {
             rowNumber++;
             
-            // Check for required fields
-            const requiredFields = ['title', 'theme', 'start_date', 'end_date', 'location_text', 'creator_email'];
+            // UPDATED: Match the input names from the "New Training" form
+            // 'creator_email' is still required for mapping the user
+            const requiredFields = ['title', 'theme', 'startDate', 'endDate', 'location', 'creator_email'];
             const missing = requiredFields.filter(field => !row[field]);
 
             if (missing.length > 0) {
@@ -34,9 +35,9 @@ const bulkImportTrainings = async (req, res) => {
             }
 
             // Basic Date format validation
-            if (isNaN(new Date(row.start_date).getTime()) || isNaN(new Date(row.end_date).getTime())) {
+            if (isNaN(new Date(row.startDate).getTime()) || isNaN(new Date(row.endDate).getTime())) {
                 errorRows.push(`Row ${rowNumber}: Invalid Date format.`);
-                return;
+                return; 
             }
 
             // If basic checks pass, add to processing queue
@@ -47,9 +48,6 @@ const bulkImportTrainings = async (req, res) => {
             let insertedCount = 0;
 
             try {
-                // We do NOT start a transaction for the whole batch (No 'BEGIN').
-                // We want valid rows to be saved even if others fail.
-
                 for (const record of successRows) {
                     try {
                         const email = record.creator_email.trim().toLowerCase();
@@ -58,22 +56,16 @@ const bulkImportTrainings = async (req, res) => {
                         const creator = await User.findByEmail(email);
 
                         // --- DATABASE LEVEL CHECKS ---
-                        if (!creator) {
-                            throw new Error(`Creator email '${email}' not found.`);
-                        }
-                        if (creator.role !== 'training_partner') {
-                            throw new Error(`User '${email}' is not a Training Partner.`);
-                        }
-                        if (creator.status !== 'active') {
-                            throw new Error(`Partner account '${email}' is inactive.`);
-                        }
+                        if (!creator) throw new Error(`Creator email '${email}' not found.`);
+                        if (creator.role !== 'training_partner') throw new Error(`User '${email}' is not a Training Partner.`);
+                        if (creator.status !== 'active') throw new Error(`Partner account '${email}' is inactive.`);
                         
-                        // Security Check: SDMA Admin can only import for their state's partners
+                        // Security Check
                         if (adminUser.role === 'sdma_admin' && creator.state !== adminUser.state) {
                             throw new Error(`Permission Denied: Cannot import for partner in ${creator.state}.`);
                         }
 
-                        // --- INSERTION ---
+                        // --- INSERTION (Mapping CSV fields to DB columns) ---
                         const insertQuery = `
                             INSERT INTO trainings (title, theme, start_date, end_date, location_text, latitude, longitude, creator_user_id)
                             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
@@ -81,9 +73,9 @@ const bulkImportTrainings = async (req, res) => {
                         const values = [
                             record.title,
                             record.theme,
-                            record.start_date,
-                            record.end_date,
-                            record.location_text,
+                            record.startDate, // Maps to start_date
+                            record.endDate,   // Maps to end_date
+                            record.location,  // Maps to location_text
                             record.latitude ? parseFloat(record.latitude) : null,
                             record.longitude ? parseFloat(record.longitude) : null,
                             creator.id
@@ -93,8 +85,6 @@ const bulkImportTrainings = async (req, res) => {
                         insertedCount++;
 
                     } catch (rowError) {
-                        // Catch individual row errors (e.g., User not found, DB constraint)
-                        // Add specific error message to our list
                         errorRows.push(`Row ${record.rowNumber}: ${rowError.message}`);
                     }
                 }
@@ -104,7 +94,7 @@ const bulkImportTrainings = async (req, res) => {
                     message: 'Import process completed.',
                     successCount: insertedCount,
                     errorCount: errorRows.length,
-                    errors: errorRows // List of specific errors for the user to see
+                    errors: errorRows 
                 });
 
             } catch (err) {
@@ -112,10 +102,7 @@ const bulkImportTrainings = async (req, res) => {
                 res.status(500).json({ message: 'Internal Server Error processing batch.' });
             } finally {
                 client.release();
-                // Cleanup: Delete the uploaded CSV file
-                if (fs.existsSync(filePath)) {
-                    fs.unlinkSync(filePath);
-                }
+                if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
             }
         })
         .on('error', (err) => {

@@ -66,9 +66,9 @@ const assessmentController = {
         try {
             await client.query('BEGIN');
 
-            const { trainingId, participantName, answers, userLat, userLng } = req.body;
-            // answers is object: { "question_id_1": "option_id_A", ... }
-
+            // 1. Get aadharId from request
+            const { trainingId, participantName, aadharId, answers, userLat, userLng } = req.body;
+            
             // A. FETCH TRUTH
             const training = await Training.findById(trainingId);
             
@@ -76,41 +76,50 @@ const assessmentController = {
             let fraudScore = 0;
             let riskFlag = 'SAFE';
 
-            // Check 1: Geo-Fence
+            // Check 1: Geo-Fence (Existing Logic)
             const distance = getDistanceFromLatLonInKm(userLat, userLng, training.latitude, training.longitude);
             if (distance > 200) {
-                fraudScore += 50;
+                fraudScore += 40; // Reduced slightly to weigh identity fraud higher
                 riskFlag = 'LOCATION_MISMATCH';
             }
 
-            // Check 2: Speed (Time since page load? - Advanced, skipping for now)
+            // --- CHECK 2: IDENTITY PATTERN ANALYSIS (New) ---
+            // Check how many times this Aadhar ID has been used in ANY training
+            const historyCheck = await client.query(
+                `SELECT COUNT(*) as count FROM participant_submissions WHERE aadhar_id = $1`, 
+                [aadharId]
+            );
+            const participationCount = parseInt(historyCheck.rows[0].count);
 
-            // C. CALCULATE SCORE & DETAIL
+            // LOGIC: If a person appears more than 3 times, it's suspicious for a "One-time" training program.
+            // This suggests the NGO is recycling people to inflate numbers.
+            if (participationCount >= 3) {
+                fraudScore += 100; // Immediate Critical Fail
+                riskFlag = 'IDENTITY_FRAUD'; // This alerts SDMA immediately on Dashboard
+            }
+            // ------------------------------------------------
+
+            // C. CALCULATE SCORE
             let correctCount = 0;
             const questionIds = Object.keys(answers);
             
-            // Insert the Main Submission
+            // Insert Submission (Now including aadhar_id)
             const submissionResult = await client.query(`
                 INSERT INTO participant_submissions 
-                (training_id, participant_email, score, gps_lat, gps_lng, fraud_score, risk_flag, device_id)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                (training_id, participant_email, aadhar_id, score, gps_lat, gps_lng, fraud_score, risk_flag, device_id)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                 RETURNING id
-            `, [trainingId, participantName, 0, userLat, userLng, fraudScore, riskFlag, req.ip]);
+            `, [trainingId, participantName, aadharId, 0, userLat, userLng, fraudScore, riskFlag, req.ip]);
             
             const submissionId = submissionResult.rows[0].id;
 
-            // D. SAVE DETAILS (For "Lackness Report")
+            // D. SAVE ANSWERS (Existing Logic)
             for (const qId of questionIds) {
                 const selectedOptionId = answers[qId];
-                
-                // Verify correctness (This logic assumes you have a way to check. 
-                // For efficiency, we usually cache correct answers or fetch them.)
                 const optionCheck = await client.query('SELECT is_correct FROM options WHERE id = $1', [selectedOptionId]);
                 const isCorrect = optionCheck.rows[0]?.is_correct || false;
-
                 if (isCorrect) correctCount++;
 
-                // Save the detailed answer
                 await client.query(`
                     INSERT INTO submission_answers (submission_id, question_id, selected_option_id, is_correct)
                     VALUES ($1, $2, $3, $4)
@@ -127,7 +136,8 @@ const assessmentController = {
                 success: true, 
                 score: finalScore, 
                 risk: riskFlag,
-                message: fraudScore > 50 ? "Submitted with Warnings" : "Success"
+                // If ID Fraud, tell them "Audit Pending" instead of Success
+                message: riskFlag === 'IDENTITY_FRAUD' ? "Submission Flagged for Audit" : "Success"
             });
 
         } catch (error) {

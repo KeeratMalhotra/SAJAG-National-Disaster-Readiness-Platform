@@ -228,9 +228,9 @@
                 <div class="modal-body text-center">
                     <div id="qrcode"></div>
                     <p class="mt-2 text-break">
-                        <small class="text-muted" id="assessment-link">
-                            <%= "https://sajag-portal.onrender.com/assessment/start/" + training.id %>
-                        </small>
+                        <small class="text-muted" id="assessment-link" data-path="/assessment/start/<%= training.id %>">
+    Loading link...
+</small>
                     </p>
                     <div class="alert alert-warning py-1 mt-2">
                         <small><i class="bi bi-exclamation-triangle"></i> Geo-Lock Active: Must be within 200m</small>

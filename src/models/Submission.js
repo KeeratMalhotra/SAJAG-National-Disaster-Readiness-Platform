@@ -130,6 +130,23 @@ async getParticipantCountByLocation(theme, location) {
         throw error;
     }
 },
+async findFlaggedByState(state) {
+        const query = `
+            SELECT ps.*, t.title as training_title, u.organization_name
+            FROM participant_submissions ps
+            JOIN trainings t ON ps.training_id = t.id
+            JOIN users u ON t.creator_user_id = u.id
+            WHERE u.state = $1 AND ps.risk_flag != 'SAFE'
+            ORDER BY ps.submitted_at DESC;
+        `;
+        try {
+            const result = await pool.query(query, [state]);
+            return result.rows;
+        } catch (error) {
+            console.error('Error finding flagged submissions:', error);
+            throw error;
+        }
+    },
 async getAverageScoreByState(state) {
     const query = `
         SELECT AVG(ps.score) as average_score

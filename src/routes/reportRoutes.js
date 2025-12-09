@@ -1,18 +1,27 @@
 const express = require('express');
 const router = express.Router();
 const reportController = require('../controllers/reportController');
-const { checkUser } = require('../middleware/checkUserMiddleware');
+const checkUserMiddleware = require('../middleware/checkUserMiddleware');
 
-// --- DEBUGGING LOGS (Check your terminal for these) ---
-console.log('--- DEBUGGING REPORT ROUTE ---');
-console.log('checkUser is:', typeof checkUser); // Should say 'function'
-console.log('reportController is:', reportController); // Should be an object
-console.log('getTrainingAnalysis is:', typeof reportController?.getTrainingAnalysis); // Should say 'function'
-console.log('------------------------------');
+// Extract the function specifically (Safe Destructuring)
+const checkUser = checkUserMiddleware.checkUser;
 
-// If either is 'undefined', the app will crash below.
+console.log('--- DEBUGGING REPORT ROUTES ---');
+console.log('1. CheckUser Function Type:', typeof checkUser);
+console.log('2. ReportController Object:', typeof reportController);
+console.log('3. getTrainingAnalysis Function Type:', typeof reportController?.getTrainingAnalysis);
 
-// The Route for the Report Page
-router.get('/analysis/:trainingId', checkUser, reportController.getTrainingAnalysis);
+// --- SAFETY CHECK ---
+if (typeof checkUser !== 'function') {
+    console.error("❌ CRITICAL ERROR: 'checkUser' is missing. Check src/middleware/checkUserMiddleware.js");
+} else if (typeof reportController.getTrainingAnalysis !== 'function') {
+    console.error("❌ CRITICAL ERROR: 'getTrainingAnalysis' is missing. Check src/controllers/reportController.js");
+} else {
+    // Only define the route if everything exists
+    console.log("✅ All checks passed. Initializing Report Routes.");
+    router.get('/analysis/:trainingId', checkUser, reportController.getTrainingAnalysis);
+}
+
+console.log('-------------------------------');
 
 module.exports = router;

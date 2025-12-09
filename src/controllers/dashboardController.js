@@ -49,11 +49,13 @@ const dashboardController = {
     const [
         stateTrainings,
         activePartnersInState,
-        readinessScoreInState
+        readinessScoreInState,
+        flaggedSubmissions
     ] = await Promise.all([
         Training.findAllByState(adminState),
         User.countActiveByState(adminState),
-        Submission.getAverageScoreByState(adminState)
+        Submission.getAverageScoreByState(adminState),
+        Submission.findFlaggedByState(adminState)
     ]);
 
     res.render('pages/sdma_dashboard', {
@@ -66,7 +68,8 @@ const dashboardController = {
         unreadCount: unreadCount, // Add this line
         MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN,
         activePartners: activePartnersInState,
-        readinessScore: parseFloat(readinessScoreInState).toFixed(2)
+        readinessScore: parseFloat(readinessScoreInState).toFixed(2),
+        flaggedSubmissions: flaggedSubmissions
     });
 } else if (role === 'ndma_admin'|| role === 'auditor') {
                 
