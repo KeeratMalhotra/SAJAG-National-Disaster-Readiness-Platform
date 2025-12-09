@@ -5,7 +5,7 @@ const { protectRoute } = require('../middleware/authMiddleware');
 
 router.use(protectRoute);
 
-// GET /announcements/all
+
 router.get('/all', announcementController.showAllAnnouncementsPage);
 
 module.exports = router;

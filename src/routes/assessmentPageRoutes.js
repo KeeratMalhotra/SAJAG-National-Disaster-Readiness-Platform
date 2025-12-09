@@ -14,19 +14,16 @@
 
 const express = require('express');
 const router = express.Router();
-const Assessment = require('../models/Assessment'); // Model import karein
+const Assessment = require('../models/Assessment'); 
 
-// --- PUBLIC ROUTE: Redirect to Google Form ---
-// Example: /assessments/take/Floods -> Redirects to Google Form URL
+
 router.get('/take/:theme', async (req, res) => {
     try {
         const { theme } = req.params;
         
-        // Database se link dhundo
         const assessment = await Assessment.findByTheme(theme);
 
         if (assessment && assessment.google_form_link) {
-            // Agar link mil gaya, to Google Form par bhej do
             console.log(`Redirecting to Google Form for theme: ${theme}`);
             return res.redirect(assessment.google_form_link);
         } else {
@@ -42,7 +39,6 @@ router.get('/take/:theme', async (req, res) => {
     }
 });
 
-// --- Redirect root to dashboard (Safety fallback) ---
 router.get('/', (req, res) => {
     res.redirect('/dashboard');
 });

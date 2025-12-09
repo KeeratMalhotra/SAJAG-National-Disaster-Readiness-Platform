@@ -16,15 +16,11 @@ const trainingController = {
 
             if (!training) return res.status(404).send('Training not found');
 
-            // 1. Generate the Secure Link
-            // This points to the "Start Assessment" controller we made earlier
-            // Use req.protocol and req.get('host') to get your actual domain (localhost or production)
+           
             const assessmentUrl = `${req.protocol}://${req.get('host')}/assessment/start/${id}`;
 
-            // 2. Generate QR Data URL (Base64 image)
             const qrCodeImage = await QRCode.toDataURL(assessmentUrl);
 
-            // 3. Render a simple "Print Mode" page for the Partner
             res.render('pages/show_qr', {
                 pageTitle: 'Session QR Code',
                 qrCodeImage,
@@ -51,7 +47,7 @@ const trainingController = {
             }
             const start = new Date(startDate);
             const today = new Date();
-            today.setHours(0, 0, 0, 0); // Reset time to midnight for accurate date comparison
+            today.setHours(0, 0, 0, 0);
 
             if (start < today) {
                 return res.status(400).json({ message: 'Start date cannot be in the past.' });
@@ -104,7 +100,7 @@ const trainingController = {
                 user: req.user,
                 training: training,
                 submissions: submissions,
-                averageScore: parseFloat(averageScore) || 0, // Ensure it's a number
+                averageScore: parseFloat(averageScore) || 0, 
                 photos: photos
             });
         } catch (error) {
@@ -133,7 +129,6 @@ const trainingController = {
             const geojsonData = await Training.findAllGeoJSON();
             console.log('--- trainingController.getTrainingsAsGeoJSON ---');
         console.log(`Sending ${geojsonData.features.length} features.`);
-        // Log the IDs of the first few features to check for duplicates
         console.log('Feature IDs:', geojsonData.features.slice(0, 10).map(f => f.properties.id)); 
         console.log('--------------------------------------------');
             res.status(200).json(geojsonData);
@@ -148,7 +143,6 @@ const trainingController = {
             const geojsonData = await Training.findAllGeoJSONByState(adminState);
             console.log('--- trainingController.getTrainingsAsGeoJSONByState ---');
         console.log(`State: ${adminState}, Sending ${geojsonData.features.length} features.`);
-        // Log the IDs of the first few features
         console.log('Feature IDs:', geojsonData.features.slice(0, 10).map(f => f.properties.id));
         console.log('----------------------------------------------------');
             res.status(200).json(geojsonData);

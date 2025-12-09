@@ -20,7 +20,6 @@ const participantController = {
             const payload = { email: email };
             const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '15m' });
 
-            // **SIMULATED EMAIL:** For the hackathon, we log the link to the console
             const loginLink = `http://localhost:3000/participant/results?token=${token}`;
             console.log('--- PARTICIPANT LOGIN LINK (SIMULATED EMAIL) ---');
             console.log(loginLink);

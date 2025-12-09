@@ -16,11 +16,8 @@ const alertsController = {
                     }
                     
                     try {
-                        // Safely get the items
                         let items = result?.rss?.channel?.item || [];
 
-                        // --- THIS IS THE FIX ---
-                        // If 'items' is a single object (not an array), wrap it in an array
                         if (!Array.isArray(items)) {
                             items = [items];
                         }

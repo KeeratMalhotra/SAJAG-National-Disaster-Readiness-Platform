@@ -5,10 +5,9 @@ const { protectRoute } = require('../middleware/authMiddleware');
 const { requireRole } = require('../middleware/roleMiddleware');
 const importController = require('../controllers/importController');
 
-// Configure multer for CSV file uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/'); // Temporarily store uploaded files
+        cb(null, 'uploads/'); 
     },
     filename: (req, file, cb) => {
         cb(null, `${Date.now()}-${file.originalname}`);
@@ -27,7 +26,7 @@ const upload = multer({
 });
 
 router.post(
-    '/trainings', // Corrected route
+    '/trainings', 
     protectRoute,
     requireRole(['sdma_admin', 'ndma_admin']),
     upload.single('trainingsCsv'),

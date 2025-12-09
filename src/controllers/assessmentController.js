@@ -24,7 +24,6 @@ const deg2rad = (deg) => {
     return deg * (Math.PI / 180)
 }
 
-// --- EXPANDED HARDCODED DATA (Covers ALL Themes) ---
 const HARDCODED_DATA = {
     'Earthquake': {
         title: 'Earthquake Readiness Quiz',

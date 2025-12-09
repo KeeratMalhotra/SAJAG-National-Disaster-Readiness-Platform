@@ -128,8 +128,6 @@
 
 
 
-// --- IMPORTS ---
-// --- IMPORTS ---
 require('dotenv').config(); 
 const express = require('express');
 const path = require('path');
@@ -139,10 +137,10 @@ const cookieParser = require('cookie-parser');
 const { checkUser } = require('./src/middleware/checkUserMiddleware'); 
 const i18n = require('i18n');
 
-// --- APP INITIALIZATION ---
+
 const app = express();
 
-// --- I18N CONFIGURATION ---
+
 i18n.configure({
     locales: ['en', 'hi','bn','ta'],
     directory: path.join(__dirname, 'locales'),
@@ -154,7 +152,6 @@ i18n.configure({
     objectNotation: true
 });
 
-// --- ENSURE UPLOADS/LOCALES DIRECTORY EXISTS ---
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir);
@@ -165,19 +162,15 @@ if (!fs.existsSync(localesDir)) {
     console.log(`Created directory: ${localesDir}`);
 }
 
-// --- CONFIGURATION ---
 const PORT = process.env.PORT || 3000;
 
-// --- MIDDLEWARE ---
 app.use(express.static(path.join(__dirname, 'src', 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// --- INITIALIZE I18N ---
 app.use(i18n.init);
 
-// --- LANGUAGE SWITCHING DEBUGGER ---
 app.use((req, res, next) => {
     if (req.query.lang) {
         console.log(`DEBUG: User requested language switch to: ${req.query.lang}`);
@@ -191,11 +184,9 @@ app.use((req, res, next) => {
 app.use(checkUser);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// --- VIEW ENGINE SETUP ---
 app.set('views', path.join(__dirname, 'src', 'views'));
 app.set('view engine', 'ejs');
 
-// --- ROUTES IMPORTS ---
 const authRoutes = require('./src/routes/authRoutes');
 const dashboardRoutes = require('./src/routes/dashboardRoutes');
 const trainingRoutes = require('./src/routes/trainingRoutes');
@@ -236,7 +227,6 @@ app.post('/api/chat-public', chatController.handleChat);
 
 // --- UPDATED ROUTE FOR ASSESSMENT ---
 app.use('/assessment', assessmentApiRoutes); 
-// ------------------------------------
 
 app.use('/assessments', assessmentPageRoutes);
 app.use('/api/predictions', predictionRoutes);
@@ -255,7 +245,6 @@ app.get('/learn-public', (req, res) => {
     res.render('pages/learn-public', { pageTitle: 'Learn & Prepare' , activePage: 'learn'});
 });
 
-// --- SERVER STARTUP ---
 app.listen(PORT, () => {
-    console.log(`🚀 Server is running on http://localhost:${PORT}`);
+    console.log(` Server is running on http://localhost:${PORT}`);
 });
