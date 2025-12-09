@@ -3,9 +3,9 @@ const router = express.Router();
 const assessmentController = require('../controllers/assessmentController');
 
 router.get('/start/:trainingId', assessmentController.startAssessment);
-
-
 router.post('/submit', assessmentController.submitAssessment);
-router.get('/certificate/:submissionId', assessmentController.downloadCertificate);
+
+// CHANGED: Removed "/:submissionId" to allow query parameters like /certificate?name=...
+router.get('/certificate', assessmentController.downloadCertificate);
 
 module.exports = router;
