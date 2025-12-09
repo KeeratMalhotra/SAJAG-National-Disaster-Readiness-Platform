@@ -184,22 +184,8 @@ const assessmentController = {
 
             const { trainingId, participantName, participantEmail, aadharId, answers, userLat, userLng } = req.body;
             
-            // --- 1. GET TRAINING DETAILS ---
+            // 2. Fraud Checks
             const training = await Training.findById(trainingId);
-            if (!training) throw new Error("Training not found");
-
-            // --- 2. GET ASSESSMENT ID (FIX FOR NULL ERROR) ---
-            const assessmentRes = await client.query('SELECT id FROM assessments WHERE training_theme = $1', [training.theme]);
-            
-            if (assessmentRes.rows.length === 0) {
-                // If using fallback/hardcoded mode, we might not have an ID.
-                // However, the DB constraint requires it. 
-                // Ensure your 'assessments' table has entries for 'Earthquake', 'Flood', etc.
-                throw new Error(`Configuration Error: No Assessment found in database for theme '${training.theme}'`);
-            }
-            const assessmentId = assessmentRes.rows[0].id;
-
-            // --- 3. FRAUD CHECKS ---
             let fraudScore = 0;
             let riskFlag = 'SAFE';
 
@@ -225,25 +211,25 @@ const assessmentController = {
                 riskFlag = 'IDENTITY_FRAUD';
             }
 
-            // --- 4. INSERT SUBMISSION ---
+            // 3. CALCULATE SCORE (Hybrid)
+            let correctCount = 0;
+            const questionIds = Object.keys(answers);
+            
             // Secure Storage
             const aadharEncrypted = cryptoUtils.encrypt(aadharId);
             const aadharMasked = cryptoUtils.maskAadhar(aadharId);
 
-            // FIX: Added assessment_id to the INSERT columns and values
+            // FIX: Using participantEmail specifically for the email column.
+            // NOTE: If you have a 'participant_name' column, add it here. For now, assuming standard schema.
             const submissionResult = await client.query(`
                 INSERT INTO participant_submissions 
-                (training_id, participant_email, assessment_id, aadhar_id, aadhar_hash, aadhar_encrypted, aadhar_masked, score, gps_lat, gps_lng, fraud_score, risk_flag, device_id)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+                (training_id, participant_email, aadhar_id, aadhar_hash, aadhar_encrypted, aadhar_masked, score, gps_lat, gps_lng, fraud_score, risk_flag, device_id)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
                 RETURNING id
-            `, [trainingId, participantEmail, assessmentId, aadharId, aadharHash, aadharEncrypted, aadharMasked, 0, safeLat, safeLng, fraudScore, riskFlag, req.ip]);
+            `, [trainingId, participantEmail, aadharId, aadharHash, aadharEncrypted, aadharMasked, 0, safeLat, safeLng, fraudScore, riskFlag, req.ip]);
             
             const submissionId = submissionResult.rows[0].id;
 
-            // --- 5. CALCULATE SCORE & SAVE ANSWERS ---
-            let correctCount = 0;
-            const questionIds = Object.keys(answers);
-            
             for (const qId of questionIds) {
                 const selectedOptionId = answers[qId];
                 let isCorrect = false;
@@ -258,18 +244,21 @@ const assessmentController = {
                     isHardcoded = true;
                 } else {
                     // Check Database Logic
+                    // Only query if the ID looks like it might be a DB ID (not starting with opt_)
                     try {
                         const optionCheck = await client.query('SELECT is_correct FROM options WHERE id = $1', [selectedOptionId]);
                         isCorrect = optionCheck.rows[0]?.is_correct || false;
                     } catch(err) {
+                        // Fallback if UUID casting fails on a hardcoded string
                         console.warn(`Skipping DB check for non-UUID option: ${selectedOptionId}`);
                     }
                 }
 
                 if (isCorrect) correctCount++;
 
-                // Prevent crash by only inserting if ID is valid or we relaxed the constraint
-                if (qId && selectedOptionId) {
+                // CRITICAL FIX: Only insert into submission_answers if it's NOT a hardcoded question.
+                // Inserting "eq_q1" into a UUID column will CRASH the transaction.
+                if (!isHardcoded && !qId.startsWith('eq_') && !qId.startsWith('gen_')) {
                     await client.query(`
                         INSERT INTO submission_answers (submission_id, question_id, selected_option_id, is_correct)
                         VALUES ($1, $2, $3, $4)
@@ -297,13 +286,12 @@ const assessmentController = {
             client.release();
         }
     },
-
-    // 3. CERTIFICATE GENERATION
     downloadCertificate: async (req, res) => {
         try {
             const { submissionId } = req.params;
 
-            // Fetch submission details
+            // Fetch submission and training details to populate certificate
+            // We join trainings and users to get the Organization Name (Training Partner)
             const query = `
                 SELECT s.score, s.participant_email, s.created_at, 
                        t.title as training_title, u.organization_name
@@ -347,6 +335,7 @@ const assessmentController = {
             doc.font('Helvetica').fontSize(15).fillColor('#7f8c8d').text('This is to certify that', { align: 'center' });
             
             doc.moveDown();
+            // Assuming participant_email holds the name/identifier based on your submit logic
             doc.font('Helvetica-Bold').fontSize(25).fillColor('#e67e22').text(data.participant_email || 'Participant', { align: 'center' });
 
             doc.moveDown();
@@ -360,8 +349,8 @@ const assessmentController = {
 
             doc.moveDown(3);
             
-            // Footer
-            const date = new Date(data.created_at || Date.now()).toLocaleDateString();
+            // Footer with Training Partner and Date
+            const date = new Date(data.created_at).toLocaleDateString();
             
             doc.fontSize(12).fillColor('#333');
             doc.text(`Training Partner: ${data.organization_name}`, 100, doc.y);
@@ -374,6 +363,8 @@ const assessmentController = {
             res.status(500).send("Error generating certificate");
         }
     }
+
 };
+
 
 module.exports = assessmentController;

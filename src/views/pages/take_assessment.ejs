@@ -33,7 +33,6 @@
         <h4 id="loading-text">Verifying your location...</h4>
         <p class="text-muted small" id="loading-subtext">Please allow location access to continue.</p>
         <button id="retry-btn" class="btn btn-outline-secondary btn-sm mt-3" style="display: none;" onclick="window.location.reload()">Retry</button>
-        <button id="bypass-btn" class="btn btn-link text-muted btn-sm mt-5" style="display:none;" onclick="forceStart()">Developer Bypass</button>
     </div>
 
     <div class="assessment-container" id="main-content" style="display: none;">
@@ -51,32 +50,41 @@
                         </div>
                     </div>
                 </div>
+                <div class="row mb-4">
+        
                         
                 <div class="card-body p-4">
                     <div class="mb-3">
-                        <label class="form-label text-muted small">Training Partner ID</label>
-                        <input type="text" class="form-control" value="<%= training.creator_user_id.slice(-12) %>" readonly disabled style="background-color: #e9ecef; letter-spacing: 1px; font-family: monospace;">
-                    </div>
+        <label class="form-label text-muted small">Training Partner ID</label>
+        <input type="text" class="form-control" value="<%= training.creator_user_id.slice(-12) %>" readonly disabled style="background-color: #e9ecef; letter-spacing: 1px; font-family: monospace;">
+    </div>
                     <h5 class="mb-3">Participant Details</h5>
 
-                    <div class="mb-3">
-                        <label class="form-label">Full Name</label>
-                        <input type="text" name="participantName" id="participantName" class="form-control" required placeholder="Enter your name">
-                    </div>
+    <div class="mb-3">
+        <label class="form-label">Full Name</label>
+        <input type="text" name="participantName" id="participantName" class="form-control" required placeholder="Enter your name">
+        <div class="invalid-feedback" id="nameFeedback">
+            Name cannot contain numbers or symbols.
+        </div>
+    </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Email Address</label>
-                        <input type="email" name="participantEmail" id="participantEmail" class="form-control" required placeholder="name@gov.in">
-                        <div class="invalid-feedback" id="emailFeedback">
-                            Invalid email format or restricted domain. Allowed: gov.in, nic.in
-                        </div>
-                    </div>
+    <div class="mb-3">
+        <label class="form-label">Email Address</label>
+        <input type="email" name="participantEmail" id="participantEmail" class="form-control" required placeholder="name@gov.in">
+        <div class="invalid-feedback" id="emailFeedback">
+            Invalid email format or restricted domain. Allowed: gov.in, nic.in
+        </div>
+    </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Aadhar ID / आधार संख्या</label>
-                        <input type="text" name="aadharId" id="aadharId" class="form-control form-control-lg" required maxlength="12" placeholder="12-digit Aadhar Number">
-                        <div class="invalid-feedback">Aadhar ID must be exactly 12 digits and contain no symbols.</div>
-                    </div>
+    <div class="mb-3">
+        <label class="form-label">Aadhar ID / आधार संख्या</label>
+        <input type="text" name="aadharId" id="aadharId" class="form-control form-control-lg" required 
+               maxlength="12" 
+               placeholder="12-digit Aadhar Number">
+        <div class="invalid-feedback">
+            Aadhar ID must be exactly 12 digits and contain no symbols.
+        </div>
+    </div>
                     <hr>
                     <div class="alert alert-info">
                         <i class="bi bi-shield-lock-fill me-2"></i> This assessment is geo-locked. Your location has been verified.
@@ -86,44 +94,57 @@
             </div>
 
            <% if(assessment && assessment.questions && assessment.questions.length > 0) { %>
-                <% assessment.questions.forEach((q, index) => { %>
-                    <div class="card question-card" id="q-<%= index %>" data-index="<%= index %>">
-                        <div class="card-body p-4">
-                            <div class="d-flex justify-content-between mb-3">
-                                <span class="badge bg-secondary">Question <%= index + 1 %> of <%= assessment.questions.length %></span>
-                                <span class="text-muted"><%= q.category_tag || 'General' %></span>
-                            </div>
-                            <h4 class="mb-4"><%= q.question_text %></h4>
-                            <% if(q.image_url) { %>
-                                <img src="<%= q.image_url %>" class="img-fluid rounded mb-3" style="max-height: 300px;">
-                            <% } %>
-                            <div class="options-list">
-                                <% q.options.forEach(opt => { %>
-                                    <div>
-                                        <input type="radio" name="answers[<%= q.id %>]" value="<%= opt.id %>" id="opt-<%= opt.id %>" class="option-input">
-                                        <label class="option-label" for="opt-<%= opt.id %>"><%= opt.option_text %></label>
-                                    </div>
-                                <% }) %>
-                            </div>
-                            <div class="d-flex justify-content-between mt-4">
-                                <% if(index > 0) { %>
-                                    <button type="button" class="btn btn-outline-secondary btn-nav" onclick="showQuestion(<%= index - 1 %>)">Previous</button>
-                                <% } else { %> <div></div> <% } %>
-                                <% if(index < assessment.questions.length - 1) { %>
-                                    <button type="button" class="btn btn-primary btn-nav" onclick="showQuestion(<%= index + 1 %>)">Next</button>
-                                <% } else { %>
-                                    <button type="button" class="btn btn-success btn-nav" onclick="submitAssessment()">Submit</button>
-                                <% } %>
-                            </div>
-                        </div>
-                    </div>
-                <% }) %>
-            <% } else { %>
-                <div class="alert alert-warning text-center p-4">
-                    <h4><i class="bi bi-exclamation-circle"></i> No Questions Found</h4>
-                    <p>The assessment for <strong><%= training.theme %></strong> has been created, but no questions have been added yet.</p>
+    
+    <% assessment.questions.forEach((q, index) => { %>
+        <div class="card question-card" id="q-<%= index %>" data-index="<%= index %>">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="badge bg-secondary">Question <%= index + 1 %> of <%= assessment.questions.length %></span>
+                    <span class="text-muted"><%= q.category_tag || 'General' %></span>
                 </div>
-            <% } %>
+                
+                <h4 class="mb-4"><%= q.question_text %></h4>
+
+                <% if(q.image_url) { %>
+                    <img src="<%= q.image_url %>" class="img-fluid rounded mb-3" style="max-height: 300px;">
+                <% } %>
+
+                <div class="options-list">
+                    <% q.options.forEach(opt => { %>
+                        <div>
+                            <input type="radio" name="answers[<%= q.id %>]" value="<%= opt.id %>" id="opt-<%= opt.id %>" class="option-input">
+                            <label class="option-label" for="opt-<%= opt.id %>">
+                                <%= opt.option_text %>
+                            </label>
+                        </div>
+                    <% }) %>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <% if(index > 0) { %>
+                        <button type="button" class="btn btn-outline-secondary btn-nav" onclick="showQuestion(<%= index - 1 %>)">Previous</button>
+                    <% } else { %>
+                        <div></div>
+                    <% } %>
+
+                    <% if(index < assessment.questions.length - 1) { %>
+                        <button type="button" class="btn btn-primary btn-nav" onclick="showQuestion(<%= index + 1 %>)">Next</button>
+                    <% } else { %>
+                        <button type="button" class="btn btn-success btn-nav" onclick="submitAssessment()">Submit</button>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    <% }) %>
+
+<% } else { %>
+    <div class="alert alert-warning text-center p-4">
+        <h4><i class="bi bi-exclamation-circle"></i> No Questions Found</h4>
+        <p>The assessment for <strong><%= training.theme %></strong> has been created, but no questions have been added yet.</p>
+        <hr>
+        <p class="mb-0 small">Please contact the administrator to seed the questions database.</p>
+    </div>
+<% } %>
 
         </form>
     </div>
@@ -138,37 +159,37 @@
             const userLngInput = document.getElementById('userLng');
             const loadingText = document.getElementById('loading-text');
             const retryBtn = document.getElementById('retry-btn');
-            const bypassBtn = document.getElementById('bypass-btn');
 
             if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
+                        // Success!
                         userLatInput.value = position.coords.latitude;
                         userLngInput.value = position.coords.longitude;
+                        
+                        // Hide loader, show content
                         loadingScreen.style.display = 'none';
                         mainContent.style.display = 'block';
                     },
                     (error) => {
+                        // Error Handling
                         console.error("Geo Error:", error);
                         loadingText.innerText = "Location Access Denied";
-                        document.getElementById('loading-subtext').innerText = "You must allow location access.";
+                        document.getElementById('loading-subtext').innerText = "You must allow location access to take this secure assessment.";
                         document.querySelector('.spinner-border').style.display = 'none';
                         retryBtn.style.display = 'block';
-                        // Show bypass for development if needed
-                        bypassBtn.style.display = 'block';
                     },
-                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000, // Wait max 10 seconds
+                        maximumAge: 0
+                    }
                 );
             } else {
                 loadingText.innerText = "Geolocation Not Supported";
-                bypassBtn.style.display = 'block';
+                document.getElementById('loading-subtext').innerText = "Your browser does not support location services.";
             }
         };
-
-        function forceStart() {
-            document.getElementById('loading-screen').style.display = 'none';
-            document.getElementById('main-content').style.display = 'block';
-        }
 
         // 2. QUIZ NAVIGATION
         function startQuiz() {
@@ -181,33 +202,40 @@
             }
 
             document.getElementById('intro-card').style.display = 'none';
+            // Show first question
             const firstQ = document.getElementById('q-0');
             if(firstQ) firstQ.classList.add('active');
         }
 
         function showQuestion(index) {
+            // Hide all
             document.querySelectorAll('.question-card').forEach(c => c.classList.remove('active'));
+            // Show target
             document.getElementById('q-' + index).classList.add('active');
         }
 
         // 3. SUBMISSION HANDLER
         async function submitAssessment() {
+        
             if(!confirm("Are you sure you want to submit?")) return;
+
             const form = document.getElementById('assessmentForm');
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
+
+            // Convert "answers[id]" keys to nested object if needed, 
+            // or just handle it on backend. simpler to construct a clean object:
             
             const answers = {};
             document.querySelectorAll('.option-input:checked').forEach(input => {
+                // Extract question ID from name="answers[QUESTION_ID]"
                 const qId = input.name.match(/\[(.*?)\]/)[1]; 
                 answers[qId] = input.value;
             });
 
-            // FIX: Separated Name and Email correctly
             const payload = {
                 trainingId: data.trainingId,
-                participantName: data.participantName,
-                participantEmail: data.participantEmail,
+                participantName: data.participantEmail, // Using email as identifier for now
                 answers: answers,
                 aadharId: data.aadharId,
                 userLat: data.userLat,
@@ -222,9 +250,10 @@
                 });
 
                 const result = await response.json();
+
                 if(result.success) {
                     alert('Submission Successful! Score: ' + result.score.toFixed(1) + '%');
-                    window.location.href = '/public';
+                    window.location.href = '/public'; // Redirect to home
                 } else {
                     alert('Error: ' + result.message);
                 }
@@ -234,5 +263,90 @@
             }
         }
     </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const nameInput = document.getElementById('participantName');
+        const emailInput = document.getElementById('participantEmail');
+        const aadharInput = document.getElementById('aadharId');
+        const startBtn = document.getElementById('startBtn');
+        
+        // Configuration
+        const allowedDomains = ['gov.in', 'nic.in', 'example.com','gmail.com','yahoo.com','gov.maha']; // Strict Domain List
+
+        function validateForm() {
+            // Check if all fields are valid to enable the Start button
+            const isNameValid = !nameInput.classList.contains('is-invalid') && nameInput.value.trim() !== '';
+            const isEmailValid = !emailInput.classList.contains('is-invalid') && emailInput.value.trim() !== '';
+            const isAadharValid = !aadharInput.classList.contains('is-invalid') && aadharInput.value.length === 12;
+            
+            startBtn.disabled = !(isNameValid && isEmailValid && isAadharValid);
+        }
+
+        // 1. REAL-TIME NAME VALIDATION
+        nameInput.addEventListener('input', function() {
+            // Regex: Only letters (a-z, A-Z) and spaces allowed. No numbers, no symbols.
+            const regex = /^[a-zA-Z\s]+$/;
+            
+            if (this.value && !regex.test(this.value)) {
+                this.classList.add('is-invalid');
+                // Optional: Auto-remove invalid characters
+                this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+            } else {
+                this.classList.remove('is-invalid');
+            }
+            validateForm();
+        });
+
+        // 2. REAL-TIME EMAIL VALIDATION
+        emailInput.addEventListener('input', function() {
+            const val = this.value.toLowerCase();
+            const feedback = document.getElementById('emailFeedback');
+            
+            // Check A: No forbidden symbols (only alphanumeric, @, ., -, _)
+            // The prompt asks to disallow symbols other than @ and . strictly, 
+            // but emails need alphanumeric. We assume "special symbols" like #$% are banned.
+            const strictChars = /^[a-z0-9@._-]+$/;
+            
+            // Check B: Basic Structure (something@domain.tld)
+            const basicStructure = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!strictChars.test(val)) {
+                this.classList.add('is-invalid');
+                feedback.innerText = "Email contains invalid symbols.";
+            } else if (!basicStructure.test(val)) {
+                this.classList.add('is-invalid');
+                feedback.innerText = "Invalid email format.";
+            } else {
+                // Check C: Domain Restriction (Realtime)
+                const domain = val.split('@')[1];
+                const isDomainAllowed = allowedDomains.some(d => domain === d || domain.endsWith('.' + d));
+                
+                if (!isDomainAllowed) {
+                    this.classList.add('is-invalid');
+                    feedback.innerText = `Restricted Domain. Allowed: ${allowedDomains.join(', ')}`;
+                } else {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                }
+            }
+            validateForm();
+        });
+
+        // 3. REAL-TIME AADHAR VALIDATION
+        aadharInput.addEventListener('input', function() {
+            // Remove any non-digit character immediately
+            this.value = this.value.replace(/[^0-9]/g, '');
+            
+            // Check length
+            if (this.value.length !== 12) {
+                this.classList.add('is-invalid');
+            } else {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            }
+            validateForm();
+        });
+    });
+</script>
 </body>
 </html>
