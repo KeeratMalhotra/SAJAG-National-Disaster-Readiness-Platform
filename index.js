@@ -129,6 +129,7 @@
 
 
 // --- IMPORTS ---
+// --- IMPORTS ---
 require('dotenv').config(); 
 const express = require('express');
 const path = require('path');
@@ -194,7 +195,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.set('views', path.join(__dirname, 'src', 'views'));
 app.set('view engine', 'ejs');
 
-// --- ROUTES ---
+// --- ROUTES IMPORTS ---
 const authRoutes = require('./src/routes/authRoutes');
 const dashboardRoutes = require('./src/routes/dashboardRoutes');
 const trainingRoutes = require('./src/routes/trainingRoutes');
@@ -213,6 +214,10 @@ const publicApiRoutes = require('./src/routes/publicRoutes');
 const trainingApiRoutes = require('./src/routes/trainingApiRoutes'); 
 const reportRoutes = require('./src/routes/reportRoutes');
 
+// --- NEW: CHATBOT CONTROLLER IMPORT ---
+const chatController = require('./src/controllers/chatController');
+
+// --- ROUTE USE ---
 app.use('/reports', reportRoutes); 
 app.use('/api/trainings', trainingApiRoutes); 
 app.use('/api/public', publicApiRoutes);
@@ -225,6 +230,9 @@ app.use('/api/auth', authRoutes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/trainings', trainingRoutes);
 app.use('/api/alerts', alertRoutes);
+
+// --- NEW: CHATBOT ROUTE ---
+app.post('/api/chat-public', chatController.handleChat);
 
 // --- UPDATED ROUTE FOR ASSESSMENT ---
 app.use('/assessment', assessmentApiRoutes); 
